@@ -1,9 +1,9 @@
 # sistema-de-gestion-de-arboles
 Aplicación web que esta orientada a la gestión de arboles y posterior visualización geográfica de los mismos.
 
-# 🌳 App de Mapeado y Gestión Integral de Arbolado Urbano
+# App de Mapeado y Gestión Integral de Arbolado Urbano
 
-## 📖 Contexto de la aplicación
+## Contexto de la aplicación
 A través de la observación directa del sector de gestión urbanística y el mantenimiento del espacio público, el equipo ha identificado una problemática significativa en la metodología de trabajo actual respecto al arbolado. La información de los distintos ejemplares es manejada de manera fragmentada por los inspectores, distribuyéndose en múltiples hojas de cálculo, lo cual ralentiza y dificulta la búsqueda de datos. Simultáneamente, la plataforma pública donde los vecinos gestionan denuncias por veredas rotas, podas o extracciones resulta confusa, generando incertidumbre en el ciudadano sobre el estado y seguimiento de sus solicitudes.
 
 ## Objetivos y Uso del Sistema
