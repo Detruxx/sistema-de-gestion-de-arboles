@@ -1,1 +1,1 @@
-import './bootstrap';
+// aca va el java script privado
