@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('arboles', function (Blueprint $table) {
+        Schema::create('trees', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('species_id')->constrained('species');
-            $table->foreignId('planter_id')->constrained('planters');
+            $table->foreignId('species_id')->constrained('species')->onDelete('restrict');
+            $table->foreignId('planter_id')->constrained('planters')->onDelete('restrict');
             $table->decimal('height', 5, 2); // Altura en metros
             $table->decimal('dbh', 5, 2);    // Diámetro Altura Pecho (DAP) en cm
             $table->enum('status', ['pending', 'completed'])->default('pending'); // Estado de revisión
