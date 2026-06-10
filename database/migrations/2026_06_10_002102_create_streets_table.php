@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('addresses', function (Blueprint $table) {
+        Schema::create('streets', function (Blueprint $table) {
             $table->id();
             $table->string('street_name');
             $table->integer('street_number'); // Altura de la calle
             $table->string('door_plate')->nullable(); // Chapa física / nro de puerta
-            $table->text('reference')->nullable(); // Referencia visual
+            $table->string('district')->nullable(); // Comuna / distrito
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('address');
+        Schema::dropIfExists('streets');
     }
 };
