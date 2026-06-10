@@ -11,18 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('arboles', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('id_especies')->constrained('especies')->onDelete('restrict');
-            $table->decimal('altura', 5, 2);
-            $table->decimal('dap', 5, 2);
-            $table->enum('estado', ['pendiente', 'concluido'])->default('pendiente');
-            $table->foreignId('id_plantera')->constrained('planteras')->onDelete('restrict');
-            $table->string('rasgo_follaje')->nullable();
-            $table->timestamps();
-
-
-            Schema::create('trees', function (Blueprint $table) {
+        Schema::create('trees', function (Blueprint $table) {
             //DATOS PRINCIPALES
             $table->id();
             // Clave foranea especie
@@ -49,6 +38,8 @@ return new class extends Migration
             $table->string('structure')->nullable(); //Estructura del arbol
             $table->tinyInteger('degree')->nullable(); // degree del arbol
             $table->string('observations')->nullable(); // observaciones, datos varios
+            
+            $table->timestamps();
         });
     }
 
