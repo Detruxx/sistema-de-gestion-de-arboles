@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('arboles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_especies')->constrained('especies')->onDelete('restrict');
-            $table->decimal('altura', 5, 2);
-            $table->decimal('dap', 5, 2);
-            $table->enum('estado', ['pendiente', 'concluido'])->default('pendiente');
-            $table->foreignId('id_plantera')->constrained('planteras')->onDelete('restrict');
-            $table->string('rasgo_follaje')->nullable();
+            $table->foreignId('species_id')->constrained('species');
+            $table->foreignId('planter_id')->constrained('planters');
+            $table->decimal('height', 5, 2); // Altura en metros
+            $table->decimal('dbh', 5, 2);    // Diámetro Altura Pecho (DAP) en cm
+            $table->enum('status', ['pending', 'completed'])->default('pending'); // Estado de revisión
+            $table->string('foliage_features')->nullable(); // Hojas / Follaje
             $table->timestamps();
         });
     }
