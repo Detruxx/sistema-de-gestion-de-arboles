@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('arboles', function (Blueprint $table) {
-            $table->id('id_arboles');
-            $table->foreignId('id_especies')->constrained()->onDelete('cascade');
-            $table->float('altura');
-            $table->float('dap');
-            $table->string('estado');
-            $table->foreignId('id_plantera')->constrained()->onDelete('cascade');
-            $table->string('observaciones');
+            $table->id();
+            $table->foreignId('id_especies')->constrained('especies')->onDelete('restrict');
+            $table->decimal('altura', 5, 2);
+            $table->decimal('dap', 5, 2);
+            $table->enum('estado', ['pendiente', 'concluido'])->default('pendiente');
+            $table->foreignId('id_plantera')->constrained('planteras')->onDelete('restrict');
+            $table->string('rasgo_follaje')->nullable();
             $table->timestamps();
         });
     }

@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('addresses', function (Blueprint $table) {
+        Schema::create('request_types', function (Blueprint $table) {
             $table->id();
-            $table->string('street_name');
-            $table->integer('street_number'); // Altura de la calle
-            $table->string('door_plate')->nullable(); // Chapa física / nro de puerta
-            $table->text('reference')->nullable(); // Referencia visual
+            $table->string('task_description'); // Poda, Extracción, etc.
             $table->timestamps();
         });
     }
@@ -26,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('address');
+        Schema::dropIfExists('request_types');
     }
 };
