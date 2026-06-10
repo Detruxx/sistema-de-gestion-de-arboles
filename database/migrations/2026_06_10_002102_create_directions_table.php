@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('trees', function (Blueprint $table) {
+        Schema::create('directions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_species')->constrained()->onDelete('cascade');
             $table->string('height');
             $table->integer('dap');
             $table->string('status');
-            $table->foreignId('id_plantera')->constrained()->onDelete('cascade');
-            $table->integer('observations');
             $table->timestamps();
         });
     }
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('trees');
+        Schema::dropIfExists('directions');
     }
 };
