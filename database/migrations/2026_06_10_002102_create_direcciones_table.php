@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('directions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('id_species')->constrained()->onDelete('cascade');
-            $table->string('height');
-            $table->integer('dap');
-            $table->string('status');
+        Schema::create('direcciones', function (Blueprint $table) {
+            $table->id('id_direcciones');
+            $table->string('nombre_calle');
+            $table->int('altura');
+            $table->int('chapa');
+            $table->string('referencia');
             $table->timestamps();
         });
     }
