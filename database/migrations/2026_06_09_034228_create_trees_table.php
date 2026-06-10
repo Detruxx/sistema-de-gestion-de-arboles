@@ -12,13 +12,32 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('trees', function (Blueprint $table) {
+            //DATOS PRINCIPALES
             $table->id();
-            $table->foreignId('id_species')->constrained()->onDelete('cascade');
-            $table->string('height');
-            $table->integer('dap');
-            $table->string('status');
-            $table->foreignId('id_plantera')->constrained()->onDelete('cascade');
-            $table->integer('observations');
+            // Clave foranea especie
+            $table->foreignId('species_id')->constrained()->onDelete('restrict');
+            // Clave foranea plantera
+            $table->foreignId('planter_id')->nullable()->constrained()->onDelete('restrict');
+            
+            // NULLABLE: porque puede estar en una calle o en un parque
+            $table->foreignId('street_id')->nullable()->constrained()->onDelete('restrict');
+            $table->string('reference')->nullable(); // Referencia segun la chapa de la calle (si es que esta sobre una)
+
+            $table->foreignId('park_id')->nullable()->constrained()->onDelete('restrict');
+            
+            // Datos geograficos
+            $table->double('latitude')->nullable();
+            $table->double('longitude')->nullable();
+            
+            $table->decimal('height'); // altura
+            $table->decimal('dap'); // diametro a la altura del pecho
+
+            // DATOS SECUNDARIOS
+            $table->string('maintenance_status')->nullable(); // si hay un reclamo pendiente, o no, etc
+            $table->string('vitality')->nullable(); // vital, en mal estado, muerto
+            $table->string('structure')->nullable(); //Estructura del arbol
+            $table->tinyInteger('degree')->nullable(); // degree del arbol
+            $table->string('observations')->nullable(); // observaciones, datos varios
             $table->timestamps();
         });
     }
