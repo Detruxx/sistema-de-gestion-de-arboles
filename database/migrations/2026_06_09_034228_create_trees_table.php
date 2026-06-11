@@ -38,6 +38,7 @@ return new class extends Migration
             $table->string('structure')->nullable(); //Estructura del arbol
             $table->tinyInteger('degree')->nullable(); // degree del arbol
             $table->string('observations')->nullable(); // observaciones, datos varios
+            
             $table->timestamps();
         });
     }

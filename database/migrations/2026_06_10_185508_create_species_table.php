@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('directions', function (Blueprint $table) {
+        Schema::create('species', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_species')->constrained()->onDelete('cascade');
-            $table->string('height');
-            $table->integer('dap');
-            $table->string('status');
+            $table->string('scientific_name')->unique();
+            $table->string('common_name');
+            $table->string('family'); // Familia (Bignoniaceae, etc)
+            $table->string('origin'); // Origen (Native, Exotic)
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('directions');
+        Schema::dropIfExists('species');
     }
 };
