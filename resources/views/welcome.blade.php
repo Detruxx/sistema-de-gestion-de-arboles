@@ -1,35 +1,6 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TreeBA | Arbolado Urbano</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    
-    
+@extends('layouts.app')
 
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-</head>
-<body>
-
-    <header class="navbar" id="navbar">
-        <a href="/" class="nav-brand">
-            <div class="logo"><img src="{{ asset('img/opcion 1 cuad.png') }}" alt="logo"></div>
-            <span class="brand-name">TreeBA</span>
-        </a>
-        <nav class="nav-links">
-            <a href="/mapa" class="nav-pill">Mapa</a>
-            <a href="#modificaciones" class="nav-pill">Modificaciones</a>
-            <a href="#cuidados" class="nav-pill">Cuidados</a>
-            <a href="#reclamos" class="nav-pill">Reclamos</a>
-            <a href="#contacto" class="nav-pill">Contacto</a>
-            <a href="/login" class="nav-pill btn-login">Login</a>
-        </nav>
-    </header>
-
+@section('content')
     <main>
         <section class="hero">
             <canvas id="hero-canvas"></canvas>
@@ -45,12 +16,10 @@
                 </a>
             </div>
         </section>
-        
-        
     </main>
+@endsection
 
-   
-
-    <script src="{{ asset('js/app.js') }}"></script>
-</body>
-</html>
+@push('scripts')
+    <script src="{{ asset('js/navbar.js') }}"></script>
+    <script src="{{ asset('js/hero-canvas.js') }}"></script>
+@endpush

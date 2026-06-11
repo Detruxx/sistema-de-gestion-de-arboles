@@ -1,0 +1,12 @@
+/* ================= Variables y Paleta de Colores ================= */
+:root {
+    --forest-night: #0A1A0D;
+    --deep-canopy: #1A3D28;
+    --living-moss: #2D7A4F;
+    --spring-leaf: #5BBF8C;
+    --morning-dew: #C8F2D4;
+    --paper-white: #F5F9F6;
+
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+}

@@ -1,34 +1,14 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa | TreeBA</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
-    
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-</head>
-<body class="map-body">
+@extends('layouts.app')
 
-    <header class="navbar scrolled" id="navbar">
-        <a href="/" class="nav-brand">
-            <div class="logo"><img src="{{ asset('img/logo1.png') }}" alt="logo"></div>
-            <span class="brand-name">TreeBA</span>
-        </a>
-        <nav class="nav-links">
-            <a href="/mapa" class="nav-pill active">Mapa</a>
-            <a href="/#modificaciones" class="nav-pill">Modificaciones</a>
-            <a href="/#cuidados" class="nav-pill">Cuidados</a>
-            <a href="/#reclamos" class="nav-pill">Reclamos</a>
-            <a href="/#contacto" class="nav-pill">Contacto</a>
-            <a href="/login" class="nav-pill btn-login">Login</a>
-        </nav>
-    </header>
+@push('styles')
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+@endpush
+
+@section('body-class', 'map-body')
+@section('navbar-class', 'scrolled')
+@section('content')
+
+
 
     <main class="map-page-container">
         <div class="map-wrapper">
@@ -72,8 +52,11 @@
             
         </div>
     </main>
+@endsection
 
+@push('scripts')
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-    <script src="{{ asset('js/app.js') }}"></script>
-</body>
-</html>
+    <script src="{{ asset('js/navbar.js') }}"></script>
+    <script src="{{ asset('js/map.js') }}"></script>
+@endpush
+
