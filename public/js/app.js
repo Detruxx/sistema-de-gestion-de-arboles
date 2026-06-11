@@ -1,529 +1,204 @@
 
-//Diccionario hash de calles
-const diccionarioCalles =
-{
-    "11 De September De 1888": "11 de Septiembre de 1888",
-    "3 De Febrero": "3 de Febrero",
-    "Agote Pedro": "Pedro Agote",
-    "Aguilar": "Aguilar",
-    "Alsina, Valentin Av.": "Avenida Valentín Alsina",
-    "Alvarez Thomas Av.": "Avenida Álvarez Thomas",
-    "Amenabar": "Amenábar",
-    "Arcos": "Arcos",
-    "Arenal, Concepcion": "Concepción Arenal",
-    "Arias": "Arias",
-    "Armauer Hansen, Gerardo, Dr.": "Dr. Gerardo Armauer Hansen",
-    "Arredondo, Virrey": "Virrey Arredondo",
-    "Arribeños": "Arribeños",
-    "Artilleros": "Artilleros",
-    "Aubain, Teodoro Dr.": "Dr. Teodoro Aubain",
-    "Aviles, Virrey": "Virrey Avilés",
-    "Azurduy Juana": "Juana Azurduy",
-    "Balbin, Ricardo, Dr. Av.": "Avenida Dr. Ricardo Balbín",
-    "Barilari, Atilio S., Alte.": "Almirante Atilio S. Barilari",
-    "Basavilbaso, Leopoldo": "Leopoldo Basavilbaso",
-    "Bavio, Ernesto A.": "Ernesto A. Bavio",
-    "Besares": "Besares",
-    "Betbeder, Onofre, Alte.": "Almirante Onofre Betbeder",
-    "Blanco Encalada": "Blanco Encalada",
-    "Borches, Jose": "José Borches",
-    "Cabildo Av.": "Avenida Cabildo",
-    "Calzadilla, Santiago": "Santiago Calzadilla",
-    "Campos Salles": "Campos Salles",
-    "Campos, Luis M. Av.": "Avenida Luis M. Campos",
-    "Cantilo, Int.": "Intendente Cantilo",
-    "Carbajal": "Carbajal",
-    "Castañeda": "Castañeda",
-    "Cazadores": "Cazadores",
-    "Cerrillos": "Cerrillos",
-    "Cespedes": "Céspedes",
-    "Ciudad De La Paz": "Ciudad de la Paz",
-    "Conde": "Conde",
-    "Conesa": "Conesa",
-    "Congreso": "Congreso",
-    "Congreso Av.": "Avenida Congreso",
-    "Correa": "Correa",
-    "Corregidores": "Corregidores",
-    "Cramer": "Crámer",
-    "Cramer Av.": "Avenida Crámer",
-    "Cuba": "Cuba",
-    "De Los Incas Av.": "Avenida de los Incas",
-    "Deheza": "Deheza",
-    "Del Libertador Av.": "Avenida del Libertador",
-    "Delgado": "Delgado",
-    "Dorrego": "Dorrego",
-    "Dragones": "Dragones",
-    "Dumont, Santos": "Santos Dumont",
-    "Echeverria": "Echeverría",
-    "Elcano": "Elcano",
-    "Elcano Av.": "Avenida Elcano",
-    "Figueroa Alcorta, Pres. Av.": "Avenida Presidente Figueroa Alcorta",
-    "Fitte, Marcelo J., Dr.": "Dr. Marcelo J. Fitte",
-    "Forest Av.": "Avenida Forest",
-    "Freire, Ramon, Cap. Gral.": "Capitán General Ramón Freire",
-    "Garcia, Manuel J., Alte.": "Almirante Manuel J. García",
-    "Garcia, Teodoro": "Teodoro García",
-    "Golfarini, Juan Angel, Dr.": "Dr. Juan Ángel Golfarini",
-    "Gorostiaga": "Gorostiaga",
-    "Grecia": "Grecia",
-    "Guayra": "Guayra",
-    "Guiraldes, Int.": "Intendente Güiraldes",
-    "Hernandez, Jose": "José Hernández",
-    "Hernandez, Rafael": "Rafael Hernández",
-    "Hiroshima": "Hiroshima",
-    "Husares": "Húsares",
-    "Ibera": "Iberá",
-    "Irlanda": "Irlanda",
-    "Jaramillo": "Jaramillo",
-    "Juramento": "Juramento",
-    "Juramento Av.": "Avenida Juramento",
-    "La Cachila": "La Cachila",
-    "La Pampa": "La Pampa",
-    "Lacroze, Federico Av.": "Avenida Federico Lacroze",
-    "Larralde, Crisologo Av.": "Avenida Crisólogo Larralde",
-    "Las Heras": "Las Heras",
-    "Loreto, Virrey": "Virrey Loreto",
-    "Manzanares": "Manzanares",
-    "Martinez, Enrique, Gral.": "General Enrique Martínez",
-    "Matienzo, Benjamin, Teniente": "Teniente Benjamín Matienzo",
-    "Maure": "Maure",
-    "Melian Av.": "Avenida Melián",
-    "Mendez, Nicanor": "Nicanor Méndez",
-    "Mendoza": "Mendoza",
-    "Migueletes": "Migueletes",
-    "Miñones": "Miñones",
-    "Moldes": "Moldes",
-    "Monroe": "Monroe",
-    "Monroe Av.": "Avenida Monroe",
-    "Montañeses": "Montañeses",
-    "Munich": "Munich",
-    "Naon, Romulo": "Rómulo Naón",
-    "Newbery, Jorge": "Jorge Newbery",
-    "Nuñez": "Núñez",
-    "O'higgins": "O'Higgins",
-    "Obligado Rafael, Av.Costanera": "Avenida Costanera Rafael Obligado",
-    "Olaguer Y Feliu, Virrey": "Virrey Olaguer y Feliú",
-    "Olazabal": "Olazábal",
-    "Olazabal Av.": "Avenida Olazábal",
-    "Olleros": "Olleros",
-    "Padre Canavery": "Padre Canavery",
-    "Padre Neumann Juan B.": "Padre Juan B. Neumann",
-    "Palpa": "Palpa",
-    "Paroissien": "Paroissien",
-    "Pedraza, Manuela": "Manuela Pedraza",
-    "Perez, Gregoria": "Gregoria Pérez",
-    "Pico": "Pico",
-    "Pino, Virrey Del": "Virrey del Pino",
-    "Pissarro, Victor": "Víctor Pissarro",
-    "Plaza, Victorino De La, Dr.": "Dr. Victorino de la Plaza",
-    "Prins, Enrique": "Enrique Prins",
-    "Puerto Principe": "Puerto Príncipe",
-    "Quesada": "Quesada",
-    "Quinteros, Lidoro J. Av.": "Avenida Lidoro J. Quinteros",
-    "Quiroga, Horacio": "Horacio Quiroga",
-    "Ramallo": "Ramallo",
-    "Ramsay": "Ramsay",
-    "Ricchieri, Pablo, Tte. Gral.": "Teniente General Pablo Ricchieri",
-    "Rio Piedras": "Río Piedras",
-    "Rivadavia Martin, Comodoro": "Comodoro Martín Rivadavia",
-    "Rivera, Pedro I., Dr.": "Dr. Pedro I. Rivera",
-    "Romero, D.": "D. Romero",
-    "Romero, Eduardo, Sgto.": "Sargento Eduardo Romero",
-    "Roosevelt Franklin D.": "Franklin D. Roosevelt",
-    "Ruiz Huidobro": "Ruiz Huidobro",
-    "Saenz Valiente, Juan Pablo": "Juan Pablo Sáenz Valiente",
-    "Sagasta Isla, Jose Maria": "José María Sagasta Isla",
-    "Sanchez, Miguel": "Miguel Sánchez",
-    "Soldado De La Independencia": "Soldado de la Independencia",
-    "Solier, Daniel De, Alte.": "Almirante Daniel de Solier",
-    "Sourigues, Carlos, Cnel.": "Coronel Carlos Sourigues",
-    "Sucre, Antonio Jose De, Mcal.": "Mariscal Antonio José de Sucre",
-    "Superi": "Superí",
-    "Tamborini, Jose Pascual": "José Pascual Tamborini",
-    "Tegucigalpa": "Tegucigalpa",
-    "Temperley": "Temperley",
-    "Tunez": "Túnez",
-    "Udaondo, Guillermo Av.": "Avenida Guillermo Udaondo",
-    "Ugarte, Manuel": "Manuel Ugarte",
-    "Urtubey Clodomiro Cdro.": "Comodoro Clodomiro Urtubey",
-    "Ushuaia Pasaje (Pje. Part.)": "Pasaje Particular Ushuaia",
-    "Vedia": "Vedia",
-    "Velez, Bernardo, Dr.": "Dr. Bernardo Vélez",
-    "Vertiz Virrey Av.": "Avenida Virrey Vértiz",
-    "Vidal": "Vidal",
-    "Vilela": "Vilela",
-    "Vuelta De Obligado": "Vuelta de Obligado",
-    "Washington": "Washington",
-    "Zabala": "Zabala",
-    "Zapata": "Zapata",
-    "Zapiola": "Zapiola",
-    "Zarraga": "Zárraga",
-    "Zavalia": "Zavalía",
-    "Zuberbuhler, Carlos E.": "Carlos E. Zuberbühler"
-};
+document.addEventListener('DOMContentLoaded', () => {
 
-// ==========================================
-// VARIABLES GLOBALES
-// ==========================================
-let map;
-let direccionesProcesadas = [];
-let capaRuta = null;
-let marcadoresRuta = [];
-
-// ==========================================
-// INICIALIZACIÓN DEL MAPA (LEAFLET)
-// ==========================================
-document.addEventListener("DOMContentLoaded", function () {
-    // Centramos el mapa inicial en CABA
-    map = L.map('map').setView([-34.6037, -58.3816], 12);
-
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-        {
-            maxZoom: 19,
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-});
-
-// ==========================================
-// LECTURA Y EXTRACCIÓN DEL ARCHIVO KML
-// ==========================================
-document.getElementById("kmlFile").addEventListener("change", function (event) {
-    const file = event.target.files[0];
-    let archivoListo = false;
-
-    if (file) {
-        archivoListo = true;
-    }
-
-    if (archivoListo) {
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-            const kmlText = e.target.result;
-            direccionesProcesadas = extraerDirecciones(kmlText);
-            alert("¡KML cargado! Se encontraron " + direccionesProcesadas.length + " direcciones.");
-        };
-
-        reader.readAsText(file);
-    }
-});
-
-function extraerDirecciones(kmlString) {
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(kmlString, "text/xml");
-    const addressNodes = xmlDoc.getElementsByTagName("address");
-
-    let puntos = [];
-    let i = 0;
-    // OSRM soporta muchísimos más puntos que Google, 
-    // pero limitamos a 50 por precaución con la API pública
-    let limiteAlcanzado = false;
-
-    while (i < addressNodes.length && !limiteAlcanzado) {
-        let textoDir = addressNodes[i].textContent.trim();
-
-        if (textoDir !== "") {
-            let textoLimpio = corregirDireccionBaseDeDatos(textoDir);
-            puntos.push(textoLimpio);
+    // 1. Efecto Scroll en la barra de navegación
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
         }
-        if (puntos.length >= 50) {
-            limiteAlcanzado = true;
-            console.warn("Límite de 50 direcciones alcanzado.");
-        }
-        i++;
-    }
-    return puntos;
-}
-
-// FUNCION QUE CORRIGE LAS DIRECCIONES PARA UNA POSTERIOR MEJOR BUSQUEDA
-function corregirDireccionBaseDeDatos(direccionOriginal) {
-    let direccionCorregida = direccionOriginal;
-    let originalMinuscula = direccionOriginal.toLowerCase();
-
-    // Obtenemos todas las claves (nombres malos) del diccionario
-    const callesMalas = Object.keys(diccionarioCalles);
-    let i = 0;
-    let coincidenciaEncontrada = false; // Nuestra bandera
-
-    while (i < callesMalas.length && !coincidenciaEncontrada) {
-        let calleMala = callesMalas[i];
-        let malaMinuscula = calleMala.toLowerCase();
-
-        // Si el texto del KML arranca con el nombre feo de la base de datos...
-        if (originalMinuscula.startsWith(malaMinuscula)) {
-            let calleBuena = diccionarioCalles[calleMala];
-
-            // Recortamos la parte mala original y le concatenamos el resto 
-            // (que incluye la altura, ciudad y país)
-            let restoDeLaDireccion = direccionOriginal.substring(calleMala.length);
-            direccionCorregida = calleBuena + restoDeLaDireccion;
-
-            coincidenciaEncontrada = true;
-        }
-
-        i++;
-    }
-
-    return direccionCorregida;
-}
-
-
-
-// ==========================================
-// CONTROLADOR DEL BOTÓN PRINCIPAL
-// ==========================================
-document.getElementById("btnOptimizar").addEventListener("click", async function () {
-    let puedeProcesar = false;
-
-    if (direccionesProcesadas.length > 0) {
-        puedeProcesar = true;
-    }
-
-    if (puedeProcesar) {
-        console.log("Iniciando geocodificación con OSM. Esto tomará unos segundos...");
-
-        // Esperamos a que todas las direcciones se conviertan a coordenadas
-        const coordenadas = await traducirConNominatim(direccionesProcesadas);
-
-        console.log("¡Coordenadas listas! Calculando la ruta más rápida...");
-        calcularRutaOSRM(coordenadas);
-    }
-    else {
-        alert("Por favor, cargá un archivo KML primero.");
-    }
-});
-
-// Función auxiliar para pausar la ejecución (1 segundo)
-function esperarUnSegundo() {
-    return new Promise(function (resolve) {
-        setTimeout(resolve, 1000);
     });
-}
 
-// ==========================================
-// GEOCODIFICACIÓN (TEXTO A COORDENADAS)
-// ==========================================
-async function traducirConNominatim(arregloTextos) {
-    let coordenadas = [];
-    let i = 0;
-    let seguirTraduciendo = true;
+    // 2. Animación de Partículas (Estilo orgánico/hojas flotantes) en el Canvas
+    const canvas = document.getElementById('hero-canvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
 
-    while (i < arregloTextos.length && seguirTraduciendo) {
-        let textoBusqueda = arregloTextos[i];
-        let calleResuelta = false; // Bandera para el bucle de reintentos
-        let cancelarProceso = false;
+        let particlesArray;
 
-        // Bucle interno: Se repite hasta que encontremos la calle o la salteemos
-        while (!calleResuelta && !cancelarProceso) {
-            // Le agregamos ", CABA, Argentina" acá para darle más contexto a OSM
-            let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(textoBusqueda + ", CABA, Argentina")}`;
+        // Ajustar el tamaño del canvas a la ventana
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
-            try {
-                let respuesta = await fetch(url);
-                let datos = await respuesta.json();
-                let encontroLugar = false;
-
-                if (datos.length > 0) {
-                    encontroLugar = true;
-                }
-
-                if (encontroLugar) {
-                    coordenadas.push(
-                        {
-                            lat: parseFloat(datos[0].lat),
-                            lng: parseFloat(datos[0].lon)
-                        });
-                    calleResuelta = true; // Encontrada, salimos del bucle de reintento
-                }
-                else {
-                    // AQUÍ INTERVENIMOS MANUALMENTE
-                    let textoCorreccion = prompt("OSM no encontró esta dirección:\n\n" + textoBusqueda + "\n\nIngresá la calle corregida (o dejá en blanco para saltarla):", textoBusqueda);
-
-                    let usuarioCancelo = false;
-
-                    if (textoCorreccion === null || textoCorreccion.trim() === "") {
-                        usuarioCancelo = true;
-                    }
-
-                    if (usuarioCancelo) {
-                        calleResuelta = true; // Salimos del bucle pero sin agregar nada
-                        console.warn("Se omitió la dirección: " + textoBusqueda);
-                    }
-                    else {
-                        // Si escribiste algo, actualizamos la variable
-                        // Como 'calleResuelta' sigue siendo false, el while vuelve a girar
-                        textoBusqueda = textoCorreccion;
-                        console.log("Reintentando con: " + textoBusqueda);
-                    }
-                }
-            }
-            catch (error) {
-                console.error("Error consultando Nominatim: ", error);
-                cancelarProceso = true;
-                seguirTraduciendo = false; // Cortamos todo si se cae internet
+        // Clase constructora de partículas
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1; // Tamaño de la "hoja/polen"
+                this.speedX = Math.random() * 1 - 0.5; // Movimiento horizontal
+                this.speedY = Math.random() * -1 - 0.5; // Movimiento vertical (hacia arriba)
+                // Color verde translúcido
+                this.color = `rgba(91, 191, 140, ${Math.random() * 0.5 + 0.1})`;
             }
 
-            // Mantenemos la pausa de 1 segundo (incluso entre reintentos)
-            await esperarUnSegundo();
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // Si la partícula sale por arriba, reaparece abajo
+                if (this.y < 0) {
+                    this.y = canvas.height;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
         }
 
-        i++;
-    }
-
-    return coordenadas;
-}
-
-// ==========================================
-// CÁLCULO DE RUTA ÓPTIMA Y DIBUJO (OSRM)
-// ==========================================
-function calcularRutaOSRM(listaCoordenadas) {
-    let puedeCalcular = false;
-
-    if (listaCoordenadas.length > 1) {
-        puedeCalcular = true;
-    }
-
-    if (puedeCalcular) {
-        let urlOSRM = "https://router.project-osrm.org/trip/v1/driving/";
-        let coordenadasString = "";
-        let i = 0;
-        let armarUrl = true;
-
-        // OSRM requiere el formato: longitud,latitud;longitud,latitud
-        while (i < listaCoordenadas.length && armarUrl) {
-            coordenadasString += listaCoordenadas[i].lng + "," + listaCoordenadas[i].lat;
-
-            let esUltimoPunto = false;
-
-            if (i === listaCoordenadas.length - 1) {
-                esUltimoPunto = true;
+        // Inicializar el arreglo de partículas
+        function initParticles() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.width * canvas.height) / 9000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
             }
-
-            if (!esUltimoPunto) {
-                coordenadasString += ";";
-            }
-
-            i++;
         }
 
-        // Agregamos parámetros: viaje circular (roundtrip) e incluir geometrías para dibujar
-        urlOSRM += coordenadasString + "?roundtrip=true&source=first&geometries=geojson";
+        // Ciclo de animación
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
 
-        fetch(urlOSRM)
-            .then(function (respuesta) {
-                return respuesta.json();
-            })
-            .then(function (datos) {
-                let calculoExitoso = false;
+        initParticles();
+        animateParticles();
+    }
 
-                if (datos.code === "Ok") {
-                    calculoExitoso = true;
-                }
+    //======================= PAGINA MAPA
 
-                if (calculoExitoso) {
-                    // Limpiamos la ruta anterior
-                    let hayRutaPrevia = false;
+    // ================= LÓGICA DEL MAPA (Solo si existe el div del mapa) =================
+    const mapElement = document.getElementById('tree-map');
+    if (mapElement) {
+        // Inicializar el mapa
+        const map = L.map('tree-map', {
+            zoomControl: false // Desactivamos el default para no chocar con el panel
+        }).setView([-34.6037, -58.3816], 13);
 
-                    if (capaRuta !== null) {
-                        hayRutaPrevia = true;
-                    }
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
 
-                    if (hayRutaPrevia) {
-                        map.removeLayer(capaRuta);
-                    }
+        // Mover controles de zoom a la derecha (para que no los tape el panel)
+        L.control.zoom({ position: 'topright' }).addTo(map);
 
-                    // Dibujamos la nueva ruta
-                    let geometria = datos.trips[0].geometry;
-                    capaRuta = L.geoJSON(geometria,
-                        {
-                            style: { color: '#0288D1', weight: 5, opacity: 0.8 }
-                        }).addTo(map);
+        // Elementos del DOM del Panel Lateral
+        const sidebar = document.getElementById('tree-sidebar');
+        const toggleBtn = document.getElementById('toggle-sidebar');
 
-                    map.fitBounds(capaRuta.getBounds());
+        // Función para abrir/cerrar panel con el botón
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('sidebar-closed');
+        });
 
-                    // AQUÍ LLAMAMOS A LAS NUEVAS FUNCIONES MODULARES
-                    gestionarPines(listaCoordenadas);
-                    generarEnlacesCelular(datos);
+        // Simulación de una base de datos de árboles
+        const arboles = [
+            {
+                lat: -34.6037, lng: -58.3816,
+                id: "#0012", estado: "Saludable", especie: "Jacarandá", edad: "15 años", reclamos: "0",
+                foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Jacaranda_mimosifolia_en_Buenos_Aires.jpg/800px-Jacaranda_mimosifolia_en_Buenos_Aires.jpg"
+            },
+            {
+                lat: -34.6100, lng: -58.3900,
+                id: "#0084", estado: "Riesgo", especie: "Palo Borracho", edad: "25 años", reclamos: "3",
+                foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Ceiba_speciosa_%28Palo_borracho%29_en_Buenos_Aires.jpg/800px-Ceiba_speciosa_%28Palo_borracho%29_en_Buenos_Aires.jpg"
+            }
+        ];
 
-                    console.log("¡Ruta trazada, pines dibujados y enlaces generados!");
+        // Función para inyectar los datos en el panel al hacer clic
+        function mostrarDatosArbol(arbol) {
+            document.getElementById('t-id').textContent = arbol.id;
+            document.getElementById('t-estado').textContent = arbol.estado;
+            document.getElementById('t-especie').textContent = arbol.especie;
+            document.getElementById('t-edad').textContent = arbol.edad;
+            document.getElementById('t-reclamos').textContent = arbol.reclamos;
+            document.getElementById('t-foto').src = arbol.foto;
+
+            // Abrir el panel si está cerrado
+            sidebar.classList.remove('sidebar-closed');
+        }
+
+        // Cargar los marcadores en el mapa
+        arboles.forEach(arbol => {
+            const marker = L.marker([arbol.lat, arbol.lng]).addTo(map);
+
+            // Al hacer clic en el marcador
+            marker.on('click', () => {
+                mostrarDatosArbol(arbol);
+                // Centrar el mapa suavemente en el árbol clickeado
+                map.flyTo([arbol.lat, arbol.lng], 16, { duration: 0.5 });
+            });
+        });
+    }
+
+    // 3. ScrollSpy y gestión de clase activa en la barra de navegación
+    const navLinks = document.querySelectorAll('.navbar .nav-pill');
+
+    // Si estamos en la página del mapa, no queremos scrollspy para el inicio
+    if (!window.location.pathname.includes('/mapa')) {
+        // Lógica de click manual para destacar el ancla activa
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                const href = link.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
                 }
             });
-    }
-}
+        });
 
-function gestionarPines(coordenadas) {
-    // Limpiamos los pines viejos si existen
-    let k = 0;
-    let limpiarPines = true;
+        // ScrollSpy automático con IntersectionObserver para las secciones que existan
+        const sections = [];
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && href.startsWith('#')) {
+                const sec = document.querySelector(href);
+                if (sec) {
+                    sections.push(sec);
+                }
+            }
+        });
 
-    while (k < marcadoresRuta.length && limpiarPines) {
-        map.removeLayer(marcadoresRuta[k]);
-        k++;
-    }
+        if (sections.length > 0) {
+            const observerOptions = {
+                root: null,
+                rootMargin: '-20% 0px -60% 0px',
+                threshold: 0
+            };
 
-    marcadoresRuta = []; // Vaciamos el arreglo
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        navLinks.forEach(link => {
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active');
+                            } else {
+                                link.classList.remove('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
 
-    // Dibujamos los pines nuevos
-    let m = 0;
-    let dibujarPines = true;
-
-    while (m < coordenadas.length && dibujarPines) {
-        let pin = L.marker([coordenadas[m].lat, coordenadas[m].lng]).addTo(map);
-        marcadoresRuta.push(pin);
-        m++;
-    }
-}
-
-function generarEnlacesCelular(datosOSRM) {
-    // Recuperamos el orden óptimo devuelto por OSRM
-    let rutaOptimizada = new Array(datosOSRM.waypoints.length);
-    let idx = 0;
-    let ordenar = true;
-
-    while (idx < datosOSRM.waypoints.length && ordenar) {
-        let posicionIdeal = datosOSRM.waypoints[idx].waypoint_index;
-
-        let lngOSRM = datosOSRM.waypoints[idx].location[0];
-        let latOSRM = datosOSRM.waypoints[idx].location[1];
-
-        rutaOptimizada[posicionIdeal] = { lat: latOSRM, lng: lngOSRM };
-        idx++;
-    }
-
-    // Generamos los enlaces
-    let enlacesHTML = "<h3>Links para el celular:</h3>";
-    let loteActual = 0;
-    let procesarLotes = true;
-
-    while (loteActual < rutaOptimizada.length && procesarLotes) {
-        let urlMaps = "https://www.google.com/maps/dir/";
-        let p = 0;
-        let procesarPuntos = true;
-
-        while (p < 10 && (loteActual + p) < rutaOptimizada.length && procesarPuntos) {
-            let punto = rutaOptimizada[loteActual + p];
-            urlMaps += punto.lat + "," + punto.lng + "/";
-            p++;
-        }
-
-        let numLote = Math.floor(loteActual / 9) + 1;
-        let puntoFinalTexto = loteActual + p;
-
-        if (puntoFinalTexto > rutaOptimizada.length) {
-            puntoFinalTexto = rutaOptimizada.length;
-        }
-
-        enlacesHTML += `
-        <a href="${urlMaps}" target="_blank" style="display:inline-block; margin-bottom:10px; padding:8px 12px; background-color:#0288D1; color:white; text-decoration:none; border-radius:5px; margin-right:10px;">
-            📍 Abrir Tramo ${numLote} (Paradas ${loteActual + 1} a ${puntoFinalTexto})
-        </a>`;
-
-        loteActual += 9;
-
-        if (loteActual >= rutaOptimizada.length) {
-            procesarLotes = false;
+            sections.forEach(section => observer.observe(section));
         }
     }
 
-    document.getElementById("contenedorEnlaces").innerHTML = enlacesHTML;
-}
+});
