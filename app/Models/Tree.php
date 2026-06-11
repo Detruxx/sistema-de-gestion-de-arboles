@@ -9,6 +9,11 @@ class Tree extends Model
     protected $table = 'trees';
 
     protected $primaryKey = 'id';
+
+    protected $casts = [
+        'vitality' => 'array',
+    ];
+
     protected $fillable = [
         //Claves Foraneas
         'species_id', // Clave foranea de Species
@@ -23,7 +28,7 @@ class Tree extends Model
         'height', // altura
         'dap', // diametro a la altura del pecho
 
-        //Datos secundarios
+        //Datos secundarios 
         'reference', // Referencia segun la chapa de la calle
         'maintenance_status', // si hay un reclamo pendiente, o no
         'vitality', // vital, en mal estado, muerto
@@ -34,16 +39,16 @@ class Tree extends Model
 
     // RELACIONES
 
-    // Relacion con Species
-    public function species()
+    // Relacion con Specie
+    public function specie()
     {
-        return $this->belongsTo(Species::class, 'species_id');
+        return $this->belongsTo(Specie::class, 'species_id');
     }
 
     // Relacion con Plantera
-    public function plantera()
+    public function planter()
     {
-        return $this->belongsTo(Plantera::class, 'planter_id');
+        return $this->belongsTo(Planter::class, 'planter_id');
     }
     
     // Relacion con Street
