@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('common_name');
             $table->string('family'); // Familia (Bignoniaceae, etc)
             $table->string('origin'); // Origen (Native, Exotic)
+            $table->string('foliage_type');
             $table->timestamps();
         });
     }

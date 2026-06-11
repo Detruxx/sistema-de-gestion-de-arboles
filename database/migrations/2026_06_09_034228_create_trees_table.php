@@ -13,24 +13,29 @@ return new class extends Migration
     {
         Schema::create('trees', function (Blueprint $table) {
             //DATOS PRINCIPALES
-            $table->id();
-            // Clave foranea especie
+            $table->Id();
             $table->foreignId('species_id')->constrained()->onDelete('restrict');
-            // Clave foranea plantera
+    
+            // CONTEXTO 1: Árbol de Vereda (Alineado)
             $table->foreignId('planter_id')->nullable()->constrained()->onDelete('restrict');
-            
-            // NULLABLE: porque puede estar en una calle o en un parque
             $table->foreignId('street_id')->nullable()->constrained()->onDelete('restrict');
-            $table->string('reference')->nullable(); // Referencia segun la chapa de la calle (si es que esta sobre una)
+            $table->string('reference')->nullable(); // Ej: "Frente a chapa 1425"
 
+            // CONTEXTO 2: Árbol de Plaza / Espacio Verde
             $table->foreignId('park_id')->nullable()->constrained()->onDelete('restrict');
             
-            // Datos geograficos
-            $table->double('latitude')->nullable();
-            $table->double('longitude')->nullable();
+            // Datos geográficos (OBLIGATORIOS para árboles de plaza)
+            $table->double('latitude'); 
+            $table->double('longitude');
             
-            $table->decimal('height'); // altura
-            $table->decimal('dap'); // diametro a la altura del pecho
+            // Datos forestales y secundarios
+            $table->decimal('height', 5, 2);
+            $table->decimal('dap', 5, 2);
+            $table->string('maintenance_status')->nullable();
+            $table->json('vitality')->nullable();
+            $table->string('structure')->nullable();
+            $table->tinyInteger('degree')->nullable();
+            $table->string('observations')->nullable();
 
             // DATOS SECUNDARIOS
             $table->string('maintenance_status')->nullable(); // si hay un reclamo pendiente, o no, etc
@@ -51,3 +56,4 @@ return new class extends Migration
         Schema::dropIfExists('trees');
     }
 };
+
