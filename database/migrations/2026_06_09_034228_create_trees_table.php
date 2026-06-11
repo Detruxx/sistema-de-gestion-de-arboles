@@ -32,7 +32,7 @@ return new class extends Migration
             $table->decimal('height', 5, 2);
             $table->decimal('dap', 5, 2);
             $table->string('maintenance_status')->nullable();
-            $table->string('vitality')->nullable();
+            $table->json('vitality')->nullable();
             $table->string('structure')->nullable();
             $table->tinyInteger('degree')->nullable();
             $table->string('observations')->nullable();
