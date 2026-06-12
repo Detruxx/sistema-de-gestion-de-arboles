@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict');
             $table->foreignId('tree_id')->constrained('trees')->onDelete('restrict');
             $table->foreignId('request_type_id')->constrained('request_types')->onDelete('restrict');
+            $table->foreignId('street_name')->constrained('streets')->onDelete('restrict');
+            $table->foreignId('door_plate')->constrained('streets')->onDelete('restrict');
             $table->text('description');
             $table->enum('status', ['open', 'in_progress', 'resolved'])->default('open');
             $table->timestamps();
