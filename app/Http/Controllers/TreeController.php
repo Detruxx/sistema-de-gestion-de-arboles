@@ -6,9 +6,14 @@ use Illuminate\Http\Request;
 
 class TreeController extends Controller
 {
-     public function store(Request $request)
+    // =========================
+    // FUNCIONES
+    // =========================
+
+    // Guarda un arbol nuevo en la base de datos
+    public function store(Request $request)
     {
-        // 1. Validamos los datos que vienen del formulario
+        // Validamos los datos que vienen del formulario
         $validatedData = $request->validate([
             'species_id' => 'required|exists:species,id',
             'latitude'   => 'required|numeric',
@@ -20,7 +25,7 @@ class TreeController extends Controller
             'vitality'   => 'nullable|array', 
         ]);
 
-        // 2. Creamos la instancia del Árbol
+        // Creamos la instancia del Árbol
         $tree = new Tree();
         $tree->species_id = $validatedData['species_id'];
         $tree->latitude   = $validatedData['latitude'];
@@ -28,7 +33,7 @@ class TreeController extends Controller
         $tree->height     = $validatedData['height'];
         $tree->dap        = $validatedData['dap'];
 
-        // 3. Guardamos el array de vitalidad directamente
+        // Guardamos el array de vitalidad directamente
         // Laravel, gracias al cast que pusimos en el Modelo, se encarga de transformarlo a JSON para MySQL.
         $tree->vitality = $request->input('vitality'); // Ej: ['semiseco', 'escasa foliacion']
 
@@ -37,18 +42,68 @@ class TreeController extends Controller
         return response()->json(['message' => 'Árbol registrado con éxito', 'tree' => $tree], 201);
     }
 
+    // Actualiza el estado del arbol
+    public function updateStatus(Request $request, $id)
+    {
+        // Validacion de datos
+        $request->validate([
+            'vitality'=> 'nullable|array',
+            'maintenance_status' => 'nullable|string',
+            'structure' => 'nullable|string',
+            'degree' => 'nullable|integer',
+            'observations' => 'nullable|string',
+        ]);
+
+        // Se busca el arbol
+        $tree = Tree::find($id);
+
+        // Si no se encuentra el arbol
+        if (!$tree) {
+            return response()->json([
+                'status'=> 'error',
+                'message' => 'Arbol no encontrado'
+            ], 404);
+        }
+
+        // Actualizamos los datos
+        $tree->vitality = $request->input('vitality');
+        $tree->maintenance_status = $request->input('maintenance_status');
+        $tree->structure = $request->input('structure');
+        $tree->degree = $request->input('degree');
+        $tree->observations = $request->input('observations');
+
+        // Guardamos el arbol
+        $tree->save();
+
+        // Devolvemos el arbol
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Estado del arbol actualizado con exito',
+            'data' => $tree
+        ], 200);
+    }
+
+
+    // =================================
+    // FUNCIONES DE CONSULTA (GET)
+    // =================================
+
+    // Busca arboles por la Especie
     public function getTreesBySpecies($speciesId)
     {
-        $trees = Tree::where('species', $speciesId)
+        // Busca arboles por la Especie
+        $trees = Tree::where('species_id', $speciesId)
         ->with(['street','species','planter'])
         ->get();
 
+        // Si no se encuentran arboles con esa especie
         if ($trees->isEmpty()) {
             return response()->json([
                 'message' => 'No se encontraron arboles con esa especie'
             ], 404);
         }
-
+        
+        // Si se encuentran arboles con esa especie
         return response()->json([
             'status' => 'success', 
             'count' => $trees->count(),
@@ -56,8 +111,9 @@ class TreeController extends Controller
         ], 200);
     }
 
+    
     //Busca arboles por el NOMBRE de la calle 
-    public function getTreesByStreet(Request $request)
+    public function getTreesByStreetName(Request $request)
     {
 
         // Validacion de datos
@@ -86,6 +142,81 @@ class TreeController extends Controller
         ],200);
     }
 
+    // Busca arboles por la cuadra
+    public function getTreesByBlock(Request $request)
+    {
+        // Validacion de datos
+        $request->validate([
+            'street' => 'required|string|min:3',
+            'street_number' => 'required|integer|min: 0'
+        ]);
+
+        // Se busca el arbol por el numero de la calle
+        $streetName = $request->input('street'); 
+        $baseStreetNumber = intval($request->input('street_number'));
+
+        // Se calcula el rango de numeros de la cuadra
+        $baseStreetNumber= intval($request->input('street_number'));
+        $start = floor( $baseStreetNumber / 100) * 100;
+        $end = $start + 99;
+
+        // Se busca el arbol por el numero de la calle
+        $trees = Tree::whereHas('street', function($query) use ($streetName) { 
+            $query->where('street_name', 'like', '%' . $streetName . '%');
+        })
+        ->whereBetween('street_number', [ $start, $end ])
+        ->with(['street', 'species', 'planter'])
+        ->get();
+
+        // Si no se encuentran arboles en la cuadra
+        if ($trees->isEmpty()) {
+            return response()->json([
+                'message' => 'No se encontraron arboles en la cuadra'
+            ], 404);
+        }
+        // Si se encuentran arboles en la cuadra
+        return response()->json([
+            'status' => 'success',
+            'count' => $trees->count(),
+            'data'=>  $trees
+        ],200);
+    }
+
+    // Busqueda por frente exacto de la calle 
+
+    public function getTreesByExactAddress(Request $request)
+    {
+        // Validacion de datos
+        $request->validate([
+            'street_id' => 'required|exists:streets,id',
+            'street_number' => 'required|integer|min: 1'
+        ]);
+
+       $streetId = $request->input('street_id'); 
+       $exactNumber = $request->input('street_number');
+
+       $trees = Tree::where('street_id', $streetId)
+       ->whereHas('street_number', $exactNumber)
+       ->with(['street','species','planter'])
+       ->get(); 
+       
+       // Si no se encuentra el arbol
+       if ($trees->isEmpty()) {
+            return response()->json([
+                'message' => 'No se encontraron arboles con esa calle y numero'
+            ], 404);
+       }
+       // Si se encuentra el arbol
+       return response()->json([
+            'status' => 'success',
+            'count' => $trees->count(),
+            'data' => $trees
+       ],200);
+        
+    }
+    
+
+    // Busca un arbol y devuelve todos sus detalles
     public function getTreeDetails($id)
     {
         // Validacion de datos
@@ -105,8 +236,7 @@ class TreeController extends Controller
         ],200);
     }
 
-    /* Busca arboles que estan en estado critico,
-     Por ahora van a estar en espaniol hasta que me digan como se pone*/
+    // Busca arboles que estan en estado critico
     public function getCriticalTrees()
     {
 
@@ -130,8 +260,8 @@ class TreeController extends Controller
         ],200);
     }
 
-    /* Retorna solo coordenadas y estados para que el mapa cargue rápido 
-    y renderice los pines sin ponerse pesado*/
+    // Retorna solo coordenadas y estados para que el mapa cargue rápido 
+    // y renderice los pines sin ponerse pesado
 
     public function getMapPins()
     {
