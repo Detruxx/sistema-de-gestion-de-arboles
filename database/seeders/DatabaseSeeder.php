@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
             // NIVEL 1: Tablas maestras (No dependen de nadie)
             StreetSeeder::class,   // Crea 10 calles (IDs: 1-10)
             ParkSeeder::class,     // Crea 3 plazas (IDs: 1-3)
-            SpeciesSeeder::class,  // Crea 5 especies reales (IDs: 1-5)
+            SpecieSeeder::class,  // Crea 5 especies reales (IDs: 1-5)
 
             // NIVEL 2: Tablas intermedias (Dependen de las maestras)
             PlanterSeeder::class,  // Crea 30 planteras asociadas a las calles
