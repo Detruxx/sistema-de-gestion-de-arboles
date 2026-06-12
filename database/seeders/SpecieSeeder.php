@@ -14,6 +14,6 @@ class SpecieSeeder extends Seeder
     public function run(): void
     {
         // Creamos exactamente las 5 especies reales de nuestra lista
-        Species::factory()->count(5)->create();
+        Specie::factory()->count(5)->create();
     }
 }
