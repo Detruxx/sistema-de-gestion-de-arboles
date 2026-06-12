@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('trees', function (Blueprint $table) {
             //DATOS PRINCIPALES
-            $table->Id();
+            $table->id();
             $table->foreignId('species_id')->constrained('species')->onDelete('restrict');
     
             // CONTEXTO 1: Árbol de Vereda (Alineado)
