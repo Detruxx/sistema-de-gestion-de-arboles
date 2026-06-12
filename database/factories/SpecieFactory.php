@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\Species;
+use App\Models\Specie;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<Species>
  */
-class SpeciesFactory extends Factory
+class SpecieFactory extends Factory
 {
     /**
      * Define the model's default state.
