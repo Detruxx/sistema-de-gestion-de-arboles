@@ -65,4 +65,16 @@ class Tree extends Model
     {
         return $this->belongsTo(Park::class, 'park_id');
     }
+
+    // Relación con sus fotos
+    public function photos()
+    {
+        return $this->hasMany(Photo_Tree::class, 'tree_id');
+    }
+
+    // Relación con fotos oficiales únicamente (DNI)
+    public function officialPhotos()
+    {
+        return $this->hasMany(Photo_Tree::class, 'tree_id')->where('type', 'official');
+    }
 }

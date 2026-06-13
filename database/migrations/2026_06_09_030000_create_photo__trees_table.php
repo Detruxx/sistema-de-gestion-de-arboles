@@ -13,7 +13,13 @@ return new class extends Migration
     {
         Schema::create('photo__trees', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('request_id')->constrained('requests')->onDelete('restrict');
+            $table->string('photo_path'); // Ruta de la imagen en el storage
+            $table->enum('type', ['official', 'request'])->default('request'); // Tipo de foto
+            
+            // Relaciones
+            $table->foreignId('tree_id')->nullable()->constrained('trees')->onDelete('cascade');
+            $table->foreignId('request_id')->nullable()->constrained('requests')->onDelete('cascade');
+            
             $table->timestamps();
         });
     }
