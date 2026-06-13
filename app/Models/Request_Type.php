@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tipo_Reclamo extends Model
+class Request_Type extends Model
 {
-    //
+    use HasFactory;
 }

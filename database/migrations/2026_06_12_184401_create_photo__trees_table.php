@@ -11,13 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('species', function (Blueprint $table) {
+        Schema::create('photo__trees', function (Blueprint $table) {
             $table->id();
-            $table->string('scientific_name')->unique();
-            $table->string('common_name');
-            $table->string('family'); // Familia (Bignoniaceae, etc)
-            $table->string('origin'); // Origen (Native, Exotic)
-            $table->string('foliage_type');
+            $table->foreignId('request_id')->constrained('requests')->onDelete('restrict');
             $table->timestamps();
         });
     }
@@ -27,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('species');
+        Schema::dropIfExists('photo__trees');
     }
 };
