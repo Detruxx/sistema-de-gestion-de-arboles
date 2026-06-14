@@ -87,7 +87,7 @@
     position: absolute;
     top: 50%;
     right: -40px;
-    /* Sobresale hacia el mapa */
+    /* Sobresale hacia el mapa a la derecha */
     transform: translateY(-50%);
     width: 40px;
     height: 60px;
@@ -361,4 +361,110 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+}
+
+/* ================= Controles Flotantes del Mapa ================= */
+.map-floating-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    max-width: calc(100% - 40px);
+}
+
+.map-floating-controls .search-box {
+    width: 280px;
+    height: 48px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    background-color: #ffffff;
+    border: 2px solid rgba(45, 122, 79, 0.25);
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.map-floating-controls .search-box:focus-within {
+    border-color: var(--living-moss);
+    box-shadow: 0 4px 25px rgba(45, 122, 79, 0.15);
+}
+
+.filter-dropdown-container {
+    position: relative;
+}
+
+.filter-toggle-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(45, 122, 79, 0.25);
+    background-color: #ffffff;
+    color: var(--living-moss);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.filter-toggle-btn:hover,
+.filter-toggle-btn.active {
+    background-color: var(--morning-dew);
+    color: var(--deep-canopy);
+    border-color: var(--living-moss);
+}
+
+.filter-dropdown-menu {
+    position: absolute;
+    top: 58px;
+    right: 0;
+    width: 300px;
+    background-color: #ffffff;
+    border: 2px solid rgba(45, 122, 79, 0.25);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    display: none;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 1001;
+    transform-origin: top right;
+    animation: fadeInScale 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.filter-dropdown-menu.active {
+    display: flex;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Adaptación responsive para móviles */
+@media (max-width: 576px) {
+    .map-floating-controls {
+        top: 15px;
+        right: 15px;
+        left: 15px;
+        max-width: none;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+    .map-floating-controls .search-box {
+        width: 100%;
+    }
+    .filter-dropdown-menu {
+        width: calc(100vw - 30px);
+    }
 }

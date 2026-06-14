@@ -6,6 +6,7 @@
 
 @section('content')
     <main>
+        <!-- Seccion hero -->
         <section class="hero">
             <div class="hero-content">
                 <h1 class="hero-title">El bosque urbano<br>en tus manos</h1>
@@ -19,6 +20,7 @@
             </div>
         </section>
 
+        <!-- Seccion sobre nosotros -->
         <section id="sobre-nosotros" class="about-section">
             <div class="about-container">
                 <div class="about-text reveal">
@@ -30,6 +32,8 @@
                         Creemos que un bosque urbano saludable mejora la calidad de vida de todos, disminuye la temperatura de la ciudad, purifica el aire y embellece nuestras calles.
                     </p>
                 </div>
+
+                <!-- Estadisticas -->
                 <div class="about-stats">
                     <div class="stat-card reveal delay-1">
                         <span class="stat-icon">
@@ -56,11 +60,13 @@
             </div>
         </section>
 
+        <!-- Seccion de contacto -->
         <section id="contacto" class="contact-section">
             <div class="contact-container reveal">
                 <h2 class="section-title text-center">Escríbenos</h2>
                 <p class="section-subtitle">¿Tienes alguna duda o sugerencia sobre el proyecto? Ponte en contacto con nosotros.</p>
                 
+                <!-- Si esta logueado muestra el formulario, si no muestra el mensaje de que inicie sesion -->
                 @auth
                     <form class="contact-form" action="/contacto" method="POST">
                         @csrf

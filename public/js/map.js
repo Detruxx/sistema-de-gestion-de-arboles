@@ -12,35 +12,46 @@ document.addEventListener('DOMContentLoaded', () => {
             attribution: '&copy; OpenStreetMap'
         }).addTo(map);
 
-        // Mover controles de zoom a la derecha (para que no los tape el panel)
-        L.control.zoom({ position: 'topright' }).addTo(map);
-
-        // Elementos del DOM del Panel Lateral
+        // Mover controles de zoom al extremo inferior derecho (evita solaparse con sidebar izquierda y filtros arriba a la derecha)
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+ 
+        // Elementos del DOM
         const sidebar = document.getElementById('tree-sidebar');
         const toggleBtn = document.getElementById('toggle-sidebar');
-        const panelFilters = document.getElementById('sidebar-panel-filters');
         const panelDetails = document.getElementById('sidebar-panel-details');
         const btnTreeBack = document.getElementById('btn-tree-back');
 
-        // Función para abrir/cerrar panel con el botón
-        toggleBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('sidebar-closed');
-        });
+        // Nuevos elementos de Filtros Flotantes
+        const btnToggleFilters = document.getElementById('btn-toggle-filters');
+        const filterDropdownMenu = document.getElementById('filter-dropdown-menu');
 
-        // Alternar entre panel de filtros y panel de detalles
-        function switchPanel(panelName) {
-            if (panelName === 'filters') {
-                panelFilters.classList.add('active');
-                panelDetails.classList.remove('active');
-            } else if (panelName === 'details') {
-                panelFilters.classList.remove('active');
-                panelDetails.classList.add('active');
-            }
+        // Función para abrir/cerrar panel de detalles
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('sidebar-closed');
+            });
+        }
+
+        // Alternar el menú desplegable de filtros
+        if (btnToggleFilters && filterDropdownMenu) {
+            btnToggleFilters.addEventListener('click', (e) => {
+                e.stopPropagation();
+                btnToggleFilters.classList.toggle('active');
+                filterDropdownMenu.classList.toggle('active');
+            });
+
+            // Cerrar el menú si se hace clic fuera del mismo
+            document.addEventListener('click', (e) => {
+                if (!filterDropdownMenu.contains(e.target) && e.target !== btnToggleFilters && !btnToggleFilters.contains(e.target)) {
+                    btnToggleFilters.classList.remove('active');
+                    filterDropdownMenu.classList.remove('active');
+                }
+            });
         }
 
         if (btnTreeBack) {
             btnTreeBack.addEventListener('click', () => {
-                switchPanel('filters');
+                sidebar.classList.add('sidebar-closed');
             });
         }
 
@@ -110,8 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 estadoBadge.className = 'status-bad';
             }
 
-            // Cambiar a vista de detalles
-            switchPanel('details');
+
 
             // Actualizar URL del botón de reclamo con datos del árbol
             const btnReclamar = document.getElementById('btn-reclamar-arbol');

@@ -75,18 +75,18 @@
 
             <div class="tip-card reveal delay-1" 
                   data-badge="Protección" 
-                  data-title="Cazuela Libre de Cemento y Químicos" 
-                  data-description="La cazuela (el espacio cuadrado de tierra en la vereda) es la boca de alimentación y respiración principal del árbol. El cementado o pavimentación de la cazuela asfixia las raíces, impidiendo el paso del oxígeno y el agua de lluvia." 
-                  data-tips="Mantén la tierra de la cazuela suelta, desmalezada y completamente libre de escombros o basura.;Queda estrictamente prohibido rellenar la cazuela con cemento, baldosas o colocar rejas totalmente cerradas.;Nunca arrojes agua con detergentes, lavandina, aceites ni desinfectantes químicos en la cazuela.;Planta flores de raíz superficial en la cazuela; ayudan a retener la humedad del suelo y embellecen la vereda." 
+                  data-title="Plantera Libre de Cemento y Químicos" 
+                  data-description="La plantera (el espacio cuadrado de tierra en la vereda) es la boca de alimentación y respiración principal del árbol. El cementado o pavimentación de la plantera asfixia las raíces, impidiendo el paso del oxígeno y el agua de lluvia." 
+                  data-tips="Mantén la tierra de la plantera suelta, desmalezada y completamente libre de escombros o basura.;Queda estrictamente prohibido rellenar la plantera con cemento, baldosas o colocar rejas totalmente cerradas.;Nunca arrojes agua con detergentes, lavandina, aceites ni desinfectantes químicos en la plantera.;Planta flores de raíz superficial en la plantera; ayudan a retener la humedad del suelo y embellecen la vereda." 
                   data-image="https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=600&auto=format&fit=crop">
                 <div class="tip-card-header">
                     <span class="tip-icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
                     </span>
-                    <h3>Cazuela Libre</h3>
+                    <h3>Plantera Libre</h3>
                 </div>
                 <p>
-                    Mantén el cuadrado de tierra libre de cemento, piedras y basura. Nunca viertas agua con detergentes, lavandina ni productos químicos, ya que envenenan las raíces del árbol.
+                    Mantén el espacio de tierra libre de cemento, piedras y basura. Nunca viertas agua con detergentes, lavandina ni productos químicos, ya que envenenan las raíces del árbol.
                 </p>
                 <div class="tip-badge">Protección</div>
             </div>
