@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', 'TreeBA | Arbolado Urbano')</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    @yield('styles')
+    
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=1.1">
+</head>
+<body class="@yield('body-class')">
+    @yield('canvas')
+
+    <header class="navbar @yield('navbar-class')" id="navbar">
+        <a href="/" class="nav-brand">
+            <div class="logo"><img src="{{ asset('img/opcion 1 cuad.png') }}" alt="logo"></div>
+            <span class="brand-name">TreeBA</span>
+        </a>
+        
+        <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <nav class="nav-links" id="nav-links">
+            <a href="/mapa" class="nav-pill @yield('active-mapa')">Mapa</a>
+            <a href="/cuidados" class="nav-pill @yield('active-cuidados')">Cuidados</a>
+            
+            <div class="nav-dropdown">
+                <button class="nav-pill dropdown-trigger @yield('active-tramites')" aria-expanded="false">
+                    Trámites
+                    <svg class="dropdown-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="/tramites/reclamos" class="@yield('active-reclamos')">Reclamos</a>
+                    <a href="/tramites/plantacion" class="@yield('active-plantacion')">Plantación</a>
+                    <a href="/tramites/permisos" class="@yield('active-permisos')">Permisos</a>
+                </div>
+            </div>
+            
+            <a href="/#sobre-nosotros" class="nav-pill">Sobre Nosotros</a>
+            <a href="/#contacto" class="nav-pill">Contacto</a>
+            @guest
+                <a href="/login" class="nav-pill btn-login @yield('active-login')">Login</a>
+            @endguest
+            @auth
+                <div class="nav-dropdown">
+                    <button class="nav-pill dropdown-trigger" aria-expanded="false" style="background: none; border: 1px solid transparent; font-family: inherit; font-size: inherit; color: inherit; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                        {{ Auth::user()->name }}
+                        <svg class="dropdown-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Cerrar Sesión</a>
+                    </div>
+                </div>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+            @endauth
+        </nav>
+    </header>
+
+    @yield('content')
+
+    @section('footer')
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <div class="logo"><img src="{{ asset('img/opcion 1 cuad.png') }}" alt="logo"></div>
+                    <span class="brand-name">TreeBA</span>
+                </div>
+                <p class="footer-tagline">Mapeando el futuro verde de la ciudad.</p>
+                <p class="footer-source">Datos abiertos obtenidos de BA Data - GCBA.</p>
+                <p class="footer-source" style="margin-top: 5px; opacity: 0.85;">Basado en el modelo de gestión de la Comuna 13 (Belgrano, Colegiales y Núñez).</p>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Navegación</h4>
+                <ul>
+                    <li><a href="/">Inicio</a></li>
+                    <li><a href="/mapa">Mapa Interactivo</a></li>
+                    <li><a href="/cuidados">Cuidados del Árbol</a></li>
+                    <li><a href="/#sobre-nosotros">Sobre Nosotros</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Trámites</h4>
+                <ul>
+                    <li><a href="/tramites/reclamos">Reclamos y Solicitudes</a></li>
+                    <li><a href="/tramites/plantacion">Solicitar Plantación</a></li>
+                    <li><a href="/tramites/permisos">Permisos de Poda</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-social">
+                <h4>Contacto</h4>
+                <ul class="footer-contact-list">
+                    <li>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        <span>Línea 147 (GCBA)</span>
+                    </li>
+                    <li>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        <span>contacto@treeba.gob.ar</span>
+                    </li>
+                    <li>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                        <span>Av. Cabildo 3067, CABA</span>
+                    </li>
+                </ul>
+                <div class="social-icons" style="margin-top: 15px;">
+                    <a href="https://github.com" target="_blank" aria-label="GitHub">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                    </a>
+                    <a href="https://instagram.com" target="_blank" aria-label="Instagram">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    </a>
+                    <a href="https://twitter.com" target="_blank" aria-label="Twitter">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 TreeBA. Creado con <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#5bbf8c" stroke="#5bbf8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin: 0 3px; position: relative; top: -1px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> para la Ciudad de Buenos Aires.</p>
+        </div>
+    </footer>
+    @show
+
+    @yield('scripts')
+    <script src="{{ asset('js/app.js') }}"></script>
+</body>
+</html>
