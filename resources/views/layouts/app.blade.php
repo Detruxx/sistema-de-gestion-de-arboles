@@ -18,7 +18,7 @@
 
     <header class="navbar @yield('navbar-class')" id="navbar">
         <a href="/" class="nav-brand">
-            <div class="logo"><img src="{{ asset('img/opcion 1 cuad.png') }}" alt="logo"></div>
+            <div class="logo"><img src="{{ asset('img/logo.png') }}" alt="logo"></div>
             <span class="brand-name">TreeBA</span>
         </a>
         
@@ -73,7 +73,7 @@
         <div class="footer-container">
             <div class="footer-brand">
                 <div class="footer-logo">
-                    <div class="logo"><img src="{{ asset('img/opcion 1 cuad.png') }}" alt="logo"></div>
+                    <div class="logo"><img src="{{ asset('img/logo.png') }}" alt="logo"></div>
                     <span class="brand-name">TreeBA</span>
                 </div>
                 <p class="footer-tagline">Mapeando el futuro verde de la ciudad.</p>
