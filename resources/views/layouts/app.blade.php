@@ -1,22 +1,25 @@
+<!-- Plantilla principal de la pagina web -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'TreeBA | Arbolado Urbano')</title>
-    
+    <!-- Aca va el icono de la pagina -->
+    <title>@yield('title', 'TreeBA | Mapeado de Arboles')</title>
+
+    <!-- Aca van las fuentes que usa la pagina -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     
-    @yield('styles')
+    @yield('styles') <!-- Aca se colocan estilos especificos de cada vista -->
     
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=1.1">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=1.1"> <!-- Aca va el css de la pagina -->
 </head>
 <body class="@yield('body-class')">
-    @yield('canvas')
+    @yield('canvas') <!-- Aca va el canvas de la pagina -->
 
-    <header class="navbar @yield('navbar-class')" id="navbar">
+    <header class="navbar @yield('navbar-class')" id="navbar"> <!-- Aca va la barra de navegacion de la pagina -->
         <a href="/" class="nav-brand">
             <div class="logo"><img src="{{ asset('img/logo.png') }}" alt="logo"></div>
             <span class="brand-name">TreeBA</span>
@@ -46,10 +49,10 @@
             
             <a href="/#sobre-nosotros" class="nav-pill">Sobre Nosotros</a>
             <a href="/#contacto" class="nav-pill">Contacto</a>
-            @guest
+            @guest <!-- Si el usuario no esta logueado, se muestra el boton de login -->
                 <a href="/login" class="nav-pill btn-login @yield('active-login')">Login</a>
             @endguest
-            @auth
+            @auth <!-- Si el usuario esta logueado, se muestra el boton de cerrar sesion -->
                 <div class="nav-dropdown">
                     <button class="nav-pill dropdown-trigger" aria-expanded="false" style="background: none; border: 1px solid transparent; font-family: inherit; font-size: inherit; color: inherit; cursor: pointer; display: flex; align-items: center; gap: 6px;">
                         {{ Auth::user()->name }}
@@ -66,9 +69,9 @@
         </nav>
     </header>
 
-    @yield('content')
+    @yield('content') <!-- Aca va el contenido de la pagina el cual es propio de cada pagina-->
 
-    @section('footer')
+    @section('footer') <!-- Aca va el footer de la pagina -->
     <footer class="main-footer">
         <div class="footer-container">
             <div class="footer-brand">
@@ -135,7 +138,8 @@
     </footer>
     @show
 
-    @yield('scripts')
-    <script src="{{ asset('js/app.js') }}"></script>
+    @yield('scripts') <!-- Aca van los scripts de cada vista -->
+    <script src="{{ asset('js/navbar.js') }}"></script> <!-- script de la barra de navegacion -->
+    <script src="{{ asset('js/reveal.js') }}"></script> <!-- script de revelacion de elementos -->
 </body>
 </html>

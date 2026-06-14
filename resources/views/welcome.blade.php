@@ -83,3 +83,7 @@
         </section>
     </main>
 @endsection
+
+@section('scripts')
+    <script src="{{ asset('js/hero-canvas.js') }}"></script>
+@endsection

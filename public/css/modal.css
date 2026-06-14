@@ -1,0 +1,251 @@
+/* ================= Modal de Detalles de Cuidado ================= */
+.care-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(10, 26, 13, 0.65);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.care-modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.care-modal-container {
+    background-color: #ffffff;
+    border-radius: 20px;
+    border: 2px solid var(--deep-canopy);
+    max-width: 850px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(10, 26, 13, 0.3);
+    transform: scale(0.92);
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.care-modal-overlay.active .care-modal-container {
+    transform: scale(1);
+}
+
+.care-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 2.2rem;
+    line-height: 1;
+    color: var(--forest-night);
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+    z-index: 10;
+}
+
+.care-modal-close:hover {
+    color: #d32f2f;
+    transform: scale(1.1);
+}
+
+.care-modal-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    min-height: 480px;
+}
+
+.care-modal-content {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow-y: auto;
+    max-height: 90vh;
+    text-align: left;
+}
+
+.care-modal-badge {
+    align-self: flex-start;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 50px;
+    background-color: rgba(45, 122, 79, 0.1);
+    color: var(--deep-canopy);
+    border: 1px solid rgba(45, 122, 79, 0.25);
+}
+
+.care-modal-badge.warning {
+    background-color: rgba(211, 47, 47, 0.1);
+    color: #d32f2f;
+    border: 1px solid rgba(211, 47, 47, 0.25);
+}
+
+.care-modal-title {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: var(--deep-canopy);
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+.care-modal-body {
+    font-size: 1rem;
+    color: var(--forest-night);
+    line-height: 1.6;
+}
+
+.care-modal-action-box {
+    background-color: var(--paper-white);
+    border-radius: 12px;
+    padding: 22px;
+    border: 1px solid rgba(45, 122, 79, 0.15);
+    margin-top: 10px;
+}
+
+.care-modal-action-box h4 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    color: var(--deep-canopy);
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+
+.care-modal-tips-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0;
+    margin: 0;
+}
+
+.care-modal-tips-list li {
+    font-size: 0.95rem;
+    color: var(--forest-night);
+    line-height: 1.5;
+    position: relative;
+    padding-left: 22px;
+}
+
+.care-modal-tips-list li::before {
+    content: '✓';
+    color: var(--living-moss);
+    font-weight: bold;
+    font-size: 1rem;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.care-modal-image-panel {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    background-color: var(--deep-canopy);
+}
+
+.care-modal-image-panel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .care-modal-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .care-modal-image-panel {
+        order: -1;
+        min-height: 200px;
+        height: 200px;
+    }
+    
+    .care-modal-container {
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+    
+    .care-modal-content {
+        max-height: none;
+        padding: 30px 20px;
+    }
+}
+
+/* ================= Botones de Navegación del Modal y Enlaces ================= */
+.modal-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(10, 26, 13, 0.45);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1010;
+    padding-bottom: 4px;
+}
+
+.modal-nav-btn:hover {
+    background-color: var(--spring-leaf);
+    color: var(--forest-night);
+    border-color: var(--spring-leaf);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.modal-nav-btn.prev {
+    left: 20px;
+}
+
+.modal-nav-btn.next {
+    right: 20px;
+}
+
+.modal-inline-link {
+    color: var(--living-moss);
+    text-decoration: underline;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.modal-inline-link:hover {
+    color: var(--spring-leaf);
+}
+
+@media (max-width: 950px) {
+    .modal-nav-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+    }
+    .modal-nav-btn.prev {
+        left: 10px;
+    }
+    .modal-nav-btn.next {
+        right: 10px;
+    }
+}

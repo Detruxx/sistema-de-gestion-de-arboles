@@ -153,8 +153,12 @@
                 </div>
                 <div class="care-modal-image-panel">
                     <img id="modal-image" src="" alt="Cuidado del árbol">
-                </div>
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('js/cuidados.js') }}"></script>
+    <script src="{{ asset('js/modal.js') }}"></script>
 @endsection
