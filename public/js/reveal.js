@@ -2,8 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. ScrollSpy y gestión de clase activa en la barra de navegación
     const navLinks = document.querySelectorAll('.navbar .nav-pill');
 
-    // Si estamos en la página del mapa, no queremos scrollspy para el inicio
-    if (!window.location.pathname.includes('/mapa')) {
+    // Solo activamos ScrollSpy y la lógica de anclas si existen esas secciones en la página actual
+    const hasScrollSpySections = document.getElementById('sobre-nosotros') || document.getElementById('contacto');
+    if (hasScrollSpySections) {
         // Lógica de click manual para destacar el ancla activa
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
