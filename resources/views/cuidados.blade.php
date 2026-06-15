@@ -158,6 +158,10 @@
     </div>
 @endsection
 
+@section('footer')
+
+@endsection
+
 @section('scripts')
     <script src="{{ asset('js/cuidados.js') }}"></script>
     <script src="{{ asset('js/modal.js') }}"></script>
