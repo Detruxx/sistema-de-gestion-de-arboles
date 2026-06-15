@@ -13,8 +13,8 @@ class TreeSeeder extends Seeder
      */
     public function run(): void {
 
-        $totalRegistros = 200000; // 200.000 puntos
-        $lote = 2000; // Reducido a 2.000 para evitar el límite de "Prepared statement contains too many placeholders" de MySQL (máximo 65,535)
+        $totalRegistros = 5000; // 200.000 puntos
+        $lote = 100; // Reducido a 2.000 para evitar el límite de "Prepared statement contains too many placeholders" de MySQL (máximo 65,535)
 
         for ($i = 0; $i < $totalRegistros; $i += $lote) {
             // En lugar de usar ->create() que hace un INSERT por cada uno, 
