@@ -1,4 +1,4 @@
-/* ================= Sección Mapa y Panel ================= */
+/* ================= Sección Mapa ================= */
 .map-section {
     position: relative;
     height: 100vh;
@@ -20,6 +20,9 @@
     color: var(--paper-white);
 }
 
+
+/* ==================== PAGINA MAPA
+
 /* ================= Página del Mapa ================= */
 .map-body {
     overflow: hidden;
@@ -31,17 +34,23 @@
     width: 100vw;
     padding: 90px 20px 20px 20px;
     /* Margen superior para el navbar + márgenes laterales */
-    background-color: var(--forest-night);
+    background-color: var(--paper-white);
 }
 
 .map-wrapper {
     position: relative;
     width: 100%;
     height: 100%;
-    border: 2px solid var(--deep-canopy);
+    border: 2px solid rgba(45, 122, 79, 0.3);
     border-radius: 10px;
     overflow: hidden;
     /* Mantiene el mapa dentro de los bordes redondeados */
+}
+
+#tree-map {
+    width: 100%;
+    height: 100%;
+    z-index: 10;
 }
 
 /* ================= Panel Lateral (Sidebar) ================= */
@@ -51,11 +60,12 @@
     left: 0;
     height: 100%;
     width: 350px;
-    background-color: var(--forest-night);
-    border-right: 2px solid var(--deep-canopy);
+    background-color: var(--paper-white);
+    border-right: 2px solid rgba(45, 122, 79, 0.3);
     z-index: 1000;
     /* Sobre el mapa */
     transition: transform 0.4s ease-in-out;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
 }
 
 #tree-sidebar.sidebar-closed {
@@ -77,20 +87,27 @@
     position: absolute;
     top: 50%;
     right: -40px;
-    /* Sobresale hacia el mapa */
+    /* Sobresale hacia el mapa a la derecha */
     transform: translateY(-50%);
     width: 40px;
     height: 60px;
-    background-color: var(--forest-night);
-    border: 2px solid var(--deep-canopy);
+    background-color: var(--paper-white);
+    border: 2px solid rgba(45, 122, 79, 0.3);
     border-left: none;
     border-radius: 0 10px 10px 0;
-    color: var(--paper-white);
+    color: var(--living-moss);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1001;
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.toggle-btn:hover {
+    background-color: var(--morning-dew);
+    color: var(--deep-canopy);
 }
 
 #tree-sidebar.sidebar-closed #arrow-icon {
@@ -108,7 +125,7 @@
 .sidebar-top {
     display: flex;
     gap: 15px;
-    height: 120px;
+    height: 140px;
 }
 
 .badges-col {
@@ -116,34 +133,43 @@
     flex-direction: column;
     gap: 10px;
     flex: 1;
+    height: 100%;
 }
 
 .info-badge {
-    border: 2px solid var(--deep-canopy);
+    border: 2px solid rgba(45, 122, 79, 0.3);
     border-radius: 8px;
-    padding: 8px;
+    padding: 6px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: rgba(26, 61, 40, 0.3);
+    background-color: #ffffff;
+    flex: 1;
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
 }
 
 .info-badge .badge-label {
-    font-size: 0.7rem;
-    color: var(--morning-dew);
+    font-size: 0.65rem;
+    color: var(--living-moss);
+    text-transform: uppercase;
+    font-weight: 600;
 }
 
 .info-badge span:not(.badge-label) {
     font-family: var(--font-display);
     font-weight: 700;
+    color: var(--forest-night);
+    font-size: 1.1rem;
 }
 
 .photo-col {
     flex: 1.5;
-    border: 2px solid var(--deep-canopy);
+    border: 2px solid rgba(45, 122, 79, 0.3);
     border-radius: 8px;
     overflow: hidden;
+    height: 100%;
 }
 
 .photo-col img {
@@ -153,18 +179,20 @@
 }
 
 .sidebar-bottom {
-    border: 2px solid var(--deep-canopy);
+    border: 2px solid rgba(45, 122, 79, 0.3);
     border-radius: 8px;
     padding: 15px;
-    background-color: rgba(26, 61, 40, 0.3);
+    background-color: #ffffff;
     flex-grow: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
 }
 
 .data-title {
     font-family: var(--font-display);
-    color: var(--spring-leaf);
+    color: var(--deep-canopy);
     margin-bottom: 15px;
     font-size: 1rem;
+    font-weight: 700;
 }
 
 .data-list {
@@ -176,9 +204,272 @@
 
 .data-list li {
     font-size: 0.9rem;
-    color: var(--paper-white);
+    color: var(--forest-night);
 }
 
 .data-list strong {
-    color: var(--morning-dew);
+    color: var(--living-moss);
+}
+
+/* ================= Estilos de Filtros y Paneles de Mapa ================= */
+.sidebar-panel {
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sidebar-panel.active {
+    display: flex;
+}
+
+.search-box {
+    display: flex;
+    border: 2px solid rgba(45, 122, 79, 0.3);
+    border-radius: 25px;
+    overflow: hidden;
+    background-color: #ffffff;
+    width: 100%;
+    height: 45px;
+    align-items: center;
+}
+
+.search-box input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    padding: 0 15px;
+    color: var(--forest-night);
+    font-size: 0.9rem;
+    font-family: var(--font-body);
+}
+
+.search-box input::placeholder {
+    color: rgba(10, 26, 13, 0.4);
+}
+
+.search-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--living-moss);
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.search-btn:hover {
+    color: var(--deep-canopy);
+}
+
+.search-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+}
+
+.filter-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--deep-canopy);
+    margin-top: 10px;
+    font-weight: 700;
+    border-bottom: 2px solid rgba(45, 122, 79, 0.2);
+    padding-bottom: 8px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filter-group-label {
+    font-size: 0.75rem;
+    color: var(--living-moss);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.form-control {
+    background-color: #ffffff;
+    border: 2px solid rgba(45, 122, 79, 0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--forest-night);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.form-control option {
+    background-color: #ffffff;
+    color: var(--forest-night);
+}
+
+.form-control:focus {
+    border-color: var(--living-moss);
+    background-color: #ffffff;
+}
+
+.panel-back-btn {
+    background: none;
+    border: 2px solid rgba(45, 122, 79, 0.3);
+    border-radius: 50px;
+    color: var(--living-moss);
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    align-self: flex-start;
+    transition: all 0.3s ease;
+    font-family: var(--font-body);
+    margin-bottom: 10px;
+}
+
+.panel-back-btn svg {
+    stroke: currentColor;
+}
+
+.panel-back-btn:hover {
+    border-color: var(--deep-canopy);
+    color: var(--deep-canopy);
+    background-color: rgba(45, 122, 79, 0.08);
+}
+
+/* Status colors */
+.status-good {
+    color: #2E7D32 !important;
+}
+
+.status-regular {
+    color: #EF6C00 !important;
+}
+
+.status-bad {
+    color: #C62828 !important;
+}
+
+.tree-card-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ================= Controles Flotantes del Mapa ================= */
+.map-floating-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    max-width: calc(100% - 40px);
+}
+
+.map-floating-controls .search-box {
+    width: 280px;
+    height: 48px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    background-color: #ffffff;
+    border: 2px solid rgba(45, 122, 79, 0.25);
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.map-floating-controls .search-box:focus-within {
+    border-color: var(--living-moss);
+    box-shadow: 0 4px 25px rgba(45, 122, 79, 0.15);
+}
+
+.filter-dropdown-container {
+    position: relative;
+}
+
+.filter-toggle-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(45, 122, 79, 0.25);
+    background-color: #ffffff;
+    color: var(--living-moss);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.filter-toggle-btn:hover,
+.filter-toggle-btn.active {
+    background-color: var(--morning-dew);
+    color: var(--deep-canopy);
+    border-color: var(--living-moss);
+}
+
+.filter-dropdown-menu {
+    position: absolute;
+    top: 58px;
+    right: 0;
+    width: 300px;
+    background-color: #ffffff;
+    border: 2px solid rgba(45, 122, 79, 0.25);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    display: none;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 1001;
+    transform-origin: top right;
+    animation: fadeInScale 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.filter-dropdown-menu.active {
+    display: flex;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Adaptación responsive para móviles */
+@media (max-width: 576px) {
+    .map-floating-controls {
+        top: 15px;
+        right: 15px;
+        left: 15px;
+        max-width: none;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .map-floating-controls .search-box {
+        width: 100%;
+    }
+
+    .filter-dropdown-menu {
+        width: calc(100vw - 30px);
+    }
 }

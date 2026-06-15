@@ -89,3 +89,82 @@
     background-color: var(--living-moss);
     color: var(--paper-white);
 }
+
+/* ================= Dropdown de Trámites ================= */
+.nav-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+button.dropdown-trigger {
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    outline: none;
+}
+
+.dropdown-chevron {
+    transition: transform 0.3s ease;
+    stroke: currentColor;
+    margin-top: 1px;
+}
+
+.nav-dropdown.active .dropdown-chevron {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background-color: rgba(10, 26, 13, 0.96);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--deep-canopy);
+    border-radius: 14px;
+    width: 170px;
+    padding: 8px 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 15px 30px rgba(10, 26, 13, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    z-index: 1000;
+}
+
+.nav-dropdown.active .dropdown-menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+.dropdown-menu a {
+    text-decoration: none;
+    color: var(--morning-dew);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 10px 20px;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.dropdown-menu a:hover {
+    background-color: rgba(45, 122, 79, 0.15);
+    color: var(--spring-leaf);
+    padding-left: 24px;
+}
+
+.dropdown-menu a.active {
+    background-color: var(--paper-white);
+    color: var(--forest-night);
+    font-weight: 600;
+}
+
+/* ================= Menú Hamburguesa (Desktop) ================= */
+.nav-toggle {
+    display: none;
+}

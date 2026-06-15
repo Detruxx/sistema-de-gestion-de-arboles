@@ -1,67 +1,96 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Efecto Scroll en la barra de navegación
     const navbar = document.getElementById('navbar');
-    if (navbar) {
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
+    const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.php' || window.location.pathname === '';
+    
+    function updateNavbar() {
+        if (!isHomePage || window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    }
+    
+    window.addEventListener('scroll', updateNavbar);
+    updateNavbar();
+
+    // ================= LÓGICA DEL MENU DESPLEGABLE (DROPDOWN) =================
+    const navDropdowns = document.querySelectorAll('.nav-dropdown');
+
+    navDropdowns.forEach(dropdown => {
+        const trigger = dropdown.querySelector('.dropdown-trigger');
+        if (trigger) {
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                
+                // Cerrar los otros menús desplegables
+                navDropdowns.forEach(otherDropdown => {
+                    if (otherDropdown !== dropdown) {
+                        otherDropdown.classList.remove('active');
+                        const otherTrigger = otherDropdown.querySelector('.dropdown-trigger');
+                        if (otherTrigger) otherTrigger.setAttribute('aria-expanded', 'false');
+                    }
+                });
+
+                const isActive = dropdown.classList.contains('active');
+                if (isActive) {
+                    dropdown.classList.remove('active');
+                    trigger.setAttribute('aria-expanded', 'false');
+                } else {
+                    dropdown.classList.add('active');
+                    trigger.setAttribute('aria-expanded', 'true');
+                }
+            });
+        }
+    });
+    document.addEventListener('click', (e) => {
+        navDropdowns.forEach(dropdown => {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+                const trigger = dropdown.querySelector('.dropdown-trigger');
+                if (trigger) trigger.setAttribute('aria-expanded', 'false');
             }
         });
-    }
+    });
 
-    // 2. ScrollSpy y gestión de clase activa en la barra de navegación
-    const navLinks = document.querySelectorAll('.navbar .nav-pill');
+    // ================= LÓGICA DEL MENU HAMBURGUESA =================
+    const navToggle = document.getElementById('nav-toggle');
+    const navLinksContainer = document.getElementById('nav-links');
 
-    // Si estamos en la página del mapa, no queremos scrollspy para el inicio
-    if (!window.location.pathname.includes('/mapa') && navLinks.length > 0) {
-        // Lógica de click manual para destacar el ancla activa
-        navLinks.forEach(link => {
+    if (navToggle && navLinksContainer) {
+        navToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isActive = navToggle.classList.contains('active');
+            if (isActive) {
+                navToggle.classList.remove('active');
+                navToggle.setAttribute('aria-expanded', 'false');
+                navLinksContainer.classList.remove('active');
+            } else {
+                navToggle.classList.add('active');
+                navToggle.setAttribute('aria-expanded', 'true');
+                navLinksContainer.classList.add('active');
+            }
+        });
+
+        // Cerrar menú al hacer clic en cualquier enlace (excluyendo disparadores de dropdowns)
+        const links = navLinksContainer.querySelectorAll('.nav-pill:not(.dropdown-trigger), .dropdown-menu a');
+        links.forEach(link => {
             link.addEventListener('click', () => {
-                const href = link.getAttribute('href');
-                if (href && href.startsWith('#')) {
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    link.classList.add('active');
-                }
+                navToggle.classList.remove('active');
+                navToggle.setAttribute('aria-expanded', 'false');
+                navLinksContainer.classList.remove('active');
             });
         });
 
-        // ScrollSpy automático con IntersectionObserver para las secciones que existan
-        const sections = [];
-        navLinks.forEach(link => {
-            const href = link.getAttribute('href');
-            if (href && href.startsWith('#')) {
-                const sec = document.querySelector(href);
-                if (sec) {
-                    sections.push(sec);
-                }
+        // Cerrar al hacer clic fuera del menú
+        document.addEventListener('click', (e) => {
+            if (!navLinksContainer.contains(e.target) && !navToggle.contains(e.target)) {
+                navToggle.classList.remove('active');
+                navToggle.setAttribute('aria-expanded', 'false');
+                navLinksContainer.classList.remove('active');
             }
         });
-
-        if (sections.length > 0) {
-            const observerOptions = {
-                root: null,
-                rootMargin: '-20% 0px -60% 0px',
-                threshold: 0
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const id = entry.target.getAttribute('id');
-                        navLinks.forEach(link => {
-                            if (link.getAttribute('href') === `#${id}`) {
-                                link.classList.add('active');
-                            } else {
-                                link.classList.remove('active');
-                            }
-                        });
-                    }
-                });
-            }, observerOptions);
-
-            sections.forEach(section => observer.observe(section));
-        }
     }
+
+
 });

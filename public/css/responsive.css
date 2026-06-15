@@ -1,0 +1,253 @@
+/* ================= DISEÑO RESPONSIVO (MOBILE ADAPTATIONS) ================= */
+@media (max-width: 768px) {
+    /* Navbar & Hamburger Toggle Button */
+    .nav-toggle {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 30px;
+        height: 20px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        z-index: 1001;
+        outline: none;
+    }
+
+    .nav-toggle span {
+        width: 100%;
+        height: 3px;
+        background-color: var(--morning-dew);
+        border-radius: 10px;
+        transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+
+    .nav-toggle.active span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+        background-color: var(--spring-leaf);
+    }
+
+    .nav-toggle.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .nav-toggle.active span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+        background-color: var(--spring-leaf);
+    }
+
+    /* Mobile Navigation Drawer Overlay */
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 280px;
+        height: 100vh;
+        background-color: rgba(10, 26, 13, 0.98);
+        backdrop-filter: blur(15px);
+        border-left: 1px solid var(--deep-canopy);
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        padding: 100px 30px 40px 30px;
+        gap: 1.2rem;
+        z-index: 999;
+        transition: right 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        overflow-y: auto;
+    }
+
+    .nav-links.active {
+        right: 0;
+    }
+
+    .nav-pill {
+        width: 100%;
+        padding: 0.8rem 1.2rem;
+        font-size: 1.05rem;
+        border-bottom: 1px solid rgba(91, 191, 140, 0.1);
+        border-radius: 8px;
+        color: var(--morning-dew);
+    }
+
+    .nav-pill:hover,
+    .nav-pill.active {
+        border-color: var(--spring-leaf);
+        background-color: rgba(91, 191, 140, 0.08);
+    }
+
+    /* Dropdowns in Mobile Navbar Drawer */
+    .nav-dropdown {
+        width: 100%;
+    }
+
+    .nav-dropdown .dropdown-trigger {
+        width: 100%;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(91, 191, 140, 0.1);
+        padding-right: 1.2rem;
+    }
+
+    .nav-dropdown .dropdown-menu {
+        position: static;
+        width: 100%;
+        box-shadow: none;
+        background-color: rgba(26, 61, 40, 0.3);
+        border: 1px solid rgba(91, 191, 140, 0.2);
+        border-radius: 12px;
+        margin-top: 8px;
+        padding: 8px 0;
+        display: none;
+        transform: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+    }
+
+    .nav-dropdown.active .dropdown-menu {
+        display: flex;
+        flex-direction: column;
+        transform: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    .nav-dropdown .dropdown-menu a {
+        padding: 10px 20px 10px 30px;
+        font-size: 0.95rem;
+        color: var(--morning-dew);
+        border-bottom: none;
+        text-align: left;
+    }
+
+    /* General Layout Padding */
+    .cuidados-page-container,
+    .tramites-page-container {
+        padding: 110px 5% 40px 5%;
+    }
+
+    .tips-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .tip-card {
+        padding: 25px;
+    }
+
+    /* Home Page Layout Adjustments */
+    .hero-title {
+        font-size: 2.6rem;
+        line-height: 1.2;
+    }
+
+    .hero-description {
+        font-size: 1.05rem;
+    }
+
+    .about-section {
+        padding: 60px 5%;
+    }
+
+    .about-container {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        text-align: center;
+    }
+
+    .contact-section {
+        padding: 60px 5%;
+        margin-bottom: 20px;
+    }
+
+    .contact-form {
+        padding: 25px 20px;
+    }
+
+    /* Map Bottom-Sheet UX for Mobile */
+    .map-page-container {
+        padding: 80px 10px 10px 10px;
+    }
+
+    #tree-sidebar {
+        top: auto;
+        bottom: 0;
+        width: 100%;
+        height: 50vh;
+        border-right: none;
+        border-top: 2px solid rgba(45, 122, 79, 0.3);
+        border-radius: 20px 20px 0 0;
+        transform: translateY(0);
+        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    #tree-sidebar.sidebar-closed {
+        transform: translateY(calc(100% - 40px));
+    }
+
+    .sidebar-content {
+        padding: 40px 15px 15px 15px;
+    }
+
+    /* Toggle Button as a Pull-up handle bar */
+    .toggle-btn {
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 40px;
+        transform: none;
+        border: none;
+        border-bottom: 1px solid rgba(45, 122, 79, 0.1);
+        border-radius: 20px 20px 0 0;
+        background-color: var(--paper-white);
+        box-shadow: none;
+    }
+
+    .toggle-btn::after {
+        content: '';
+        position: absolute;
+        top: 17px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 5px;
+        background-color: rgba(45, 122, 79, 0.3);
+        border-radius: 10px;
+    }
+
+    /* Hide default chevron inside handle bar */
+    .toggle-btn #arrow-icon {
+        display: none;
+    }
+
+    .sidebar-top {
+        height: auto;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .badges-col {
+        flex-direction: row;
+        height: auto;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .info-badge {
+        flex: 1;
+        height: 65px;
+        padding: 4px;
+    }
+
+    .photo-col {
+        width: 100%;
+        height: 160px;
+        flex: none;
+    }
+}

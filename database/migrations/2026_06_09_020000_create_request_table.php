@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict');
-            $table->foreignId('tree_id')->constrained('trees')->onDelete('restrict');
+            $table->foreignId('tree_id')->nullable()->constrained('trees')->onDelete('restrict');
             $table->foreignId('request_type_id')->constrained('request_types')->onDelete('restrict');
+            $table->foreignId('street_id')->constrained('streets')->onDelete('restrict');
             $table->text('description');
             $table->enum('status', ['open', 'in_progress', 'resolved'])->default('open');
             $table->timestamps();
