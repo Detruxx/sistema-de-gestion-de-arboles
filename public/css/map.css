@@ -350,9 +350,11 @@
 .status-good {
     color: #2E7D32 !important;
 }
+
 .status-regular {
     color: #EF6C00 !important;
 }
+
 .status-bad {
     color: #C62828 !important;
 }
@@ -445,6 +447,7 @@
         opacity: 0;
         transform: scale(0.95) translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: scale(1) translateY(0);
@@ -461,9 +464,11 @@
         flex-direction: column;
         align-items: flex-end;
     }
+
     .map-floating-controls .search-box {
         width: 100%;
     }
+
     .filter-dropdown-menu {
         width: calc(100vw - 30px);
     }

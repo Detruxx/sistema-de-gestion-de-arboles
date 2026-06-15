@@ -32,5 +32,13 @@ class DatabaseSeeder extends Seeder
                 'password' => bcrypt('123'),
             ]
         );
+
+        $this->call([
+            SpecieSeeder::class,
+            StreetSeeder::class,
+            ParkSeeder::class,
+            PlanterSeeder::class,
+            TreeSeeder::class,
+        ]);
     }
 }

@@ -61,7 +61,7 @@
                                 <option value="alto">Alto (mayor a 12m)</option>
                             </select>
                         </div>
-
+                        <!--   POR AHORA ESTOS FILTROS NO LOS NECESITAMOS
                         <div class="filter-group">
                             <label class="filter-group-label">Edad</label>
                             <select id="filter-edad" class="form-control">
@@ -71,7 +71,7 @@
                                 <option value="centenario">Centenario (mayor a 30 años)</option>
                             </select>
                         </div>
-
+                        
                         <div class="filter-group">
                             <label class="filter-group-label">Estado Fitosanitario</label>
                             <select id="filter-estado" class="form-control">
@@ -81,6 +81,7 @@
                                 <option value="Malo">Malo</option>
                             </select>
                         </div>
+                        -->
                     </div>
                 </div>
             </div>
@@ -110,10 +111,6 @@
                                     <div class="info-badge">
                                         <span class="badge-label">ID</span>
                                         <span id="t-id">#0000</span>
-                                    </div>
-                                    <div class="info-badge">
-                                        <span class="badge-label">ESTADO</span>
-                                        <span id="t-estado" class="status-good">-</span>
                                     </div>
                                 </div>
                                 <div class="photo-col">

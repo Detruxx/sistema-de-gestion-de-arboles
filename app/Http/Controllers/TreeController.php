@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Tree;
+use Illuminate\Support\Facades\DB;
 
 class TreeController extends Controller
 {
@@ -220,7 +222,7 @@ class TreeController extends Controller
     public function getTreeDetails($id)
     {
         // Validacion de datos
-        $tree = Tree::with(['street', 'species', 'planter'])->find($id);
+        $tree = Tree::with(['street', 'specie', 'planter'])->find($id);
 
         // Si no se encuentra el arbol
         if (!$tree) {
@@ -265,9 +267,25 @@ class TreeController extends Controller
 
     public function getMapPins()
     {
-        // Se selecciona solo las coordenadas y estados de los arboles
-        $pins = Tree::select('id','latitude','longitude','vitality','maintenance_status')->get();
-        
+        // Usamos Query Builder puro en lugar de Eloquent para evitar construir 200.000 modelos en memoria RAM
+        $pins = DB::table('trees')
+            ->leftJoin('streets', 'trees.street_id', '=', 'streets.id')
+            ->leftJoin('parks', 'trees.park_id', '=', 'parks.id')
+            ->leftJoin('species', 'trees.species_id', '=', 'species.id')
+            ->select([
+                'trees.id',
+                'trees.latitude',
+                'trees.longitude',
+                'trees.height',
+                'trees.degree',
+                'streets.street_name',
+                'streets.street_number',
+                'streets.door_plate',
+                'parks.park_name',
+                'species.common_name as specie_common_name'
+            ])
+            ->get();
+
         // Si no se encuentran pines
         if ($pins->isEmpty()) {
             return response()->json([
@@ -275,12 +293,34 @@ class TreeController extends Controller
             ], 404);
         }
 
-        // Si se encuentran pines
+        // Mapeamos los resultados planos a la estructura que espera el frontend (arbol.street, arbol.specie, etc.)
+        // Esto sigue siendo infinitamente más liviano que instanciar objetos Eloquent completos
+        $formattedPins = $pins->map(function($pin) {
+            return [
+                'id' => $pin->id,
+                'latitude' => (float)$pin->latitude,
+                'longitude' => (float)$pin->longitude,
+                'height' => $pin->height,
+                'degree' => $pin->degree,
+                'street' => $pin->street_name ? [
+                    'street_name' => $pin->street_name,
+                    'street_number' => $pin->street_number,
+                    'door_plate' => $pin->door_plate
+                ] : null,
+                'park' => $pin->park_name ? [
+                    'park_name' => $pin->park_name
+                ] : null,
+                'specie' => $pin->specie_common_name ? [
+                    'common_name' => $pin->specie_common_name
+                ] : null
+            ];
+        });
+
         return response()->json([
             'status' => 'success',
-            'count' => $pins->count(),
-            'data'=>  $pins
-        ],200);
+            'count' => $formattedPins->count(),
+            'data'=>  $formattedPins
+        ], 200);
     }
 
 }
