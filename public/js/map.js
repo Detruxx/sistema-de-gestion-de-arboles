@@ -177,6 +177,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     fillOpacity: 0.8
                 }).addTo(map);
 
+                // Micro-interacción: agrandar círculo en hover
+                marker.on('mouseover', function() {
+                    const currentRadius = this.getRadius();
+                    this.setStyle({
+                        radius: currentRadius + 3,
+                        weight: 1.5
+                    });
+                });
+                marker.on('mouseout', function() {
+                    const currentRadius = this.getRadius();
+                    this.setStyle({
+                        radius: currentRadius - 3,
+                        weight: 0.5
+                    });
+                });
 
                 marker.on('click', () => {
                     mostrarDatosArbol(arbol.id); // Pasamos solo el ID para que haga fetch del detalle

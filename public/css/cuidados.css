@@ -126,3 +126,40 @@
     color: #d32f2f;
     border: 1px solid rgba(211, 47, 47, 0.3);
 }
+
+.tip-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    width: 100%;
+}
+
+.read-more-link {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--spring-leaf);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.read-more-link svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2px;
+    transition: transform 0.3s ease;
+}
+
+.tip-card:hover .read-more-link {
+    color: var(--morning-dew);
+}
+
+.tip-card:hover .read-more-link svg {
+    transform: translateX(4px);
+}

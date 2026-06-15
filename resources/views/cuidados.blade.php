@@ -29,7 +29,13 @@
                 <p>
                     Los árboles jóvenes necesitan riego regular (20 a 40 litros semanales) durante sus primeros 3 años de vida. Riega lentamente al atardecer para evitar la evaporación inmediata.
                 </p>
-                <div class="tip-badge">Cuidado Diario</div>
+                <div class="tip-card-footer">
+                    <div class="tip-badge">Cuidado Diario</div>
+                    <span class="read-more-link">
+                        Leer más
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </span>
+                </div>
             </div>
 
             <div class="tip-card reveal delay-2" 
@@ -47,7 +53,13 @@
                 <p>
                     La poda particular en la vía pública está prohibida por la Ley 3263. Las tareas autorizadas por la comuna se realizan exclusivamente en invierno (mayo a agosto). ¡No podes por tu cuenta!
                 </p>
-                <div class="tip-badge warning">Normativa Legal</div>
+                <div class="tip-card-footer">
+                    <div class="tip-badge warning">Normativa Legal</div>
+                    <span class="read-more-link">
+                        Leer más
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </span>
+                </div>
             </div>
 
             <div class="tip-card reveal delay-3" 
@@ -65,7 +77,13 @@
                 <p>
                     Para plantar en la vereda debes solicitar autorización. El gobierno define la especie adecuada para tu calle, evitando futuros daños en cañerías, cableados o la propia acera.
                 </p>
-                <div class="tip-badge warning">Requiere Permiso</div>
+                <div class="tip-card-footer">
+                    <div class="tip-badge warning">Requiere Permiso</div>
+                    <span class="read-more-link">
+                        Leer más
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </span>
+                </div>
             </div>
 
             <div class="tip-card reveal delay-1" 
@@ -83,7 +101,13 @@
                 <p>
                     Mantén el espacio de tierra libre de cemento, piedras y basura. Nunca viertas agua con detergentes, lavandina ni productos químicos, ya que envenenan las raíces del árbol.
                 </p>
-                <div class="tip-badge">Protección</div>
+                <div class="tip-card-footer">
+                    <div class="tip-badge">Protección</div>
+                    <span class="read-more-link">
+                        Leer más
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </span>
+                </div>
             </div>
 
             <div class="tip-card reveal delay-2" 
@@ -101,7 +125,13 @@
                 <p>
                     Colocar chips de madera u hojas secas en la base del tronco retiene la humedad, regula la temperatura del suelo y evita el crecimiento de malezas que compiten por nutrientes.
                 </p>
-                <div class="tip-badge">Recomendación</div>
+                <div class="tip-card-footer">
+                    <div class="tip-badge">Recomendación</div>
+                    <span class="read-more-link">
+                        Leer más
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </span>
+                </div>
             </div>
 
             <div class="tip-card reveal delay-3" 
@@ -119,7 +149,13 @@
                 <p>
                     La corteza es la "piel" del árbol. Evita clavar carteles, atar bicicletas con cadenas pesadas o dañarla con bordadoras de césped; las heridas abren paso a hongos y plagas fatales.
                 </p>
-                <div class="tip-badge">Prevención</div>
+                <div class="tip-card-footer">
+                    <div class="tip-badge">Prevención</div>
+                    <span class="read-more-link">
+                        Leer más
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </span>
+                </div>
             </div>
         </section>
     </main>

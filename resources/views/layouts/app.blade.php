@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Aca va el icono de la pagina -->
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
     <title>@yield('title', 'TreeBA | Mapeado de Arboles')</title>
 
     <!-- Aca van las fuentes que usa la pagina -->
