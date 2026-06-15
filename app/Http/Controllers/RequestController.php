@@ -1,0 +1,157 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Request as IncidentRequest;
+
+class RequestController extends Controller
+{
+
+    // =========================
+    // FUNCIONES
+    // =========================
+
+/*
+    Guarda una solicitud nueva en la base de datos
+*/
+    public function store(Request $request)
+    {
+        // Validamos los datos que vienen del formulario
+       $validatedData = $request->validate([
+            'user_id'         => 'required|exists:users,id',
+            'tree_id'         => 'required|exists:trees,id',
+            'request_type_id' => 'required|exists:request_types,id',
+            'street_id'       => 'required|exists:streets,id',
+            'description'     => 'required|string',
+        ]);
+
+        // Creamos la instancia de la Solicitud
+        $incident = new IncidentRequest();
+        $incident->user_id          = $validatedData['user_id'];
+        $incident->tree_id          = $validatedData['tree_id'];
+        $incident->request_type_id  = $validatedData['request_type_id'];
+        $incident->street_id        = $validatedData['street_id'];
+        $incident->description      = $validatedData['description'];
+        
+        // Estado inicial 'pending'
+        $incident->status           = 'open'; 
+
+        // Guardamos la solicitud
+        $incident->save();
+ 
+        return response()->json([
+            'status'    => 'success', 
+            'message'   => 'Solicitud registrada con éxito', 
+            'data'      => $incident
+        ], 201);
+    }
+
+    
+/*
+    Cambia el estado de una solicitud existente
+*/
+    public function UpdateStatus(Request $request, $id)
+    {
+        // Validamos los datos que vienen del formulario
+        $request->validate([
+            'status' => 'required|string|in:open,in_progress,resolved',
+        ]);
+
+        // Buscamos la solicitud por su ID
+        $incident = IncidentRequest::find($id);
+        
+        if (!$incident) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Solicitud no encontrada',
+            ], 404);
+        }
+
+        // Actualizamos el estado de la solicitud
+        $incident->status = $request['status'];
+        $incident->save();
+
+        // Respondemos con el estado actualizado
+        return response()->json([
+            'status'    => 'success',
+            'message'   => 'Solicitud actualizada con éxito',
+            'data'      => $incident,
+        ], 200);
+    }
+
+/*
+    Obtiene los reclamos de un Arbol en especifico
+*/
+    public function getRequestsByTree($tree_id)
+    {
+        // Buscamos la solicitud por su ID
+        $request = IncidentRequest::where('tree_id', $tree_id)
+        ->with(['user','requestType'])
+        ->get();
+        
+        if($request->isEmpty){
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'No se encontraron solicitudes',
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'count'  => $request->count(),
+            'data'   => $request,
+        ], 200);
+    }
+    
+/*
+    Muestra todas las solicitudes por estado
+*/
+    public function getRequestByStatus($status)
+    {
+        // Valida que el filtro que usan coincida
+        if(!in_array($status, ['open', 'in_progress', 'resolved'])){
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Estado de solicitud inválido',
+            ], 400);
+        }
+
+        // Buscamos las solicitudes por su estado
+        $request = IncidentRequest::where('status', $status)
+        ->with(['tree.street','user','requestType'])
+        ->get();
+        
+        // Muestra todas las solicitudes por estado
+        return response()->json([
+            'status' => 'success',
+            'count'  => $request->count(),
+            'data'   => $request,
+        ], 200);
+    }
+
+/*
+    Muestra todas las solicitudes por tipo de solicitud
+*/
+    public function getRequestByType($typeId)
+    {
+        $request = IncidentRequest::where('request_type_id', $typeId)
+        ->with(['tree.street', 'requestType', 'user'])
+        ->get();
+
+        if($request->isEmpty()){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No se encontraron solicitudes',
+            ],404);
+        }
+
+        // Muestra todas las solicitudes por tipo de solicitud
+        return response()->json([
+            'status' => 'success',
+            'count'  => $request->count(),
+            'data'   => $request,
+        ],200);
+    }
+    
+}
