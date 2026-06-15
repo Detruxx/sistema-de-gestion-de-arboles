@@ -4,11 +4,6 @@
 @section('navbar-class', 'scrolled')
 @section('active-cuidados', 'active')
 
-@section('canvas')
-    <!-- Canvas específico para la animación fluida de hojas cayendo -->
-    <canvas id="cuidados-canvas"></canvas>
-@endsection
-
 @section('content')
     <main class="cuidados-page-container">
         <section class="cuidados-header reveal">
@@ -163,6 +158,6 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ asset('js/cuidados.js') }}"></script>
+    
     <script src="{{ asset('js/modal.js') }}"></script>
 @endsection
