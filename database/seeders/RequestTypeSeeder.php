@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Request_type;
+use Illuminate\Support\Facades\DB;
 
 class RequestTypeSeeder extends Seeder
 {
