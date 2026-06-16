@@ -6,6 +6,7 @@
 @section('active-reclamos', 'active')
 
 @section('styles')
+    <link rel="stylesheet" href="{{ asset('css/reclamos.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 @endsection
 
@@ -18,24 +19,24 @@
             </p>
         </section>
 
-        <section style="max-width: 800px; margin: 0 auto; position: relative; z-index: 10;" class="reveal delay-1">
+        <section class="reclamos-form-container reveal delay-1">
             <!-- Banner de información de árbol preseleccionado -->
-            <div id="selected-tree-banner" style="display: none; background-color: rgba(91, 191, 140, 0.15); border: 2px solid var(--living-moss); border-radius: 12px; padding: 15px; margin-bottom: 25px; color: var(--forest-night); align-items: center; gap: 15px;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--living-moss)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+            <div id="selected-tree-banner" style="display: none;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--living-moss)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="16" x2="12" y2="12"></line>
                     <line x1="12" y1="8" x2="12.01" y2="8"></line>
                 </svg>
                 <div>
-                    <strong style="display: block; font-family: var(--font-display); color: var(--deep-canopy); font-size: 1.05rem; margin-bottom: 4px;">Árbol Seleccionado del Mapa</strong>
-                    <span id="selected-tree-text" style="font-size: 0.95rem;"></span>
+                    <strong class="selected-tree-title">Árbol Seleccionado del Mapa</strong>
+                    <span id="selected-tree-text"></span>
                 </div>
             </div>
 
             <form class="contact-form" onsubmit="event.preventDefault(); alert('Reclamo registrado con éxito (Simulación).');">
                 <div class="form-group">
                     <label for="tipo-reclamo">Tipo de Incidencia</label>
-                    <select id="tipo-reclamo" style="background-color: var(--paper-white); border: 1px solid rgba(45, 122, 79, 0.3); border-radius: 8px; padding: 15px; color: var(--forest-night); font-family: var(--font-body); font-size: 1rem; width: 100%;" required>
+                    <select id="tipo-reclamo" class="form-control" required>
                         <option value="">Selecciona una opción...</option>
                         <option value="caido">Árbol o rama de gran porte caído</option>
                         <option value="seco">Árbol seco con riesgo de caída</option>
@@ -45,17 +46,17 @@
                     </select>
                 </div>
 
-                <div class="form-group" style="margin-top: 20px;">
+                <div class="form-group">
                     <label for="arbol-id">ID del Árbol (Opcional)</label>
-                    <input type="number" id="arbol-id" placeholder="Ej: 1001 (Si lo conoces y deseas vincularlo)" style="background-color: var(--paper-white); border: 1px solid rgba(45, 122, 79, 0.3); border-radius: 8px; padding: 15px; color: var(--forest-night); font-family: var(--font-body); font-size: 1rem; width: 100%;">
-                    <small id="arbol-id-help" style="display: none; color: #b73235; margin-top: 6px; font-size: 0.85rem; font-weight: 500;"></small>
+                    <input type="number" id="arbol-id" class="form-control" placeholder="Ej: 1001 (Si lo conoces y deseas vincularlo)">
+                    <small id="arbol-id-help" style="display: none;"></small>
                 </div>
 
-                <div class="form-group" style="margin-top: 20px;">
+                <div class="form-group">
                     <label for="direccion">Dirección / Ubicación aproximada</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="direccion" placeholder="Ej: Av. Santa Fe 2500, Palermo" style="background-color: var(--paper-white); border: 1px solid rgba(45, 122, 79, 0.3); border-radius: 8px; padding: 15px; color: var(--forest-night); font-family: var(--font-body); font-size: 1rem; flex-grow: 1; transition: all 0.3s ease;" required>
-                        <button type="button" id="btn-select-map" class="btn-main-cta" style="flex-shrink: 0; padding: 15px 20px; border-radius: 8px; font-size: 0.95rem; text-transform: none; display: flex; align-items: center; justify-content: center; gap: 8px; background-color: var(--deep-canopy); border: 1px solid var(--living-moss); box-shadow: 0 4px 10px rgba(45, 122, 79, 0.15);">
+                    <div class="input-with-button">
+                        <input type="text" id="direccion" class="form-control" placeholder="Ej: Av. Santa Fe 2500, Palermo" required>
+                        <button type="button" id="btn-select-map" class="btn-main-cta">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--spring-leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                                 <circle cx="12" cy="10" r="3"></circle>
@@ -65,12 +66,12 @@
                     </div>
                 </div>
 
-                <div class="form-group" style="margin-top: 20px;">
+                <div class="form-group">
                     <label for="descripcion">Detalles del Reclamo</label>
-                    <textarea id="descripcion" placeholder="Describe brevemente la situación para ayudar a los inspectores..." required rows="4" style="background-color: var(--paper-white); border: 1px solid rgba(45, 122, 79, 0.3); border-radius: 8px; padding: 15px; color: var(--forest-night); font-family: var(--font-body); font-size: 1rem; width: 100%; resize: vertical;"></textarea>
+                    <textarea id="descripcion" class="form-control" placeholder="Describe brevemente la situación para ayudar a los inspectores..." required rows="4"></textarea>
                 </div>
 
-                <div style="margin-top: 30px; display: flex; justify-content: flex-end;">
+                <div class="form-actions">
                     <button type="submit" class="btn-main-cta">Enviar Reclamo</button>
                 </div>
             </form>
@@ -138,16 +139,14 @@
                 if (arbol) {
                     inputDireccion.value = arbol.direccion;
                     inputDireccion.readOnly = true;
-                    inputDireccion.style.backgroundColor = 'rgba(235, 245, 238, 0.5)';
-                    inputDireccion.style.cursor = 'not-allowed';
+                    inputDireccion.classList.add('readonly-input');
 
                     banner.style.display = 'flex';
                     bannerText.innerHTML = `Estás registrando un reclamo para el árbol <strong>ID #${arbol.id} (${arbol.especie})</strong> ubicado en <strong>${arbol.direccion}</strong>.`;
                     helpText.style.display = 'none';
                 } else {
                     inputDireccion.readOnly = false;
-                    inputDireccion.style.backgroundColor = 'var(--paper-white)';
-                    inputDireccion.style.cursor = 'text';
+                    inputDireccion.classList.remove('readonly-input');
 
                     banner.style.display = 'none';
                     bannerText.textContent = '';
@@ -161,8 +160,7 @@
             if (arbolIdParam) {
                 inputArbolId.value = arbolIdParam;
                 inputArbolId.readOnly = true;
-                inputArbolId.style.backgroundColor = 'rgba(235, 245, 238, 0.5)';
-                inputArbolId.style.cursor = 'not-allowed';
+                inputArbolId.classList.add('readonly-input');
                 
                 const matched = arboles.find(a => a.id == arbolIdParam);
                 if (matched) {
@@ -309,8 +307,7 @@
                 if (currentCoordsAddress) {
                     inputDireccion.value = currentCoordsAddress;
                     inputDireccion.readOnly = false;
-                    inputDireccion.style.backgroundColor = 'var(--paper-white)';
-                    inputDireccion.style.cursor = 'text';
+                    inputDireccion.classList.remove('readonly-input');
                     inputArbolId.value = ''; 
                     banner.style.display = 'none';
                     helpText.style.display = 'none';

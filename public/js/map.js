@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 2. Inyectar datos en el DOM (se removió t-estado)
                 document.getElementById('t-id').textContent = `#${arbol.id}`;
                 document.getElementById('t-especie').textContent = arbol.specie ? arbol.specie.common_name : 'Desconocida';
-                document.getElementById('t-edad').textContent = arbol.degree ? `${arbol.degree} años` : 'Desconocida';
+                document.getElementById('t-edad').textContent = arbol.degree ? `${arbol.degree} años` : 'Desconocida'; // corregir
                 document.getElementById('t-altura').textContent = `${arbol.height} m`;
                 document.getElementById('t-direccion').textContent = direccionCompleta;
 
@@ -177,21 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     fillOpacity: 0.8
                 }).addTo(map);
 
-                // Micro-interacción: agrandar círculo en hover
-                marker.on('mouseover', function() {
-                    const currentRadius = this.getRadius();
-                    this.setStyle({
-                        radius: currentRadius + 3,
-                        weight: 1.5
-                    });
-                });
-                marker.on('mouseout', function() {
-                    const currentRadius = this.getRadius();
-                    this.setStyle({
-                        radius: currentRadius - 3,
-                        weight: 0.5
-                    });
-                });
 
                 marker.on('click', () => {
                     mostrarDatosArbol(arbol.id); // Pasamos solo el ID para que haga fetch del detalle

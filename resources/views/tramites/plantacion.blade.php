@@ -6,6 +6,7 @@
 @section('active-plantacion', 'active')
 
 @section('styles')
+    <link rel="stylesheet" href="{{ asset('css/plantacion.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 @endsection
 
@@ -18,11 +19,11 @@
             </p>
         </section>
 
-        <section style="max-width: 800px; margin: 0 auto; position: relative; z-index: 10;" class="reveal delay-1">
+        <section class="plantacion-form-container reveal delay-1">
             <form class="contact-form" onsubmit="event.preventDefault(); alert('Solicitud enviada con éxito (Simulación).');">
                 <div class="form-group">
                     <label for="ancho-vereda">Ancho Estimado de la Vereda</label>
-                    <select id="ancho-vereda" style="background-color: var(--paper-white); border: 1px solid rgba(45, 122, 79, 0.3); border-radius: 8px; padding: 15px; color: var(--forest-night); font-family: var(--font-body); font-size: 1rem; width: 100%;" required>
+                    <select id="ancho-vereda" class="form-control" required>
                         <option value="">Selecciona una opción...</option>
                         <option value="angosta">Angosta (Menos de 2 metros)</option>
                         <option value="media">Media (Entre 2 y 3.5 metros)</option>
@@ -30,9 +31,9 @@
                     </select>
                 </div>
 
-                <div class="form-group" style="margin-top: 20px;">
+                <div class="form-group">
                     <label for="cazuela-estado">¿La cazuela (espacio de tierra) está disponible?</label>
-                    <select id="cazuela-estado" style="background-color: var(--paper-white); border: 1px solid rgba(45, 122, 79, 0.3); border-radius: 8px; padding: 15px; color: var(--forest-night); font-family: var(--font-body); font-size: 1rem; width: 100%;" required>
+                    <select id="cazuela-estado" class="form-control" required>
                         <option value="">Selecciona una opción...</option>
                         <option value="si">Sí, está abierta y con tierra suelta</option>
                         <option value="cemento">No, la vereda está completamente cementada</option>
@@ -40,11 +41,11 @@
                     </select>
                 </div>
 
-                <div class="form-group" style="margin-top: 20px;">
+                <div class="form-group">
                     <label for="direccion-solicitud">Dirección Exacta</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="direccion-solicitud" placeholder="Ej: Av. Rivadavia 4800, Caballito" style="background-color: var(--paper-white); border: 1px solid rgba(45, 122, 79, 0.3); border-radius: 8px; padding: 15px; color: var(--forest-night); font-family: var(--font-body); font-size: 1rem; flex-grow: 1;" required>
-                        <button type="button" id="btn-select-map" class="btn-main-cta" style="flex-shrink: 0; padding: 15px 20px; border-radius: 8px; font-size: 0.95rem; text-transform: none; display: flex; align-items: center; justify-content: center; gap: 8px; background-color: var(--deep-canopy); border: 1px solid var(--living-moss); box-shadow: 0 4px 10px rgba(45, 122, 79, 0.15);">
+                    <div class="input-with-button">
+                        <input type="text" id="direccion-solicitud" class="form-control" placeholder="Ej: Av. Rivadavia 4800, Caballito" required>
+                        <button type="button" id="btn-select-map" class="btn-main-cta">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--spring-leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                                 <circle cx="12" cy="10" r="3"></circle>
@@ -54,14 +55,14 @@
                     </div>
                 </div>
 
-                <div class="form-group" style="margin-top: 25px; display: flex; flex-direction: row; align-items: flex-start; gap: 10px;">
-                    <input type="checkbox" id="compromiso" style="margin-top: 6px; cursor: pointer;" required>
-                    <label for="compromiso" style="font-weight: 500; font-size: 0.95rem; color: var(--forest-night); line-height: 1.4;">
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="compromiso" required>
+                    <label for="compromiso">
                         Me comprometo a cuidar y regar el árbol regularmente durante sus primeros 3 años de vida para asegurar su crecimiento saludable.
                     </label>
                 </div>
 
-                <div style="margin-top: 30px; display: flex; justify-content: flex-end;">
+                <div class="form-actions">
                     <button type="submit" class="btn-main-cta">Enviar Solicitud</button>
                 </div>
             </form>

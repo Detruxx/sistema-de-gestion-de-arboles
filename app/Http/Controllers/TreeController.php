@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Tree;
 use Illuminate\Support\Facades\DB;
+use App\Models\Tree;
 
 class TreeController extends Controller
 {
