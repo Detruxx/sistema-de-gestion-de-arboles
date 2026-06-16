@@ -147,8 +147,13 @@
 }
 
 .wave-divider.wave-top {
-    margin-bottom: -1px;
-    /* Evita huecos de 1px en render */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    transform: translateY(-99%);
+    background-color: transparent;
+    z-index: 10;
 }
 
 .wave-divider.wave-bottom {

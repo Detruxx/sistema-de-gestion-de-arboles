@@ -21,64 +21,91 @@
                 </div>
                 <div class="hero-image-right">
                     <div class="organic-image-mask">
-                        <img src="https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=800&auto=format&fit=crop" alt="Arboles urbanos">
+                        <img src="{{ asset('img/copa_arboles.png') }}" alt="Arboles urbanos">
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Divisor de onda SVG (De oscuro del Hero a claro de Especies) -->
-        <div class="wave-divider wave-top">
-            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z"></path>
-            </svg>
-        </div>
-
         <!-- Seccion especies destacadas -->
         <section class="featured-species-section reveal">
+            <!-- Divisor de onda SVG (De oscuro del Hero a claro de Especies) -->
+            <div class="wave-divider wave-top">
+                <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z"></path>
+                </svg>
+            </div>
+
             <h2 class="section-title">Especies Emblemáticas</h2>
             <p class="section-subtitle">Conoce las especies más características que embellecen y protegen las calles de Buenos Aires.</p>
             
             <div class="species-grid">
                 <!-- Jacarandá -->
-                <div class="species-card">
+                <div class="species-card"
+                      data-badge="8% de veredas"
+                      data-title="Jacarandá"
+                      data-scientific="Jacaranda mimosifolia"
+                      data-description="Famoso por su espectacular floración violeta en noviembre. Aporta frescura y biodiversidad a las avenidas de la ciudad. Es un árbol originario de las selvas de montaña del noroeste argentino (Yungas), adaptado perfectamente al clima de Buenos Aires."
+                      data-tips="Floración: Flores violáceas/azules en forma de campana que cubren la copa a fines de primavera.;Tamaño: Árbol mediano a grande, que puede alcanzar de 12 a 15 metros de altura.;Follaje: Hojas caducas de aspecto plumoso y delicado, que caen tarde en invierno.;Ubicación: Ideal para veredas anchas y avenidas debido a su copa abierta y raíces moderadas."
+                      data-image="{{ asset('img/jacaranda_arbol.png') }}">
                     <div class="species-image">
-                        <img src="https://images.unsplash.com/photo-1616781297592-fb2721868350?w=600&auto=format&fit=crop" alt="Jacarandá">
+                        <img src="{{ asset('img/jacaranda_arbol.png') }}" alt="Jacarandá">
                         <span class="species-percentage">8% de veredas</span>
                     </div>
                     <div class="species-info">
                         <h3>Jacarandá</h3>
                         <span class="scientific-name">Jacaranda mimosifolia</span>
                         <p>Famoso por su espectacular floración violeta en noviembre. Aporta frescura y biodiversidad a las avenidas de la ciudad.</p>
-                        <a href="/mapa?filter-especie=Jacarandá" class="btn-species-map">Ver en Mapa →</a>
+                        <span class="read-more-link" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--living-moss); margin-top: 10px; transition: color 0.3s ease, transform 0.3s ease;">
+                            Leer más
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </span>
                     </div>
                 </div>
                 
                 <!-- Ceibo -->
-                <div class="species-card">
+                <div class="species-card"
+                      data-badge="Flor Nacional"
+                      data-title="Ceibo"
+                      data-scientific="Erythrina crista-galli"
+                      data-description="Nuestra flor nacional. De vistoso color rojo, crece principalmente en parques, plazas y zonas húmedas cercanas a la ribera. Es una especie autóctona de la región del Delta y del Río de la Plata, muy querida por su valor cultural."
+                      data-tips="Floración: Flores de color rojo carmín intenso, agrupadas en racimos durante primavera y verano.;Tamaño: Árbol de tamaño mediano, de entre 5 a 10 metros de altura, de tronco tortuoso.;Corteza: Rugosa y suberosa (corchosa), muy característica del paisaje ribereño.;Ubicación: Se desarrolla óptimamente en terrenos húmedos, linderos a cursos de agua o en parques amplios."
+                      data-image="{{ asset('img/ceibo_arbol.png') }}">
                     <div class="species-image">
-                        <img src="https://images.unsplash.com/photo-1598902108854-10e335adac99?w=600&auto=format&fit=crop" alt="Ceibo">
+                        <img src="{{ asset('img/ceibo_arbol.png') }}" alt="Ceibo">
                         <span class="species-percentage">Flor Nacional</span>
                     </div>
                     <div class="species-info">
                         <h3>Ceibo</h3>
                         <span class="scientific-name">Erythrina crista-galli</span>
                         <p>Nuestra flor nacional. De vistoso color rojo, crece principalmente en parques, plazas y zonas húmedas cercanas a la ribera.</p>
-                        <a href="/mapa?filter-especie=Ceibo" class="btn-species-map">Ver en Mapa →</a>
+                        <span class="read-more-link" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--living-moss); margin-top: 10px; transition: color 0.3s ease, transform 0.3s ease;">
+                            Leer más
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </span>
                     </div>
                 </div>
                 
                 <!-- Fresno -->
-                <div class="species-card">
+                <div class="species-card"
+                      data-badge="38% de veredas"
+                      data-title="Fresno Americano"
+                      data-scientific="Fraxinus pennsylvanica"
+                      data-description="El árbol más abundante en las veredas de Buenos Aires. Provee una sombra tupida en verano y un tono dorado en otoño. Es una especie exótica originaria de América del Norte que se ha adaptado masivamente al ejido urbano porteño."
+                      data-tips="Follaje: Hojas caducas que se tornan de color amarillo dorado en otoño antes de caer.;Sombra: Copa globosa muy tupida que reduce la radiación solar sobre el pavimento y fachadas en verano.;Resistencia: Excelente tolerancia a la polución urbana, la poda severa y la compactación del suelo.;Frecuencia: Constituye casi 4 de cada 10 árboles plantados en las veredas de la ciudad."
+                      data-image="{{ asset('img/fresno_arbol.png') }}">
                     <div class="species-image">
-                        <img src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=600&auto=format&fit=crop" alt="Fresno">
+                        <img src="{{ asset('img/fresno_arbol.png') }}" alt="Fresno">
                         <span class="species-percentage">38% de veredas</span>
                     </div>
                     <div class="species-info">
                         <h3>Fresno Americano</h3>
                         <span class="scientific-name">Fraxinus pennsylvanica</span>
                         <p>El árbol más abundante en las veredas de Buenos Aires. Provee una sombra tupida en verano y un tono dorado en otoño.</p>
-                        <a href="/mapa?filter-especie=Fresno" class="btn-species-map">Ver en Mapa →</a>
+                        <span class="read-more-link" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--living-moss); margin-top: 10px; transition: color 0.3s ease, transform 0.3s ease;">
+                            Leer más
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -151,9 +178,142 @@
                 @endauth
             </div>
         </section>
+        <!-- Modal de Detalles de Especie -->
+        <div id="species-modal" class="care-modal-overlay">
+            <!-- Botones de navegación del modal -->
+            <button class="modal-nav-btn prev" id="species-prev-btn" aria-label="Anterior">&lsaquo;</button>
+            <button class="modal-nav-btn next" id="species-next-btn" aria-label="Siguiente">&rsaquo;</button>
+
+            <div class="care-modal-container">
+                <button class="care-modal-close" id="species-close-btn">&times;</button>
+                <div class="care-modal-layout">
+                    <div class="care-modal-content">
+                        <span class="care-modal-badge" id="species-modal-badge">CATEGORÍA</span>
+                        <h2 class="care-modal-title" id="species-modal-title">Título de la Especie</h2>
+                        <p class="care-modal-body" id="species-modal-body">
+                            Aquí va el texto detallado...
+                        </p>
+                        <div class="care-modal-action-box">
+                            <h4>Características Principales:</h4>
+                            <ul class="care-modal-tips-list" id="species-modal-tips-list">
+                                <!-- Lista de tips/características -->
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="care-modal-image-panel">
+                        <img id="species-modal-image" src="" alt="Especie de árbol">
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 @endsection
 
 @section('scripts')
     <script src="{{ asset('js/hero-canvas.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const speciesModal = document.getElementById('species-modal');
+            if (speciesModal) {
+                const modalBadge = document.getElementById('species-modal-badge');
+                const modalTitle = document.getElementById('species-modal-title');
+                const modalBody = document.getElementById('species-modal-body');
+                const modalTipsList = document.getElementById('species-modal-tips-list');
+                const modalImage = document.getElementById('species-modal-image');
+                const modalCloseBtn = document.getElementById('species-close-btn');
+                const prevBtn = document.getElementById('species-prev-btn');
+                const nextBtn = document.getElementById('species-next-btn');
+
+                const speciesCards = document.querySelectorAll('.species-card');
+                let currentCardIndex = -1;
+
+                function showCard(index) {
+                    if (index < 0) {
+                        index = speciesCards.length - 1;
+                    } else if (index >= speciesCards.length) {
+                        index = 0;
+                    }
+                    currentCardIndex = index;
+
+                    const card = speciesCards[index];
+                    const badgeText = card.getAttribute('data-badge');
+                    const titleText = card.getAttribute('data-title');
+                    const scientificName = card.getAttribute('data-scientific');
+                    const descText = card.getAttribute('data-description');
+                    const imageSrc = card.getAttribute('data-image');
+                    const tipsString = card.getAttribute('data-tips');
+
+                    // Inyectar datos básicos
+                    modalBadge.textContent = badgeText;
+                    modalTitle.innerHTML = `${titleText} <span style="display: block; font-size: 1.1rem; font-style: italic; font-weight: 500; color: var(--living-moss); margin-top: 5px;">${scientificName}</span>`;
+                    modalBody.textContent = descText;
+                    modalImage.src = imageSrc;
+                    modalImage.alt = titleText;
+
+                    // Inyectar lista de tips
+                    modalTipsList.innerHTML = '';
+                    if (tipsString) {
+                        const tipsArray = tipsString.split(';');
+                        tipsArray.forEach(tip => {
+                            if (tip.trim()) {
+                                const li = document.createElement('li');
+                                li.innerHTML = tip.trim();
+                                modalTipsList.appendChild(li);
+                            }
+                        });
+                    }
+                }
+
+                function openModal(index) {
+                    showCard(index);
+                    speciesModal.classList.add('active');
+                }
+
+                function closeModal() {
+                    speciesModal.classList.remove('active');
+                }
+
+                speciesCards.forEach((card, index) => {
+                    card.style.cursor = 'pointer';
+                    card.addEventListener('click', () => {
+                        openModal(index);
+                    });
+                });
+
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        showCard(currentCardIndex - 1);
+                    });
+                }
+
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        showCard(currentCardIndex + 1);
+                    });
+                }
+
+                modalCloseBtn.addEventListener('click', closeModal);
+
+                speciesModal.addEventListener('click', (e) => {
+                    if (e.target === speciesModal) {
+                        closeModal();
+                    }
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (!speciesModal.classList.contains('active')) return;
+
+                    if (e.key === 'Escape') {
+                        closeModal();
+                    } else if (e.key === 'ArrowLeft') {
+                        showCard(currentCardIndex - 1);
+                    } else if (e.key === 'ArrowRight') {
+                        showCard(currentCardIndex + 1);
+                    }
+                });
+            }
+        });
+    </script>
 @endsection
