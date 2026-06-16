@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('request_type_id')->constrained('request_types')->onDelete('restrict');
             $table->foreignId('street_id')->constrained('streets')->onDelete('restrict');
             $table->text('description');
+            $table->string('path'); // path que lleva a la foto
             $table->enum('status', ['open', 'in_progress', 'resolved'])->default('open');
             $table->timestamps();
         });
