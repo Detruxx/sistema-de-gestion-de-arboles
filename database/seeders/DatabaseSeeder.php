@@ -34,11 +34,13 @@ class DatabaseSeeder extends Seeder
         );
 
         $this->call([
-            SpecieSeeder::class,
-            StreetSeeder::class,
-            ParkSeeder::class,
+            StreetSeeder::class,      
+            ParkSeeder::class,        
+            SpeciesSeeder::class,     
+            RequestTypeSeeder::class,
             PlanterSeeder::class,
             TreeSeeder::class,
+            RequestSeeder::class,
         ]);
     }
 }

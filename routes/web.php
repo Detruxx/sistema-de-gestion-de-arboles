@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\TreeController;
+use App\Http\Controllers\RequestController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -41,6 +42,6 @@ Route::get('/api/arboles/pines', [TreeController::class, 'getMapPins']);
 // Endpoint para traer el detalle de un árbol específico
 Route::get('/api/arboles/{id}', [TreeController::class, 'getTreeDetails']);
 
-
-
+//Parte de RECLAMOS
+Route::resource('requests', RequestController::class);
 
