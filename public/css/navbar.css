@@ -7,7 +7,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 1.5rem 4%;
-    z-index: 100;
+    z-index: 2000;
     transition: background-color 0.3s ease, padding 0.3s ease;
 }
 

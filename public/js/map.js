@@ -2,10 +2,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // ================= LÓGICA DEL MAPA (Solo si existe el div del mapa) =================
     const mapElement = document.getElementById('tree-map');
     if (mapElement) {
+        // Crear un renderizador Canvas con alta "tolerancia" para clics (15px extra de área invisible)
+        const canvasRenderer = L.canvas({ padding: 0.5, tolerance: 15 });
+
         // Inicializar el mapa centrado en Palermo, CABA
         const map = L.map('tree-map', {
             zoomControl: false, // Desactivamos el default para no chocar con el panel
-            preferCanvas: true   // Renderizado de alto rendimiento para miles de marcadores
+            renderer: canvasRenderer, // Usamos el renderizador con tolerancia táctil en vez de preferCanvas: true
+            zoomSnap: 0.1,        // Permite niveles de zoom intermedios (ej. 13.1, 13.2)
+            zoomDelta: 0.25,      // Cada "clic" de la rueda del ratón avanza un cuarto de nivel en vez de un nivel entero
+            wheelPxPerZoomLevel: 120 // Hace que el giro físico de la rueda se sienta más lento/pesado (por defecto es 60)
         }).setView([-34.5888, -58.4285], 13);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -161,18 +167,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (arbol.estado === 'Regular') chosenIcon = orangeIcon;
                 if (arbol.estado === 'Malo') chosenIcon = redIcon;
                 */
-                // Calcular el radio inicial según el nivel de zoom actual
+                // Calcular el estilo inicial copiando la lógica de interpolación del mapa de referencia
+                function getMarkerStyle(zoom, totalFeatures) {
+                    let radius, weight;
+                    // Radio (interpolación lineal)
+                    if (totalFeatures < 20000) {
+                        if (zoom <= 10) radius = 2;
+                        else if (zoom <= 14) radius = 2 + (6 - 2) * ((zoom - 10) / (14 - 10));
+                        else if (zoom <= 21) radius = 6 + (8 - 6) * ((zoom - 14) / (21 - 14));
+                        else radius = 8;
+                    } else {
+                        if (zoom <= 12) radius = 0.8;
+                        else if (zoom <= 14) radius = 0.8 + (5 - 0.8) * ((zoom - 12) / (14 - 12));
+                        else if (zoom <= 21) radius = 5 + (8 - 5) * ((zoom - 14) / (21 - 14));
+                        else radius = 8;
+                    }
+
+                    // Grosor del borde (stroke-width)
+                    if (zoom <= 12) weight = 0;
+                    else if (zoom <= 18) weight = 0 + (1 - 0) * ((zoom - 12) / (18 - 12));
+                    else weight = 1;
+
+                    return { radius, weight };
+                }
+
                 const currentZoom = map.getZoom();
-                let initialRadius = 1;
-                if (currentZoom >= 16) initialRadius = 5;
-                else if (currentZoom >= 14) initialRadius = 3;
-                else if (currentZoom >= 12) initialRadius = 2;
+                const style = getMarkerStyle(currentZoom, arboles.length);
 
                 const marker = L.circleMarker([arbol.latitude, arbol.longitude], {
-                    radius: initialRadius,
+                    radius: style.radius,
                     fillColor: '#2d7a4f',
                     color: '#ffffff',
-                    weight: 0.5, // Bordes delgados para que no se empaste tanto
+                    weight: style.weight,
                     opacity: 1,
                     fillOpacity: 0.8
                 }).addTo(map);
@@ -234,16 +260,37 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Enter') searchAddress();
         });
 
-        // Ajustar el tamaño de los puntos dinámicamente al hacer zoom
+        // Ajustar el tamaño dinámicamente al hacer zoom copiando la interpolación
         map.on('zoomend', () => {
             const zoom = map.getZoom();
-            let newRadius = 1;
-            if (zoom >= 16) newRadius = 5;
-            else if (zoom >= 14) newRadius = 3;
-            else if (zoom >= 12) newRadius = 2;
+
+            // Reutilizamos la lógica de interpolación (duplicada aquí por scope, o podríamos extraerla)
+            function getMarkerStyle(zoom, totalFeatures) {
+                let radius, weight;
+                if (totalFeatures < 20000) {
+                    if (zoom <= 10) radius = 2;
+                    else if (zoom <= 14) radius = 2 + (6 - 2) * ((zoom - 10) / (14 - 10));
+                    else if (zoom <= 21) radius = 6 + (8 - 6) * ((zoom - 14) / (21 - 14));
+                    else radius = 8;
+                } else {
+                    if (zoom <= 12) radius = 0.8;
+                    else if (zoom <= 14) radius = 0.8 + (5 - 0.8) * ((zoom - 12) / (14 - 12));
+                    else if (zoom <= 21) radius = 5 + (8 - 5) * ((zoom - 14) / (21 - 14));
+                    else radius = 8;
+                }
+
+                if (zoom <= 12) weight = 0;
+                else if (zoom <= 18) weight = 0 + (1 - 0) * ((zoom - 12) / (18 - 12));
+                else weight = 1;
+
+                return { radius, weight };
+            }
+
+            const style = getMarkerStyle(zoom, arboles.length);
 
             mapMarkers.forEach(marker => {
-                marker.setRadius(newRadius);
+                marker.setRadius(style.radius);
+                marker.setStyle({ weight: style.weight });
             });
         });
 

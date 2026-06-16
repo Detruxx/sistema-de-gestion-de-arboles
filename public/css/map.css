@@ -31,7 +31,10 @@
 
 .map-page-container {
     height: 100vh;
-    width: 100vw;
+    /* Fallback para navegadores antiguos */
+    height: 100dvh;
+    /* dvh corrige el desbordamiento provocado por la barra de direcciones en móviles */
+    width: 100%;
     padding: 90px 20px 20px 20px;
     /* Margen superior para el navbar + márgenes laterales */
     background-color: var(--paper-white);
@@ -455,7 +458,7 @@
 }
 
 /* Adaptación responsive para móviles */
-@media (max-width: 576px) {
+@media (max-width: 768px) {
     .map-floating-controls {
         top: 15px;
         right: 15px;
