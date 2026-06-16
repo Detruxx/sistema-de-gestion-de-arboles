@@ -101,3 +101,22 @@ textarea.form-control {
     background-color: rgba(235, 245, 238, 0.5) !important;
     cursor: not-allowed !important;
 }
+
+/* Botón de adjuntar archivo */
+.btn-attach:hover {
+    background-color: var(--spring-leaf) !important;
+    color: var(--forest-night) !important;
+    border-color: var(--spring-leaf) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(91, 191, 140, 0.25) !important;
+}
+
+/* Responsividad para móviles */
+@media (max-width: 768px) {
+    .input-with-button {
+        flex-direction: column;
+    }
+    #btn-select-map {
+        width: 100%;
+    }
+}

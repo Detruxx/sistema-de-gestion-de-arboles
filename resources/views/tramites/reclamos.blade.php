@@ -68,7 +68,20 @@
 
                 <div class="form-group">
                     <label for="descripcion">Detalles del Reclamo</label>
-                    <textarea id="descripcion" class="form-control" placeholder="Describe brevemente la situación para ayudar a los inspectores..." required rows="4"></textarea>
+                    <div class="textarea-container" style="position: relative; border: 1px solid rgba(45, 122, 79, 0.3); border-radius: 8px; background-color: var(--paper-white); overflow: hidden; transition: all 0.3s ease;">
+                        <textarea id="descripcion" class="form-control" placeholder="Describe brevemente la situación para ayudar a los inspectores..." required rows="4" style="border: none; border-bottom: 1px solid rgba(45, 122, 79, 0.15); border-radius: 8px 8px 0 0; background-color: transparent; width: 100%; display: block; outline: none; margin: 0; box-shadow: none;"></textarea>
+                        <div class="textarea-toolbar" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 15px; background-color: rgba(45, 122, 79, 0.03); border-top: 1px solid rgba(45, 122, 79, 0.1);">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="file" id="archivo-adjunto" style="display: none;" accept="image/*,application/pdf" multiple>
+                                <button type="button" id="btn-adjuntar" class="btn-attach" style="background-color: var(--deep-canopy); border: 1px solid var(--living-moss); color: var(--spring-leaf); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 8px; transition: all 0.2s ease; box-shadow: 0 4px 8px rgba(45, 122, 79, 0.15); outline: none;" title="Adjuntar foto o archivo">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                                    </svg>
+                                </button>
+                                <span id="archivo-lista" style="font-size: 0.85rem; color: var(--forest-night); opacity: 0.75; font-weight: 500;">Ningún archivo seleccionado</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-actions">
@@ -314,6 +327,28 @@
                 }
                 mapModal.classList.remove('active');
             });
+
+            // Lógica de archivos adjuntos (PC y Mobile)
+            const fileInput = document.getElementById('archivo-adjunto');
+            const btnAdjuntar = document.getElementById('btn-adjuntar');
+            const archivoLista = document.getElementById('archivo-lista');
+
+            if (fileInput && btnAdjuntar && archivoLista) {
+                btnAdjuntar.addEventListener('click', () => {
+                    fileInput.click();
+                });
+
+                fileInput.addEventListener('change', () => {
+                    const files = fileInput.files;
+                    if (files.length === 0) {
+                        archivoLista.textContent = 'Ningún archivo seleccionado';
+                    } else if (files.length === 1) {
+                        archivoLista.textContent = files[0].name;
+                    } else {
+                        archivoLista.textContent = `${files.length} archivos seleccionados`;
+                    }
+                });
+            }
         });
     </script>
 @endsection

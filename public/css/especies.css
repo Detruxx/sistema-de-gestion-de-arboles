@@ -26,7 +26,7 @@
     max-width: 1200px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 30px;
 }
 
@@ -51,7 +51,9 @@
 
 .species-image {
     position: relative;
-    height: 220px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
     overflow: hidden;
 }
 
@@ -185,5 +187,6 @@
 
     .species-image {
         height: 180px;
+        aspect-ratio: auto;
     }
 }

@@ -10,7 +10,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 3000;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.4s ease;
@@ -41,21 +41,30 @@
 
 .care-modal-close {
     position: absolute;
-    top: 15px;
+    top: 20px;
     right: 20px;
-    background: none;
-    border: none;
-    font-size: 2.2rem;
-    line-height: 1;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: var(--forest-night);
     cursor: pointer;
-    transition: color 0.2s ease, transform 0.2s ease;
-    z-index: 10;
+    transition: all 0.3s ease;
+    z-index: 100;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .care-modal-close:hover {
+    background-color: #ffffff;
     color: #d32f2f;
     transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(211, 47, 47, 0.2);
 }
 
 .care-modal-layout {
@@ -206,7 +215,7 @@
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    z-index: 1010;
+    z-index: 3010;
     padding-bottom: 4px;
 }
 
@@ -262,7 +271,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2000;
+    z-index: 3000;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.4s ease;

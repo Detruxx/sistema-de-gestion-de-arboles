@@ -76,3 +76,13 @@
     display: flex;
     justify-content: flex-end;
 }
+
+/* Responsividad para móviles */
+@media (max-width: 768px) {
+    .input-with-button {
+        flex-direction: column;
+    }
+    #btn-select-map {
+        width: 100%;
+    }
+}
