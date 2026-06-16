@@ -8,6 +8,7 @@
     align-items: center;
     padding: 1.5rem 4%;
     z-index: 2000;
+    /* Esto es para que se ponga encima de todo*/
     transition: background-color 0.3s ease, padding 0.3s ease;
 }
 
