@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             StreetSeeder::class,      
             ParkSeeder::class,        
-            SpeciesSeeder::class,     
+            SpecieSeeder::class,     
             RequestTypeSeeder::class,
             PlanterSeeder::class,
             TreeSeeder::class,
