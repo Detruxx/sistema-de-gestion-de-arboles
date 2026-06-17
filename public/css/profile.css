@@ -15,6 +15,22 @@
     text-align: center;
 }
 
+.profile-header .hero-title {
+    color: var(--forest-night) !important;
+    font-size: clamp(2.2rem, 4vw, 3.5rem);
+    line-height: 1.2;
+    margin-bottom: 12px;
+}
+
+.profile-header .section-subtitle {
+    color: var(--deep-canopy) !important;
+    font-size: 1.1rem;
+    font-weight: 500;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
 .profile-grid {
     max-width: 1200px;
     margin: 0 auto;
@@ -45,9 +61,9 @@
 
 .card-subtitle {
     font-size: 0.95rem;
-    color: var(--living-moss);
+    color: var(--deep-canopy);
     margin-top: -15px;
-    opacity: 0.85;
+    opacity: 0.9;
 }
 
 /* Avatar Grande */
@@ -89,7 +105,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: var(--living-moss);
+    color: var(--deep-canopy);
 }
 
 .info-value {
@@ -164,7 +180,7 @@
 
 .listing-count {
     font-size: 0.95rem;
-    color: var(--living-moss);
+    color: var(--deep-canopy);
     font-weight: 500;
 }
 
@@ -331,7 +347,7 @@ details.reclamo-card[open] .chevron-arrow svg {
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: var(--living-moss);
+    color: var(--deep-canopy);
 }
 
 .meta-box span {
