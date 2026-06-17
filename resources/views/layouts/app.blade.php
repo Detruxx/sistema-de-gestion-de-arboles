@@ -49,18 +49,35 @@
             </div>
             
             <a href="/#sobre-nosotros" class="nav-pill">Sobre Nosotros</a>
-            <a href="/#contacto" class="nav-pill">Contacto</a>
+            @auth
+                @if(Auth::user()->role === 'inspector' || Auth::user()->role === 'admin')
+                    <a href="/mensajes" class="nav-pill">Mensajes</a>
+                @else
+                    <a href="/#contacto" class="nav-pill">Contacto</a>
+                @endif
+            @else
+                <a href="/#contacto" class="nav-pill">Contacto</a>
+            @endauth
             @guest <!-- Si el usuario no esta logueado, se muestra el boton de login -->
                 <a href="/login" class="nav-pill btn-login @yield('active-login')">Login</a>
             @endguest
-            @auth <!-- Si el usuario esta logueado, se muestra el boton de cerrar sesion -->
+            @auth <!-- Si el usuario esta logueado, se muestra el menu de perfil -->
                 <div class="nav-dropdown">
-                    <button class="nav-pill dropdown-trigger" aria-expanded="false" style="background: none; border: 1px solid transparent; font-family: inherit; font-size: inherit; color: inherit; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                        {{ Auth::user()->name }}
-                        <svg class="dropdown-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    <button class="nav-pill dropdown-trigger" aria-expanded="false" style="background: none; border: 1px solid transparent; padding: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; color: var(--paper-white);" title="Perfil de {{ Auth::user()->name }}">
+                        <!-- Icono SVG de persona (cabeza y cuerpo) -->
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
                     </button>
                     <div class="dropdown-menu">
-                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Cerrar Sesión</a>
+                        <a href="/configuracion">Configuración</a>
+                        @if(Auth::user()->role === 'vecino')
+                            <a href="/mis-reclamos">Mis Reclamos</a>
+                        @else
+                            <a href="/ver-reclamos">Ver Reclamos</a>
+                        @endif
+                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="border-top: 1px solid rgba(45, 122, 79, 0.15); color: #d32f2f;">Cerrar Sesión</a>
                     </div>
                 </div>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

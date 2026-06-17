@@ -20,77 +20,88 @@
         </section>
 
         <section class="reclamos-form-container reveal delay-1">
-            <!-- Banner de información de árbol preseleccionado -->
-            <div id="selected-tree-banner" style="display: none;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--living-moss)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-                <div>
-                    <strong class="selected-tree-title">Árbol Seleccionado del Mapa</strong>
-                    <span id="selected-tree-text"></span>
-                </div>
-            </div>
-
-            <form class="contact-form" onsubmit="event.preventDefault(); alert('Reclamo registrado con éxito (Simulación).');">
-                <div class="form-group">
-                    <label for="tipo-reclamo">Tipo de Incidencia</label>
-                    <select id="tipo-reclamo" class="form-control" required>
-                        <option value="">Selecciona una opción...</option>
-                        <option value="caido">Árbol o rama de gran porte caído</option>
-                        <option value="seco">Árbol seco con riesgo de caída</option>
-                        <option value="ramas">Ramas obstruyendo cables o alumbrado</option>
-                        <option value="raices">Raíces levantando la acera</option>
-                        <option value="otro">Otros daños o plagas</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="arbol-id">ID del Árbol (Opcional)</label>
-                    <input type="number" id="arbol-id" class="form-control" placeholder="Ej: 1001 (Si lo conoces y deseas vincularlo)">
-                    <small id="arbol-id-help" style="display: none;"></small>
-                </div>
-
-                <div class="form-group">
-                    <label for="direccion">Dirección / Ubicación aproximada</label>
-                    <div class="input-with-button">
-                        <input type="text" id="direccion" class="form-control" placeholder="Ej: Av. Santa Fe 2500, Palermo" required>
-                        <button type="button" id="btn-select-map" class="btn-main-cta">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--spring-leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                <circle cx="12" cy="10" r="3"></circle>
-                            </svg>
-                            Seleccionar en Mapa
-                        </button>
+            @auth
+                <!-- Banner de información de árbol preseleccionado -->
+                <div id="selected-tree-banner" style="display: none;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--living-moss)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <div>
+                        <strong class="selected-tree-title">Árbol Seleccionado del Mapa</strong>
+                        <span id="selected-tree-text"></span>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="descripcion">Detalles del Reclamo</label>
-                    <div class="textarea-container" style="position: relative; border: 1px solid rgba(45, 122, 79, 0.3); border-radius: 8px; background-color: var(--paper-white); overflow: hidden; transition: all 0.3s ease;">
-                        <textarea id="descripcion" class="form-control" placeholder="Describe brevemente la situación para ayudar a los inspectores..." required rows="4" style="border: none; border-bottom: 1px solid rgba(45, 122, 79, 0.15); border-radius: 8px 8px 0 0; background-color: transparent; width: 100%; display: block; outline: none; margin: 0; box-shadow: none;"></textarea>
-                        <div class="textarea-toolbar" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 15px; background-color: rgba(45, 122, 79, 0.03); border-top: 1px solid rgba(45, 122, 79, 0.1);">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <input type="file" id="archivo-adjunto" style="display: none;" accept="image/*,application/pdf" multiple>
-                                <button type="button" id="btn-adjuntar" class="btn-attach" style="background-color: var(--deep-canopy); border: 1px solid var(--living-moss); color: var(--spring-leaf); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 8px; transition: all 0.2s ease; box-shadow: 0 4px 8px rgba(45, 122, 79, 0.15); outline: none;" title="Adjuntar foto o archivo">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-                                    </svg>
-                                </button>
-                                <span id="archivo-lista" style="font-size: 0.85rem; color: var(--forest-night); opacity: 0.75; font-weight: 500;">Ningún archivo seleccionado</span>
+                <form class="contact-form" onsubmit="event.preventDefault(); alert('Reclamo registrado con éxito (Simulación).');">
+                    <div class="form-group">
+                        <label for="tipo-reclamo">Tipo de Incidencia</label>
+                        <select id="tipo-reclamo" class="form-control" required>
+                            <option value="">Selecciona una opción...</option>
+                            <option value="caido">Árbol o rama de gran porte caído</option>
+                            <option value="seco">Árbol seco con riesgo de caída</option>
+                            <option value="ramas">Ramas obstruyendo cables o alumbrado</option>
+                            <option value="raices">Raíces levantando la acera</option>
+                            <option value="otro">Otros daños o plagas</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="arbol-id">ID del Árbol (Opcional)</label>
+                        <input type="number" id="arbol-id" class="form-control" placeholder="Ej: 1001 (Si lo conoces y deseas vincularlo)">
+                        <small id="arbol-id-help" style="display: none;"></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="direccion">Dirección / Ubicación aproximada</label>
+                        <div class="input-with-button">
+                            <input type="text" id="direccion" class="form-control" placeholder="Ej: Av. Santa Fe 2500, Palermo" required>
+                            <button type="button" id="btn-select-map" class="btn-main-cta">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--spring-leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                Seleccionar en Mapa
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descripcion">Detalles del Reclamo</label>
+                        <div class="textarea-container" style="position: relative; border: 1px solid rgba(45, 122, 79, 0.3); border-radius: 8px; background-color: var(--paper-white); overflow: hidden; transition: all 0.3s ease;">
+                            <textarea id="descripcion" class="form-control" placeholder="Describe brevemente la situación para ayudar a los inspectores..." required rows="4" style="border: none; border-bottom: 1px solid rgba(45, 122, 79, 0.15); border-radius: 8px 8px 0 0; background-color: transparent; width: 100%; display: block; outline: none; margin: 0; box-shadow: none;"></textarea>
+                            <div class="textarea-toolbar" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 15px; background-color: rgba(45, 122, 79, 0.03); border-top: 1px solid rgba(45, 122, 79, 0.1);">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="file" id="archivo-adjunto" style="display: none;" accept="image/*,application/pdf" multiple>
+                                    <button type="button" id="btn-adjuntar" class="btn-attach" style="background-color: var(--deep-canopy); border: 1px solid var(--living-moss); color: var(--spring-leaf); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 8px; transition: all 0.2s ease; box-shadow: 0 4px 8px rgba(45, 122, 79, 0.15); outline: none;" title="Adjuntar foto o archivo">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                                        </svg>
+                                    </button>
+                                    <span id="archivo-lista" style="font-size: 0.85rem; color: var(--forest-night); opacity: 0.75; font-weight: 500;">Ningún archivo seleccionado</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn-main-cta">Enviar Reclamo</button>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-main-cta">Enviar Reclamo</button>
+                    </div>
+                </form>
+            @else
+                <div class="contact-login-card" style="text-align: center; max-width: 600px; margin: 0 auto;">
+                    <span class="lock-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </span>
+                    <p>Para registrar un reclamo sobre el arbolado de la ciudad, por favor inicia sesión en tu cuenta de vecino.</p>
+                    <a href="/login" class="btn-main-cta">Iniciar Sesión</a>
                 </div>
-            </form>
+            @endauth
         </section>
     </main>
 
+    @auth
     <!-- Modal de Selección de Dirección desde Mapa (Estilo Uber) -->
     <div id="address-map-modal" class="address-map-modal-overlay">
         <div class="address-map-modal-container">
@@ -120,12 +131,18 @@
             </div>
         </div>
     </div>
+    @endauth
 @endsection
 
 @section('scripts')
+    @auth
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const inputArbolId = document.getElementById('arbol-id');
+            const inputDireccion = document.getElementById('direccion');
+            if (!inputArbolId || !inputDireccion) return;
+
             // Base de datos de árboles simulada para validación
             const arboles = [
                 { id: 1001, especie: 'Jacarandá', direccion: 'Plaza Armenia, Palermo, CABA' },
@@ -142,8 +159,6 @@
                 { id: 1012, especie: 'Palo Borracho', direccion: 'Av. 9 de Julio 1200, San Nicolás, CABA' }
             ];
 
-            const inputArbolId = document.getElementById('arbol-id');
-            const inputDireccion = document.getElementById('direccion');
             const banner = document.getElementById('selected-tree-banner');
             const bannerText = document.getElementById('selected-tree-text');
             const helpText = document.getElementById('arbol-id-help');
@@ -351,4 +366,5 @@
             }
         });
     </script>
+    @endauth
 @endsection

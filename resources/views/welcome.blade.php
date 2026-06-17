@@ -159,7 +159,12 @@
                 
                 <!-- Si esta logueado muestra el formulario, si no muestra el mensaje de que inicie sesion -->
                 @auth
-                    <form class="contact-form" action="/contacto" method="POST">
+                    @if(session('success'))
+                        <div class="alert alert-success" style="background-color: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.95rem; text-align: left;">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    <form class="contact-form" action="{{ route('contacto.store') }}" method="POST">
                         @csrf
                         <div class="form-group">
                             <label for="message">Tu Mensaje</label>

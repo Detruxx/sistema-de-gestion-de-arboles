@@ -31,6 +31,12 @@ class Request extends Model
         return $this->belongsTo(Tree::class, 'tree_id');
     }
 
+    // Relacion con Street
+    public function street()
+    {
+        return $this->belongsTo(Street::class, 'street_id');
+    }
+
     // Relacion con User
     public function user()
     {

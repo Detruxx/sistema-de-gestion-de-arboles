@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('role', ['vecino', 'inspector', 'admin'])->default('vecino'); //Definimos el rol. Por defecto, cualquiera que se registre es 'vecino'
             $table->rememberToken();
             $table->timestamps();
         });
