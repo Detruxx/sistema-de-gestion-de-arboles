@@ -20,8 +20,8 @@
             </div>
         </section>
 
-        <!-- Seccion sobre nosotros -->
-        <section id="sobre-nosotros" class="about-section">
+    </main>
+@endsection
             <div class="about-container">
                 <div class="about-text reveal">
                     <h2 class="section-title">Nuestra Misión</h2>
@@ -93,3 +93,4 @@
 @section('scripts')
     <script src="{{ asset('js/hero-canvas.js') }}"></script>
 @endsection
+

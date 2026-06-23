@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('photo__trees', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('request_id')->constrained('requests')->onDelete('restrict');
+            // puede tener un request_id o un tree_id
+            $table->foreignId('request_id')->nullable()->constrained('requests')->onDelete('cascade');
+            $table->foreignId('tree_id')->nullable()->constrained('trees')->onDelete('cascade');
             $table->timestamps();
         });
     }

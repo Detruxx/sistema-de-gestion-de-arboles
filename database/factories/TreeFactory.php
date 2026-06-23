@@ -39,6 +39,7 @@ class TreeFactory extends Factory
             'longitude' => $this->faker->longitude($min = -58.60, $max = -58.30),
 
             // Datos forestales y secundarios
+            'years' => $this->faker->numberBetween(1, 80), //Edad aleatoria entre 1 y 80 años
             'height' => $this->faker->randomFloat(2, 1, 25), // Altura entre 1 y 25 metros
             'dap' => $this->faker->randomFloat(2, 10, 150),  // Diámetro a la altura del pecho (cm)
             'maintenance_status' => $this->faker->randomElement(['Bueno', 'Poda Urgente', 'Estable', 'Extracción']),

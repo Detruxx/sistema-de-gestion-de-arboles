@@ -15,30 +15,38 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Administrador/Inspector de pruebas
-        User::updateOrCreate(
-            ['email' => 'administrador@hotmail.com'],
-            [
-                'name' => 'Administrador',
-                'password' => bcrypt('123'),
-            ]
-        );
+       // 1. El Vecino (Usuario Público)
+        User::factory()->create([
+            'name' => 'Vecino Juan',
+            'email' => 'vecino@example.com',
+            'role' => 'vecino',
+            'password' => bcrypt('vecino123'),
+        ]);
 
-        // Vecino de pruebas
-        User::updateOrCreate(
-            ['email' => 'vecino@hotmail.com'],
-            [
-                'name' => 'Vecino Juan',
-                'password' => bcrypt('123'),
-            ]
-        );
+        // 2. El Inspector (Trabajador de Arbolado)
+        User::factory()->create([
+            'name' => 'Inspector Carlos',
+            'email' => 'inspector@example.com',
+            'role' => 'inspector',
+            'password' => bcrypt('inspector123'),
+        ]);
+
+        // 3. El Administrador (Personal de IT / Soporte)
+        User::factory()->create([
+            'name' => 'Admin Soporte IT',
+            'email' => 'admin@example.com',
+            'role' => 'admin', 
+            'password' => bcrypt('admin123'),
+        ]);
 
         $this->call([
-            SpecieSeeder::class,
-            StreetSeeder::class,
-            ParkSeeder::class,
+            StreetSeeder::class,      
+            ParkSeeder::class,        
+            SpecieSeeder::class,     
+            RequestTypeSeeder::class,
             PlanterSeeder::class,
             TreeSeeder::class,
+            RequestSeeder::class,
         ]);
     }
 }

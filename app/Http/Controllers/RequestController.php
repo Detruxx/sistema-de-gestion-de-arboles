@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Request as IncidentRequest;
+use App\Models\Request_Type;
+use App\Models\Street;
 
 class RequestController extends Controller
 {
@@ -11,6 +13,21 @@ class RequestController extends Controller
     // =========================
     // FUNCIONES
     // =========================
+
+/*
+    Muestra el formulario para crear un reclamo
+*/
+   public function create()
+    {
+        // 1. Traemos los 7 tipos de reclamo de la base de datos
+        $tiposDeReclamo = Request_Type::all(); 
+
+        // 2. Traemos las calles para que el vecino también elija dónde es el problema
+        $calles = Street::all();
+
+        // 3. Cargamos la vista "create" y le enviamos las dos variables
+        return view('requests.create', compact('tiposDeReclamo', 'calles'));
+    }
 
 /*
     Guarda una solicitud nueva en la base de datos
@@ -24,6 +41,7 @@ class RequestController extends Controller
             'request_type_id' => 'required|exists:request_types,id',
             'street_id'       => 'required|exists:streets,id',
             'description'     => 'required|string',
+            'path'            => 'required|string',
         ]);
 
         // Creamos la instancia de la Solicitud
@@ -33,6 +51,7 @@ class RequestController extends Controller
         $incident->request_type_id  = $validatedData['request_type_id'];
         $incident->street_id        = $validatedData['street_id'];
         $incident->description      = $validatedData['description'];
+        $incident->path             = $validatedData['path'];
         
         // Estado inicial 'pending'
         $incident->status           = 'open'; 
@@ -131,13 +150,27 @@ class RequestController extends Controller
     }
 
 /*
-    Muestra todas las solicitudes por tipo de solicitud
+    Muestra todas las reclamos por tipo de solicitud
 */
     public function getRequestByType($typeId)
     {
-        $request = IncidentRequest::where('request_type_id', $typeId)
-        ->with(['tree.street', 'requestType', 'user'])
-        ->get();
+        $request = DB::table('requests')
+        ->join('request_types', 'requests.request_type_id', '=', 'request_types.id')
+        ->join('streets', 'requests.street_id', '=', 'streets.id')
+        ->join('users', 'requests.user_id', '=', 'users.id')
+        ->where('requests.request_type_id', $typeId)
+        ->select([
+            'requests.id as request_id',
+            'requests.description',
+            'requests.status',
+            'requests.path',
+            'requests.created_at', // esto es para que laravel sepa que fecha mostrar 
+            'request_types.task_description as type_name',
+            'streets.street_name',
+            'users.name as user_name'
+        ])
+        ->orderBy('requests.created_at', 'desc') // esto los ordena de mayor a menor (del mas reciente al mas antiguo)
+        ->get(); 
 
         if($request->isEmpty()){
             return response()->json([

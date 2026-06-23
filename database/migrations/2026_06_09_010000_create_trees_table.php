@@ -29,6 +29,7 @@ return new class extends Migration
             $table->double('longitude');
             
             // Datos forestales y secundarios
+            $table->unsignedSmallInteger('years')->nullable();
             $table->decimal('height', 5, 2);
             $table->decimal('dap', 5, 2);
             $table->string('maintenance_status')->nullable();

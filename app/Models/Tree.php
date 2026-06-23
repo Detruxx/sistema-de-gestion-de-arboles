@@ -28,6 +28,7 @@ class Tree extends Model
         'latitude', // latitud
         'longitude', // longitud
 
+        'years',
         'height', // altura
         'dap', // diametro a la altura del pecho
 

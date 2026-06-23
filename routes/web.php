@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\TreeController;
+use App\Http\Controllers\RequestController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -41,6 +42,19 @@ Route::get('/api/arboles/pines', [TreeController::class, 'getMapPins']);
 // Endpoint para traer el detalle de un árbol específico
 Route::get('/api/arboles/{id}', [TreeController::class, 'getTreeDetails']);
 
+
+
+// Crear un nuevo reclamo
+Route::post('/requests', [RequestController::class, 'store']);
+
+// Cambiar el estado de un reclamo
+Route::put('/requests/update-status/{id}', [RequestController::class, 'updateStatus']);
+
+// Obtener el historial de reclamos de un árbol específico
+Route::get('/requests/tree/{treeId}', [RequestController::class, 'getRequestsByTree']);
+
+// Filtrar reclamos por tipo de opción elegida
+Route::get('/requests/type/{typeId}', [RequestController::class, 'getRequestsByType']);
 
 
 
