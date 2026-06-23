@@ -12,6 +12,12 @@
     color: var(--deep-canopy);
 }
 
+#sobre-nosotros.about-section {
+    margin-top: 0;
+    border-top: none;
+    padding-top: 20px;
+}
+
 .about-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -48,7 +54,7 @@
     position: relative;
     z-index: 2;
     background-color: rgba(91, 191, 140, 0.08);
-    border: 2px solid rgba(45, 122, 79, 0.2);
+    border: 2px solid rgba(45, 122, 79, 0.35);
     border-radius: 12px;
     padding: 20px 30px;
     display: flex;

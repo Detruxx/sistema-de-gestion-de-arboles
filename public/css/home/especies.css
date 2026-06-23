@@ -131,6 +131,27 @@
     transform: translateX(4px);
 }
 
+.read-more-link {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    color: var(--forest-night);
+    margin-top: 10px;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.read-more-link:hover {
+    color: var(--spring-leaf);
+    transform: translateX(4px);
+}
+
+.read-more-link svg {
+    width: 16px;
+    height: 16px;
+}
+
 /* ================= Divisor de Ondas (Wave Divider) ================= */
 .wave-divider {
     position: relative;

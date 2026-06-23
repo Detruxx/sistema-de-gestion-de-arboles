@@ -15,7 +15,7 @@
                         Plataforma de ciencia ciudadana para mapear, reportar y aprender sobre el arbolado de la Ciudad de Buenos Aires.
                     </p>
                     <a href="/mapa" class="btn-main-cta">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg>
                         ABRIR MAPA
                     </a>
                 </div>
@@ -56,9 +56,9 @@
                         <h3>Jacarandá</h3>
                         <span class="scientific-name">Jacaranda mimosifolia</span>
                         <p>Famoso por su espectacular floración violeta en noviembre. Aporta frescura y biodiversidad a las avenidas de la ciudad.</p>
-                        <span class="read-more-link" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--forest-night); margin-top: 10px; transition: color 0.3s ease, transform 0.3s ease;">
+                        <span class="read-more-link">
                             Leer más
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                         </span>
                     </div>
                 </div>
@@ -79,9 +79,9 @@
                         <h3>Ceibo</h3>
                         <span class="scientific-name">Erythrina crista-galli</span>
                         <p>Nuestra flor nacional. De vistoso color rojo, crece principalmente en parques, plazas y zonas húmedas cercanas a la ribera.</p>
-                        <span class="read-more-link" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--forest-night); margin-top: 10px; transition: color 0.3s ease, transform 0.3s ease;">
+                        <span class="read-more-link">
                             Leer más
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                         </span>
                     </div>
                 </div>
@@ -102,9 +102,9 @@
                         <h3>Fresno Americano</h3>
                         <span class="scientific-name">Fraxinus pennsylvanica</span>
                         <p>El árbol más abundante en las veredas de Buenos Aires. Provee una sombra tupida en verano y un tono dorado en otoño.</p>
-                        <span class="read-more-link" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--forest-night); margin-top: 10px; transition: color 0.3s ease, transform 0.3s ease;">
+                        <span class="read-more-link">
                             Leer más
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                         </span>
                     </div>
                 </div>
@@ -112,7 +112,7 @@
         </section>
 
         <!-- Seccion sobre nosotros -->
-        <section id="sobre-nosotros" class="about-section" style="margin-top: 0; border-top: none; padding-top: 20px;">
+        <section id="sobre-nosotros" class="about-section">
             <div class="about-container">
                 <div class="about-text reveal">
                     <h2 class="section-title">Nuestra Misión</h2>
@@ -160,7 +160,7 @@
                 <!-- Si esta logueado muestra el formulario, si no muestra el mensaje de que inicie sesion -->
                 @auth
                     @if(session('success'))
-                        <div class="alert alert-success" style="background-color: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.95rem; text-align: left;">
+                        <div class="alert alert-success">
                             {{ session('success') }}
                         </div>
                     @endif
@@ -215,110 +215,6 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ asset('js/hero-canvas.js') }}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const speciesModal = document.getElementById('species-modal');
-            if (speciesModal) {
-                const modalBadge = document.getElementById('species-modal-badge');
-                const modalTitle = document.getElementById('species-modal-title');
-                const modalBody = document.getElementById('species-modal-body');
-                const modalTipsList = document.getElementById('species-modal-tips-list');
-                const modalImage = document.getElementById('species-modal-image');
-                const modalCloseBtn = document.getElementById('species-close-btn');
-                const prevBtn = document.getElementById('species-prev-btn');
-                const nextBtn = document.getElementById('species-next-btn');
-
-                const speciesCards = document.querySelectorAll('.species-card');
-                let currentCardIndex = -1;
-
-                function showCard(index) {
-                    if (index < 0) {
-                        index = speciesCards.length - 1;
-                    } else if (index >= speciesCards.length) {
-                        index = 0;
-                    }
-                    currentCardIndex = index;
-
-                    const card = speciesCards[index];
-                    const badgeText = card.getAttribute('data-badge');
-                    const titleText = card.getAttribute('data-title');
-                    const scientificName = card.getAttribute('data-scientific');
-                    const descText = card.getAttribute('data-description');
-                    const imageSrc = card.getAttribute('data-image');
-                    const tipsString = card.getAttribute('data-tips');
-
-                    // Inyectar datos básicos
-                    modalBadge.textContent = badgeText;
-                    modalTitle.innerHTML = `${titleText} <span style="display: block; font-size: 1.1rem; font-style: italic; font-weight: 500; color: var(--living-moss); margin-top: 5px;">${scientificName}</span>`;
-                    modalBody.textContent = descText;
-                    modalImage.src = imageSrc;
-                    modalImage.alt = titleText;
-
-                    // Inyectar lista de tips
-                    modalTipsList.innerHTML = '';
-                    if (tipsString) {
-                        const tipsArray = tipsString.split(';');
-                        tipsArray.forEach(tip => {
-                            if (tip.trim()) {
-                                const li = document.createElement('li');
-                                li.innerHTML = tip.trim();
-                                modalTipsList.appendChild(li);
-                            }
-                        });
-                    }
-                }
-
-                function openModal(index) {
-                    showCard(index);
-                    speciesModal.classList.add('active');
-                }
-
-                function closeModal() {
-                    speciesModal.classList.remove('active');
-                }
-
-                speciesCards.forEach((card, index) => {
-                    card.style.cursor = 'pointer';
-                    card.addEventListener('click', () => {
-                        openModal(index);
-                    });
-                });
-
-                if (prevBtn) {
-                    prevBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        showCard(currentCardIndex - 1);
-                    });
-                }
-
-                if (nextBtn) {
-                    nextBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        showCard(currentCardIndex + 1);
-                    });
-                }
-
-                modalCloseBtn.addEventListener('click', closeModal);
-
-                speciesModal.addEventListener('click', (e) => {
-                    if (e.target === speciesModal) {
-                        closeModal();
-                    }
-                });
-
-                document.addEventListener('keydown', (e) => {
-                    if (!speciesModal.classList.contains('active')) return;
-
-                    if (e.key === 'Escape') {
-                        closeModal();
-                    } else if (e.key === 'ArrowLeft') {
-                        showCard(currentCardIndex - 1);
-                    } else if (e.key === 'ArrowRight') {
-                        showCard(currentCardIndex + 1);
-                    }
-                });
-            }
-        });
-    </script>
+    <script src="{{ asset('js/home/hero-canvas.js') }}"></script>
+    <script src="{{ asset('js/home/welcome.js') }}"></script>
 @endsection

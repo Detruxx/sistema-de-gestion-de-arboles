@@ -5,6 +5,27 @@
     box-sizing: border-box;
 }
 
+.btn-main-cta {
+    display: inline-block;
+    padding: 14px 30px;
+    background-color: var(--spring-leaf);
+    color: var(--forest-night);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 30px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    box-shadow: 0 4px 15px rgba(91, 191, 140, 0.3);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-main-cta svg {
+    margin-right: 8px;
+}
+
 html, body {
     font-family: var(--font-body);
     background-color: var(--forest-night);

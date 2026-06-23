@@ -6,7 +6,6 @@
 @section('active-reclamos', 'active')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/reclamos.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 @endsection
 
@@ -19,8 +18,19 @@
             </p>
         </section>
 
-        <section class="reclamos-form-container reveal delay-1">
-            @auth
+        <!-- Tabs for choosing action -->
+        <div class="tramites-tabs">
+            <button class="tab-btn active" onclick="switchTab('create')" id="tab-btn-create">
+                Registrar Reclamo
+            </button>
+            <button class="tab-btn" onclick="switchTab('track')" id="tab-btn-track">
+                Seguimiento de Reclamo
+            </button>
+        </div>
+
+        <!-- TAB: CREATE COMPLAINT -->
+        <div id="section-create" class="tab-content">
+            <section class="reveal delay-1">
                 <!-- Banner de información de árbol preseleccionado -->
                 <div id="selected-tree-banner" style="display: none;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--living-moss)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -34,7 +44,7 @@
                     </div>
                 </div>
 
-                <form class="contact-form" onsubmit="event.preventDefault(); alert('Reclamo registrado con éxito (Simulación).');">
+                <form class="contact-form" id="reclamo-form">
                     <div class="form-group">
                         <label for="tipo-reclamo">Tipo de Incidencia</label>
                         <select id="tipo-reclamo" class="form-control" required>
@@ -49,15 +59,15 @@
 
                     <div class="form-group">
                         <label for="arbol-id">ID del Árbol (Opcional)</label>
-                        <input type="number" id="arbol-id" class="form-control" placeholder="Ej: 1001 (Si lo conoces y deseas vincularlo)">
+                        <input type="number" id="arbol-id" placeholder="Ej: 1001 (Si lo conoces y deseas vincularlo)" class="form-control">
                         <small id="arbol-id-help" style="display: none;"></small>
                     </div>
 
                     <div class="form-group">
                         <label for="direccion">Dirección / Ubicación aproximada</label>
                         <div class="input-with-button">
-                            <input type="text" id="direccion" class="form-control" placeholder="Ej: Av. Santa Fe 2500, Palermo" required>
-                            <button type="button" id="btn-select-map" class="btn-main-cta">
+                            <input type="text" id="direccion" placeholder="Ej: Av. Santa Fe 2500, Palermo" class="form-control" required>
+                            <button type="button" id="btn-select-map" class="btn-main-cta track-btn">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--spring-leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                                     <circle cx="12" cy="10" r="3"></circle>
@@ -69,39 +79,89 @@
 
                     <div class="form-group">
                         <label for="descripcion">Detalles del Reclamo</label>
-                        <div class="textarea-container" style="position: relative; border: 1px solid rgba(45, 122, 79, 0.3); border-radius: 8px; background-color: var(--paper-white); overflow: hidden; transition: all 0.3s ease;">
-                            <textarea id="descripcion" class="form-control" placeholder="Describe brevemente la situación para ayudar a los inspectores..." required rows="4" style="border: none; border-bottom: 1px solid rgba(45, 122, 79, 0.15); border-radius: 8px 8px 0 0; background-color: transparent; width: 100%; display: block; outline: none; margin: 0; box-shadow: none;"></textarea>
-                            <div class="textarea-toolbar" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 15px; background-color: rgba(45, 122, 79, 0.03); border-top: 1px solid rgba(45, 122, 79, 0.1);">
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <input type="file" id="archivo-adjunto" style="display: none;" accept="image/*,application/pdf" multiple>
-                                    <button type="button" id="btn-adjuntar" class="btn-attach" style="background-color: var(--deep-canopy); border: 1px solid var(--living-moss); color: var(--spring-leaf); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 8px; transition: all 0.2s ease; box-shadow: 0 4px 8px rgba(45, 122, 79, 0.15); outline: none;" title="Adjuntar foto o archivo">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-                                        </svg>
-                                    </button>
-                                    <span id="archivo-lista" style="font-size: 0.85rem; color: var(--forest-night); opacity: 0.75; font-weight: 500;">Ningún archivo seleccionado</span>
-                                </div>
-                            </div>
-                        </div>
+                        <textarea id="descripcion" placeholder="Describe brevemente la situación para ayudar a los inspectores..." required rows="4" class="form-control"></textarea>
                     </div>
 
                     <div class="form-actions">
                         <button type="submit" class="btn-main-cta">Enviar Reclamo</button>
                     </div>
                 </form>
-            @else
-                <div class="contact-login-card" style="text-align: center; max-width: 600px; margin: 0 auto;">
-                    <span class="lock-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    </span>
-                    <p>Para registrar un reclamo sobre el arbolado de la ciudad, por favor inicia sesión en tu cuenta de vecino.</p>
-                    <a href="/login" class="btn-main-cta">Iniciar Sesión</a>
+            </section>
+        </div>
+
+        <!-- TAB: TRACK COMPLAINT -->
+        <div id="section-track" class="tab-content" style="display: none;">
+            <div class="track-container">
+                <h2 class="track-title">Consulta tu Reclamo</h2>
+                <p class="track-subtitle">Ingresa el código identificador de tu solicitud (ej: REC-2026-001) para ver el progreso actual y la respuesta de la Comuna.</p>
+                
+                <div class="track-input-group">
+                    <input type="text" id="track-id-input" placeholder="Ej. REC-2026-001" class="track-input">
+                    <button type="button" class="btn-main-cta track-btn" onclick="trackComplaint()">Buscar Solicitud</button>
                 </div>
-            @endauth
-        </section>
+
+            <!-- Error container -->
+            <div id="track-error" class="track-error" style="display: none;">
+                No pudimos encontrar ningún reclamo con ese código. Por favor verifica que esté bien escrito.
+            </div>
+
+            <!-- Result container -->
+            <div id="track-result" style="display: none;">
+                <!-- Stepper -->
+                <div class="track-stepper">
+                    <h3 class="track-stepper-title">Estado de Gestión</h3>
+                    
+                    <div class="track-stepper-row">
+                        <!-- line background -->
+                        <div class="track-step-line" id="track-step-line"></div>
+                        
+                        <div class="track-step-item" id="step-recibido">
+                            <div class="step-num">1</div>
+                            <span class="step-lbl">Recibido</span>
+                        </div>
+                        <div class="track-step-item" id="step-inspeccion">
+                            <div class="step-num">2</div>
+                            <span class="step-lbl">Inspección</span>
+                        </div>
+                        <div class="track-step-item" id="step-poda">
+                            <div class="step-num">3</div>
+                            <span class="step-lbl">Planificado</span>
+                        </div>
+                        <div class="track-step-item" id="step-resuelto">
+                            <div class="step-num">4</div>
+                            <span class="step-lbl">Resuelto</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Response Box -->
+                <div class="admin-reply-box" id="admin-reply-box">
+                    <h4 class="admin-reply-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--living-moss)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        Respuesta del Administrador
+                    </h4>
+                    <p class="admin-reply-text" id="track-admin-reply">
+                        Aún no se ha redactado ninguna respuesta oficial para esta solicitud.
+                    </p>
+                </div>
+
+                <!-- Info summary -->
+                <div class="track-summary-grid">
+                    <div class="track-summary-item">
+                        <span class="track-summary-label">Ubicación Reportada</span>
+                        <strong class="track-summary-value" id="track-direccion">-</strong>
+                    </div>
+                    <div class="track-summary-item">
+                        <span class="track-summary-label">Categoría y Fecha</span>
+                        <strong class="track-summary-value" id="track-categoria">-</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
-    @auth
     <!-- Modal de Selección de Dirección desde Mapa (Estilo Uber) -->
     <div id="address-map-modal" class="address-map-modal-overlay">
         <div class="address-map-modal-container">
@@ -131,240 +191,9 @@
             </div>
         </div>
     </div>
-    @endauth
 @endsection
 
 @section('scripts')
-    @auth
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const inputArbolId = document.getElementById('arbol-id');
-            const inputDireccion = document.getElementById('direccion');
-            if (!inputArbolId || !inputDireccion) return;
-
-            // Base de datos de árboles simulada para validación
-            const arboles = [
-                { id: 1001, especie: 'Jacarandá', direccion: 'Plaza Armenia, Palermo, CABA' },
-                { id: 1002, especie: 'Ceibo', direccion: 'Av. Sarmiento 2400, Palermo, CABA' },
-                { id: 1003, especie: 'Fresno', direccion: 'Defensa 850, San Telmo, CABA' },
-                { id: 1004, especie: 'Palo Borracho', direccion: 'Plaza Francia, Recoleta, CABA' },
-                { id: 1005, especie: 'Tilo', direccion: 'Juramento 1900, Belgrano, CABA' },
-                { id: 1006, especie: 'Liquidámbar', direccion: 'Av. Del Libertador 3200, Palermo, CABA' },
-                { id: 1007, especie: 'Jacarandá', direccion: 'Plaza Cortazar, Palermo, CABA' },
-                { id: 1008, especie: 'Fresno', direccion: 'Av. Cabildo 2100, Belgrano, CABA' },
-                { id: 1009, especie: 'Tilo', direccion: 'Bolívar 600, San Telmo, CABA' },
-                { id: 1010, especie: 'Ceibo', direccion: 'Parque Rivadavia, Caballito, CABA' },
-                { id: 1011, especie: 'Liquidámbar', direccion: 'Juana Manso 1100, Puerto Madero, CABA' },
-                { id: 1012, especie: 'Palo Borracho', direccion: 'Av. 9 de Julio 1200, San Nicolás, CABA' }
-            ];
-
-            const banner = document.getElementById('selected-tree-banner');
-            const bannerText = document.getElementById('selected-tree-text');
-            const helpText = document.getElementById('arbol-id-help');
-
-            function setSeleccionArbol(arbol) {
-                if (arbol) {
-                    inputDireccion.value = arbol.direccion;
-                    inputDireccion.readOnly = true;
-                    inputDireccion.classList.add('readonly-input');
-
-                    banner.style.display = 'flex';
-                    bannerText.innerHTML = `Estás registrando un reclamo para el árbol <strong>ID #${arbol.id} (${arbol.especie})</strong> ubicado en <strong>${arbol.direccion}</strong>.`;
-                    helpText.style.display = 'none';
-                } else {
-                    inputDireccion.readOnly = false;
-                    inputDireccion.classList.remove('readonly-input');
-
-                    banner.style.display = 'none';
-                    bannerText.textContent = '';
-                }
-            }
-
-            // 1. Verificar si viene con ID preseleccionado del mapa
-            const urlParams = new URLSearchParams(window.location.search);
-            const arbolIdParam = urlParams.get('arbol_id');
-
-            if (arbolIdParam) {
-                inputArbolId.value = arbolIdParam;
-                inputArbolId.readOnly = true;
-                inputArbolId.classList.add('readonly-input');
-                
-                const matched = arboles.find(a => a.id == arbolIdParam);
-                if (matched) {
-                    setSeleccionArbol(matched);
-                }
-            }
-
-            // 2. Controlar ingreso manual de ID
-            inputArbolId.addEventListener('input', () => {
-                if (inputArbolId.readOnly) return;
-
-                const typedVal = inputArbolId.value.trim();
-                if (!typedVal) {
-                    setSeleccionArbol(null);
-                    helpText.style.display = 'none';
-                    return;
-                }
-
-                const matched = arboles.find(a => a.id == typedVal);
-                if (matched) {
-                    setSeleccionArbol(matched);
-                } else {
-                    setSeleccionArbol(null);
-                    helpText.style.display = 'block';
-                    helpText.textContent = 'El ID ingresado no corresponde a ningún árbol del censo. El reclamo se registrará por ubicación manual.';
-                }
-            });
-
-            // --- LÓGICA DEL SELECTOR DE MAPA ESTILO UBER ---
-            const btnSelectMap = document.getElementById('btn-select-map');
-            const mapModal = document.getElementById('address-map-modal');
-            const mapModalClose = document.getElementById('address-map-modal-close');
-            const btnConfirmAddress = document.getElementById('btn-confirm-address');
-            const previewText = document.getElementById('address-preview-text');
-            const addressMapBody = document.querySelector('.address-map-body');
-            
-            let selectorMap = null;
-            let currentCoordsAddress = '';
-            let debounceTimer = null;
-
-            function initSelectorMap() {
-                if (selectorMap) return;
-
-                // Centrar en Plaza Armenia, Palermo (-34.5888, -58.4285)
-                selectorMap = L.map('address-map-canvas', {
-                    zoomControl: false
-                }).setView([-34.5888, -58.4285], 16);
-
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-                    attribution: '&copy; OpenStreetMap'
-                }).addTo(selectorMap);
-
-                L.control.zoom({ position: 'topright' }).addTo(selectorMap);
-
-                // Función de geocodificación reversa usando Nominatim
-                function reverseGeocode(lat, lng) {
-                    previewText.textContent = 'Buscando dirección...';
-                    btnConfirmAddress.disabled = true;
-
-                    fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data && data.address) {
-                                const road = data.address.road || data.address.pedestrian || data.address.path || '';
-                                const number = data.address.house_number || '';
-                                const suburb = data.address.suburb || data.address.neighbourhood || '';
-                                
-                                if (road) {
-                                    currentCoordsAddress = road + (number ? ' ' + number : '') + (suburb ? ', ' + suburb : '');
-                                } else {
-                                    currentCoordsAddress = data.display_name.split(',').slice(0, 3).join(',').trim();
-                                }
-                            } else {
-                                currentCoordsAddress = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-                            }
-                            previewText.textContent = currentCoordsAddress;
-                            btnConfirmAddress.disabled = false;
-                        })
-                        .catch(err => {
-                            console.error('Nominatim error, usando fallback:', err);
-                            // Fallback de simulación en Palermo según cercanía
-                            const fallbacks = [
-                                { lat: -34.5888, lng: -58.4285, address: 'Costa Rica 4600' },
-                                { lat: -34.5795, lng: -58.4148, address: 'Av. Sarmiento 2400' },
-                                { lat: -34.6178, lng: -58.3712, address: 'Defensa 850' },
-                                { lat: -34.5835, lng: -58.3927, address: 'Plaza Francia 1100' },
-                                { lat: -34.5615, lng: -58.4552, address: 'Juramento 1900' }
-                            ];
-                            
-                            let closest = fallbacks[0];
-                            let minDist = Infinity;
-                            fallbacks.forEach(f => {
-                                let dist = Math.pow(f.lat - lat, 2) + Math.pow(f.lng - lng, 2);
-                                if (dist < minDist) {
-                                    minDist = dist;
-                                    closest = f;
-                                }
-                            });
-                            
-                            const simulatedNumber = Math.floor(100 + Math.random() * 800) * 10;
-                            const streetName = closest.address.split(' ').slice(0, -1).join(' ') || closest.address.split(' ')[0];
-                            currentCoordsAddress = streetName + ' ' + simulatedNumber + ', Palermo, CABA';
-                            previewText.textContent = currentCoordsAddress;
-                            btnConfirmAddress.disabled = false;
-                        });
-                }
-
-                // Cargar dirección inicial
-                const initialCenter = selectorMap.getCenter();
-                reverseGeocode(initialCenter.lat, initialCenter.lng);
-
-                // Añadir efectos físicos de salto al pin
-                selectorMap.on('movestart', () => {
-                    addressMapBody.classList.add('map-moving');
-                });
-
-                selectorMap.on('moveend', () => {
-                    addressMapBody.classList.remove('map-moving');
-                    
-                    clearTimeout(debounceTimer);
-                    debounceTimer = setTimeout(() => {
-                        const center = selectorMap.getCenter();
-                        reverseGeocode(center.lat, center.lng);
-                    }, 500);
-                });
-            }
-
-            btnSelectMap.addEventListener('click', () => {
-                mapModal.classList.add('active');
-                setTimeout(() => {
-                    initSelectorMap();
-                    if (selectorMap) {
-                        selectorMap.invalidateSize();
-                    }
-                }, 100);
-            });
-
-            mapModalClose.addEventListener('click', () => {
-                mapModal.classList.remove('active');
-            });
-
-            btnConfirmAddress.addEventListener('click', () => {
-                if (currentCoordsAddress) {
-                    inputDireccion.value = currentCoordsAddress;
-                    inputDireccion.readOnly = false;
-                    inputDireccion.classList.remove('readonly-input');
-                    inputArbolId.value = ''; 
-                    banner.style.display = 'none';
-                    helpText.style.display = 'none';
-                }
-                mapModal.classList.remove('active');
-            });
-
-            // Lógica de archivos adjuntos (PC y Mobile)
-            const fileInput = document.getElementById('archivo-adjunto');
-            const btnAdjuntar = document.getElementById('btn-adjuntar');
-            const archivoLista = document.getElementById('archivo-lista');
-
-            if (fileInput && btnAdjuntar && archivoLista) {
-                btnAdjuntar.addEventListener('click', () => {
-                    fileInput.click();
-                });
-
-                fileInput.addEventListener('change', () => {
-                    const files = fileInput.files;
-                    if (files.length === 0) {
-                        archivoLista.textContent = 'Ningún archivo seleccionado';
-                    } else if (files.length === 1) {
-                        archivoLista.textContent = files[0].name;
-                    } else {
-                        archivoLista.textContent = `${files.length} archivos seleccionados`;
-                    }
-                });
-            }
-        });
-    </script>
-    @endauth
+    <script src="{{ asset('js/tramites/reclamos.js') }}"></script>
 @endsection

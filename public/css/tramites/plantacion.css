@@ -78,6 +78,11 @@
 }
 
 /* Responsividad para móviles */
+.contact-login-card {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
 @media (max-width: 768px) {
     .input-with-button {
         flex-direction: column;

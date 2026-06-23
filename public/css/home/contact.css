@@ -12,6 +12,25 @@
     color: var(--deep-canopy);
 }
 
+.contact-subtitle {
+    text-align: center;
+    color: var(--forest-night);
+    opacity: 0.8;
+    margin-bottom: 40px;
+    font-size: 1.1rem;
+}
+
+.alert.alert-success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+    text-align: left;
+}
+
 .contact-section .section-subtitle {
     color: var(--forest-night);
     opacity: 0.85;

@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Aca va el icono de la pagina -->
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
     <title>@yield('title', 'TreeBA | Mapeado de Arboles')</title>
@@ -75,7 +76,7 @@
                         @if(Auth::user()->role === 'vecino')
                             <a href="/mis-reclamos">Mis Reclamos</a>
                         @else
-                            <a href="/ver-reclamos">Ver Reclamos</a>
+                            <a href="/admin/dashboard">Panel de Control</a>
                         @endif
                         <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="border-top: 1px solid rgba(45, 122, 79, 0.15); color: #d32f2f;">Cerrar Sesión</a>
                     </div>
@@ -157,7 +158,7 @@
     @show
 
     @yield('scripts') <!-- Aca van los scripts de cada vista -->
-    <script src="{{ asset('js/navbar.js') }}"></script> <!-- script de la barra de navegacion -->
-    <script src="{{ asset('js/reveal.js') }}"></script> <!-- script de revelacion de elementos -->
+    <script src="{{ asset('js/generales/navbar.js') }}"></script> <!-- script de la barra de navegacion -->
+    <script src="{{ asset('js/generales/reveal.js') }}"></script> <!-- script de revelacion de elementos -->
 </body>
 </html>

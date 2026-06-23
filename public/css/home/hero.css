@@ -141,6 +141,10 @@
     box-shadow: 0 10px 25px rgba(91, 191, 140, 0.3);
 }
 
+.btn-main-cta svg {
+    margin-right: 8px;
+}
+
 /* Animaciones */
 @keyframes fadeIn {
     from {
