@@ -50,7 +50,9 @@ class RequestController extends Controller
             'request_type_id' => $request->request_type_id,
             'street_id' => $request->street_id,
             'description' => $request->description,
-            'status' => 'open',
+            'path' => 'fotos/default.jpg',
+            'request_status_id' => 1,
+
         ]);
 
         return redirect()->back()->with('success', '¡Su reclamo ha sido registrado con éxito!');

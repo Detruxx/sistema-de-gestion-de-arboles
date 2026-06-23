@@ -33,8 +33,8 @@ class RequestFactory extends Factory
             // Descripción del reclamo que escribe el vecino
             'description' => $this->faker->paragraph(2),
             
-            // Tus enums de estado exactos
-            'status' => $this->faker->randomElement(['open', 'in_progress', 'resolved']),
+            // Tus estados del reclamo
+            'request_status_id' => $this->faker->numberBetween(1, 7),
         ];
     }
 }
