@@ -35,6 +35,8 @@ class RequestFactory extends Factory
             
             // Tus estados del reclamo
             'request_status_id' => $this->faker->numberBetween(1, 7),
+
+            'path' => $this->faker->boolean(70) ? 'fotos/reclamo_prueba.jpg' : null,
         ];
     }
 }
