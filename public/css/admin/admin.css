@@ -136,7 +136,7 @@
     margin-bottom: 40px;
 }
 
-.stat-card {
+.stats-grid .stat-card {
     background: var(--admin-card-bg);
     border: 1px solid var(--admin-border);
     border-radius: 20px;
@@ -148,7 +148,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
 }
 
-.stat-card:hover {
+.stats-grid .stat-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
     border-color: var(--admin-accent);
