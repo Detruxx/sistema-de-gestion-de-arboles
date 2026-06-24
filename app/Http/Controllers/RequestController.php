@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\RequestType; 
+use App\Models\RequestStatus;
 use App\Models\Street;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RequestController extends Controller
 {
@@ -89,4 +91,33 @@ class RequestController extends Controller
     {
         //
     }
+
+    //FUNCION PARA ACTUALIZAR LA JUSTIFICACION DE UN ESTADO
+    public function updateStatus(Request $request, $id) 
+    {
+    // Supongamos que recibimos del formulario: 'status_id' y 'justification'
+    $newStatusId = $request->input('status_id');
+    $justification = $request->input('justification');
+    $user = auth()->user(); // El inspector logueado
+
+    $treeRequest = \App\Models\Request::findOrFail($id);
+
+    // DB Transaction asegura que si algo falla, no se guarde nada a medias
+    \DB::transaction(function () use ($treeRequest, $newStatusId, $user, $justification) {
+        
+        // 1. Actualizamos el estado actual en el reclamo principal
+        $treeRequest->update([
+            'request_status_id' => $newStatusId
+        ]);
+
+        // 2. Creamos una nueva página en el libro de historial (sin borrar nada anterior)
+        $treeRequest->histories()->create([
+            'request_status_id' => $newStatusId,
+            'user_id' => $user->id,
+            'justification' => $justification
+        ]);
+    });
+
+    return redirect()->back()->with('success', 'El estado del reclamo ha sido actualizado con éxito.');
+}
 }

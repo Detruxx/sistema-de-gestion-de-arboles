@@ -23,4 +23,12 @@ class Request extends Model
         // Laravel buscará automáticamente la columna 'request_status_id' por convención
         return $this->belongsTo(RequestStatus::class, 'request_status_id');
     }
+
+    /**
+     * Obtener todo el historial de cambios de estado para este reclamo.
+     */
+    public function histories()
+    {
+        return $this->hasMany(RequestStatusHistory::class)->orderBy('created_at', 'asc');
+    }
 }
