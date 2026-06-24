@@ -48,4 +48,17 @@ Route::resource('requests', RequestController::class);
 // Ruta específica para que el inspector actualice el estado y la justificación de un RECLAMO
 Route::patch('/requests/{request}/update-status', [RequestController::class, 'updateStatus'])->name('requests.updateStatus');
 
+// Crear un nuevo reclamo
+Route::post('/requests', [RequestController::class, 'store']);
+
+// Cambiar el estado de un reclamo
+Route::put('/requests/update-status/{id}', [RequestController::class, 'updateStatus']);
+
+// Obtener el historial de reclamos de un árbol específico
+Route::get('/requests/tree/{treeId}', [RequestController::class, 'getRequestsByTree']);
+
+// Filtrar reclamos por tipo de opción elegida
+Route::get('/requests/type/{typeId}', [RequestController::class, 'getRequestsByType']);
+
+
 

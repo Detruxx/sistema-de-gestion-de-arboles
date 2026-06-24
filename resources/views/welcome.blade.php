@@ -19,9 +19,7 @@
                 </a>
             </div>
         </section>
-
-    </main>
-@endsection
+        <section id="sobre-nosotros" class="about-section">
             <div class="about-container">
                 <div class="about-text reveal">
                     <h2 class="section-title">Nuestra Misión</h2>

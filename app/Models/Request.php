@@ -31,4 +31,24 @@ class Request extends Model
     {
         return $this->hasMany(RequestStatusHistory::class)->orderBy('created_at', 'asc');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function tree()
+    {
+        return $this->belongsTo(Tree::class);
+    }
+
+    public function requestType()
+    {
+        return $this->belongsTo(RequestType::class, 'request_type_id');
+    }
+
+    public function street()
+    {
+        return $this->belongsTo(Street::class);
+    }
 }
