@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. El Vecino (Usuario Público)
+       // 1. El Vecino (Usuario Público)
         User::factory()->create([
             'name' => 'Vecino Juan',
             'email' => 'vecino@example.com',
@@ -40,11 +40,14 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
-            SpecieSeeder::class,
-            StreetSeeder::class,
-            ParkSeeder::class,
+            StreetSeeder::class,      
+            ParkSeeder::class,        
+            SpecieSeeder::class,     
+            RequestTypeSeeder::class,
+            RequestStatusSeeder::class,
             PlanterSeeder::class,
             TreeSeeder::class,
+            RequestSeeder::class,
         ]);
     }
 }

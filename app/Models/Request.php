@@ -2,52 +2,53 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Request extends Model
 {
-    // POR AHORA, la tabla estaria asi
+    use HasFactory;
 
-    protected $table = 'requests';
-    protected $primaryKey = 'id';
-
+    // Asegúrate de tener 'request_status_id' en tu array $fillable si lo usás
     protected $fillable = [
-
-        'tree_id', //Clave foranea de tree
-        'user_id', //Clave foranea de user
-        'request_type_id', //Clave foranea de request_type
-
-        // Datos secundarios
-        'description', // Descripcion del reclamo
-        'status', // Estado del reclamo (pendiente, en proceso, resuelto)
+        'user_id', 'tree_id', 'request_type_id', 'street_id', 
+        'description', 'path', 'request_status_id'
     ];
 
-   // RELACIONES 
-
-    // Relacion con Tree
-    public function tree()
+    /**
+     * Relación: Un reclamo tiene UN estado asignado
+     */
+    public function status()
     {
-        return $this->belongsTo(Tree::class, 'tree_id');
+        // Laravel buscará automáticamente la columna 'request_status_id' por convención
+        return $this->belongsTo(RequestStatus::class, 'request_status_id');
     }
 
-    // Relacion con Street
-    public function street()
+    /**
+     * Obtener todo el historial de cambios de estado para este reclamo.
+     */
+    public function histories()
     {
-        return $this->belongsTo(Street::class, 'street_id');
+        return $this->hasMany(RequestStatusHistory::class)->orderBy('created_at', 'asc');
     }
 
-    // Relacion con User
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class);
     }
 
-    // Relacion con Request_Type
-    public function Request_Type() 
+    public function tree()
+    {
+        return $this->belongsTo(Tree::class);
+    }
+
+    public function requestType()
     {
         return $this->belongsTo(RequestType::class, 'request_type_id');
-    } 
+    }
 
-    use HasFactory;
+    public function street()
+    {
+        return $this->belongsTo(Street::class);
+    }
 }

@@ -36,13 +36,28 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// PARTE DE RECLAMOS
+// PARTE DE RECLAMOS (de testing)
 Route::resource('requests', RequestController::class);
 
-// Rutas de Contacto
+// Ruta específica para que el inspector actualice el estado y la justificación de un RECLAMO
+Route::patch('/requests/{request}/update-status', [RequestController::class, 'updateStatus'])->name('requests.updateStatus');
+
+// Crear un nuevo reclamo
+Route::post('/requests', [RequestController::class, 'store']);
+
+// Cambiar el estado de un reclamo
+Route::put('/requests/update-status/{id}', [RequestController::class, 'updateStatus']);
+
+// Obtener el historial de reclamos de un árbol específico
+Route::get('/requests/tree/{treeId}', [RequestController::class, 'getRequestsByTree']);
+
+// Filtrar reclamos por tipo de opción elegida
+Route::get('/requests/type/{typeId}', [RequestController::class, 'getRequestsByType']);
+
+// Rutas de Contacto (de rediseño-home)
 Route::post('/contacto', [ContactController::class, 'store'])->name('contacto.store');
 
-// Rutas protegidas por autenticación
+// Rutas protegidas por autenticación (de rediseño-home)
 Route::middleware(['auth'])->group(function () {
     Route::get('/configuracion', [ProfileController::class, 'configuracion'])->name('profile.configuracion');
     Route::post('/configuracion/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
@@ -51,7 +66,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/mensajes', [ContactController::class, 'index'])->name('contact.index');
     Route::post('/mensajes/{id}/read', [ContactController::class, 'markRead'])->name('contact.read');
 
-    // Dashboard de Admin/Inspector (reemplaza ver-reclamos)
+    // Dashboard de Admin/Inspector
     Route::middleware(['role:admin,inspector'])->group(function () {
         Route::get('/admin/dashboard', function () {
             return view('admin.dashboard');
@@ -65,7 +80,7 @@ Route::get('/api/arboles/pines', [TreeController::class, 'getMapPins']);
 // Endpoint para traer el detalle de un árbol específico
 Route::get('/api/arboles/{id}', [TreeController::class, 'getTreeDetails']);
 
-// API de Reclamos (usada por el Dashboard y el formulario de reclamos)
+// API de Reclamos (de rediseño-home - usada por el Dashboard y el formulario de reclamos)
 Route::get('/api/reclamos', [App\Http\Controllers\ComplaintController::class, 'index']);
 Route::post('/api/reclamos', [App\Http\Controllers\ComplaintController::class, 'store']);
 Route::get('/api/reclamos/{id}', [App\Http\Controllers\ComplaintController::class, 'show']);

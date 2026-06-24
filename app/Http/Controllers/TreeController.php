@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Models\Tree;
+use Illuminate\Support\Facades\DB;
 
 class TreeController extends Controller
 {
@@ -49,11 +49,11 @@ class TreeController extends Controller
     {
         // Validacion de datos
         $request->validate([
-            'vitality'=> 'nullable|array',
+            'vitality'           => 'nullable|array',
             'maintenance_status' => 'nullable|string',
-            'structure' => 'nullable|string',
-            'degree' => 'nullable|integer',
-            'observations' => 'nullable|string',
+            'structure'          => 'nullable|string',
+            'degree'             => 'nullable|integer',
+            'observations'       => 'nullable|string',
         ]);
 
         // Se busca el arbol
@@ -62,7 +62,7 @@ class TreeController extends Controller
         // Si no se encuentra el arbol
         if (!$tree) {
             return response()->json([
-                'status'=> 'error',
+                'status'  => 'error',
                 'message' => 'Arbol no encontrado'
             ], 404);
         }
@@ -79,9 +79,9 @@ class TreeController extends Controller
 
         // Devolvemos el arbol
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'Estado del arbol actualizado con exito',
-            'data' => $tree
+            'data'    => $tree
         ], 200);
     }
 
@@ -108,8 +108,8 @@ class TreeController extends Controller
         // Si se encuentran arboles con esa especie
         return response()->json([
             'status' => 'success', 
-            'count' => $trees->count(),
-            'data' => $trees
+            'count'  => $trees->count(),
+            'data'   => $trees
         ], 200);
     }
 
@@ -139,8 +139,8 @@ class TreeController extends Controller
         // Si se encuentran arboles en la calle
         return response()->json([
             'status' => 'success',
-            'count' => $trees->count(),
-            'data'=>  $trees
+            'count'  => $trees->count(),
+            'data'   => $trees
         ],200);
     }
 
@@ -179,8 +179,8 @@ class TreeController extends Controller
         // Si se encuentran arboles en la cuadra
         return response()->json([
             'status' => 'success',
-            'count' => $trees->count(),
-            'data'=>  $trees
+            'count'  => $trees->count(),
+            'data'   => $trees
         ],200);
     }
 
@@ -190,7 +190,7 @@ class TreeController extends Controller
     {
         // Validacion de datos
         $request->validate([
-            'street_id' => 'required|exists:streets,id',
+            'street_id'     => 'required|exists:streets,id',
             'street_number' => 'required|integer|min: 1'
         ]);
 
@@ -211,8 +211,8 @@ class TreeController extends Controller
        // Si se encuentra el arbol
        return response()->json([
             'status' => 'success',
-            'count' => $trees->count(),
-            'data' => $trees
+            'count'  => $trees->count(),
+            'data'   => $trees
        ],200);
         
     }
@@ -227,14 +227,14 @@ class TreeController extends Controller
         // Si no se encuentra el arbol
         if (!$tree) {
             return response()->json([
-                'status'=> 'error',
-                'message' => 'Arbol no encontrado'
+                'status' => 'error',
+                'message'=> 'Arbol no encontrado'
             ], 404);
         }
         // Se devuelve el arbol
         return response()->json([
             'status' => 'success',
-            'data' => $tree
+            'data'   => $tree
         ],200);
     }
 
@@ -257,8 +257,8 @@ class TreeController extends Controller
         // Si se encuentra arboles en estado critico
         return response()->json([
             'status' => 'success',
-            'count' => $criticalTrees->count(),
-            'data'=>  $criticalTrees
+            'count'  => $criticalTrees->count(),
+            'data'   => $criticalTrees
         ],200);
     }
 
@@ -298,7 +298,7 @@ class TreeController extends Controller
         $formattedPins = $pins->map(function($pin) {
             return [
                 'id' => $pin->id,
-                'latitude' => (float)$pin->latitude,
+                'latitude'  => (float)$pin->latitude,
                 'longitude' => (float)$pin->longitude,
                 'height' => $pin->height,
                 'degree' => $pin->degree,
@@ -318,9 +318,30 @@ class TreeController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'count' => $formattedPins->count(),
-            'data'=>  $formattedPins
+            'count'  => $formattedPins->count(),
+            'data'   => $formattedPins
         ], 200);
     }
 
+    public function getTopSpecies()
+    {
+        $topTrees = DB::table('trees')
+        ->select('species', DB::raw('COUNT(*) as total'))
+        ->groupBy('species')
+        ->orderBy('total', 'desc')
+        ->limit(3)
+        ->get();
+        
+        if($topTrees->isEmpty()){
+            return response()->json([
+                'status' => 'error',
+                'message'=> 'No se encontraron especies'  
+            ],404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data'   =>  $topTrees
+        ], 200);
+    }
 }
