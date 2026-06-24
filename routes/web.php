@@ -45,3 +45,7 @@ Route::get('/api/arboles/{id}', [TreeController::class, 'getTreeDetails']);
 //Parte de RECLAMOS
 Route::resource('requests', RequestController::class);
 
+// Ruta específica para que el inspector actualice el estado y la justificación de un RECLAMO
+Route::patch('/requests/{request}/update-status', [RequestController::class, 'updateStatus'])->name('requests.updateStatus');
+
+

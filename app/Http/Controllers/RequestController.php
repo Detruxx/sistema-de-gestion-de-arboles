@@ -93,31 +93,37 @@ class RequestController extends Controller
     }
 
     //FUNCION PARA ACTUALIZAR LA JUSTIFICACION DE UN ESTADO
-    public function updateStatus(Request $request, $id) 
+    /**
+     * Actualiza el estado del reclamo y registra el motivo en el historial.
+     */
+    public function updateStatus(Request $request, $id)
     {
-    // Supongamos que recibimos del formulario: 'status_id' y 'justification'
-    $newStatusId = $request->input('status_id');
-    $justification = $request->input('justification');
-    $user = auth()->user(); // El inspector logueado
-
-    $treeRequest = \App\Models\Request::findOrFail($id);
-
-    // DB Transaction asegura que si algo falla, no se guarde nada a medias
-    \DB::transaction(function () use ($treeRequest, $newStatusId, $user, $justification) {
-        
-        // 1. Actualizamos el estado actual en el reclamo principal
-        $treeRequest->update([
-            'request_status_id' => $newStatusId
+        // 1. 🛡️ VALIDACIÓN: Fundamental para que nadie meta datos rotos o maliciosos
+        $request->validate([
+            'request_status_id' => 'required|exists:request_statuses,id',
+            'justification'     => 'required|string|min:5|max:1000', 
         ]);
 
-        // 2. Creamos una nueva página en el libro de historial (sin borrar nada anterior)
-        $treeRequest->histories()->create([
-            'request_status_id' => $newStatusId,
-            'user_id' => $user->id,
-            'justification' => $justification
-        ]);
-    });
+        // 2. Buscamos el reclamo en la base de datos
+        $treeRequest = \App\Models\Request::findOrFail($id);
 
-    return redirect()->back()->with('success', 'El estado del reclamo ha sido actualizado con éxito.');
-}
+        // 3. 💼 TRANSACCIÓN: Nos asegura que se guarden ambas cosas o ninguna
+        \DB::transaction(function () use ($treeRequest, $request) {
+            
+            // A. Actualizamos el estado actual en el reclamo
+            $treeRequest->update([
+                'request_status_id' => $request->request_status_id
+            ]);
+
+            // B. Creamos el nuevo registro en la bitácora de historial
+            $treeRequest->histories()->create([
+                'request_status_id' => $request->request_status_id,
+                'user_id'           => 2, // ⚠️ SIMULACIÓN: Cámbialo por auth()->id() cuando actives el login
+                'justification'     => $request->justification,
+            ]);
+        });
+
+        // 4. Redireccionamos con el mensaje de éxito
+        return redirect()->back()->with('status_updated', 'El estado del reclamo y la bitácora se actualizaron correctamente.');
+    }
 }
