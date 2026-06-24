@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Request_Status_History extends Model
+class RequestStatusHistory extends Model
 {
     use HasFactory;
 
