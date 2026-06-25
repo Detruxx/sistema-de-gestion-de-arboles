@@ -1,0 +1,176 @@
+/* ================= Navegación (Header) ================= */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 4%;
+    z-index: 2000;
+    /* Esto es para que se ponga encima de todo*/
+    transition: background-color 0.3s ease, padding 0.3s ease;
+}
+
+.navbar.scrolled {
+    background-color: rgba(10, 26, 13, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 1rem 4%;
+    border-bottom: 1px solid var(--deep-canopy);
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+}
+
+.logo {
+    width: 45px;
+    height: 45px;
+    border: 2px solid var(--spring-leaf);
+    border-radius: 50%;
+    background-color: var(--deep-canopy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.brand-name {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--paper-white);
+    letter-spacing: -0.5px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.nav-pill {
+    text-decoration: none;
+    color: var(--morning-dew);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.5rem 1.2rem;
+    border-radius: 50px;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.nav-pill:hover {
+    border-color: var(--living-moss);
+    color: var(--spring-leaf);
+    background-color: rgba(45, 122, 79, 0.1);
+}
+
+.nav-pill.active {
+    background-color: var(--paper-white);
+    color: var(--forest-night);
+    font-weight: 600;
+}
+
+.btn-login {
+    border-color: var(--living-moss);
+    color: var(--paper-white);
+}
+
+.btn-login:hover {
+    background-color: var(--living-moss);
+    color: var(--paper-white);
+}
+
+/* ================= Dropdown de Trámites ================= */
+.nav-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+button.dropdown-trigger {
+    background: none;
+    font-family: inherit;
+    font-size: 0.9rem;
+    line-height: inherit;
+    margin: 0;
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    outline: none;
+}
+
+.dropdown-chevron {
+    transition: transform 0.3s ease;
+    stroke: currentColor;
+    margin-top: 1px;
+}
+
+.nav-dropdown.active .dropdown-chevron {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background-color: rgba(10, 26, 13, 0.96);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--deep-canopy);
+    border-radius: 14px;
+    width: 170px;
+    padding: 8px 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 15px 30px rgba(10, 26, 13, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    z-index: 1000;
+}
+
+.nav-dropdown.active .dropdown-menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+.dropdown-menu a {
+    text-decoration: none;
+    color: var(--morning-dew);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 10px 20px;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.dropdown-menu a:hover {
+    background-color: rgba(45, 122, 79, 0.15);
+    color: var(--spring-leaf);
+    padding-left: 24px;
+}
+
+.dropdown-menu a.active {
+    background-color: var(--paper-white);
+    color: var(--forest-night);
+    font-weight: 600;
+}
+
+/* ================= Menú Hamburguesa (Desktop) ================= */
+.nav-toggle {
+    display: none;
+}
