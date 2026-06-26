@@ -110,9 +110,8 @@
                 </div>
             </div>
         </section>
-
-    </main>
-@endsection
+        
+        <section class="about-section">
             <div class="about-container">
                 <div class="about-text reveal">
                     <h2 class="section-title">Nuestra Misión</h2>
@@ -183,6 +182,7 @@
                 @endauth
             </div>
         </section>
+        
         <!-- Modal de Detalles de Especie -->
         <div id="species-modal" class="care-modal-overlay">
             <!-- Botones de navegación del modal -->
