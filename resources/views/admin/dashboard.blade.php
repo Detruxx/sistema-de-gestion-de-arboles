@@ -13,6 +13,12 @@
     
     <!-- Sidebar -->
     <aside class="admin-sidebar">
+        <!-- Toggle button only visible on mobile/tablet -->
+        <button class="sidebar-toggle" onclick="toggleAdminSidebar()">
+            <span>Menú del Panel Comunal</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+
         <div class="sidebar-menu">
             <h3 class="sidebar-menu-title">Panel Comunal</h3>
             <button class="sidebar-btn active" onclick="showModule('resumen')" id="menu-resumen">

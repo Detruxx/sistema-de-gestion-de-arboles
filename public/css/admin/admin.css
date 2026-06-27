@@ -892,3 +892,156 @@
     line-height: 1.5;
     color: var(--admin-text-primary);
 }
+
+/* ================= Rediseño Horizontal para el Módulo de Reclamos ================= */
+#module-reclamos .split-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+#module-reclamos .list-panel {
+    max-height: none;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    padding: 15px 20px;
+}
+
+#module-reclamos .panel-search-box {
+    margin-bottom: 0;
+    min-width: 250px;
+    flex-shrink: 0;
+}
+
+#module-reclamos .items-list {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 15px;
+    padding: 5px 5px 12px 5px;
+    flex-grow: 1;
+    width: 100%;
+}
+
+#module-reclamos .items-list::-webkit-scrollbar {
+    height: 8px;
+}
+
+#module-reclamos .items-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+#module-reclamos .items-list::-webkit-scrollbar-thumb {
+    background: rgba(45, 122, 79, 0.2);
+    border-radius: 4px;
+}
+
+#module-reclamos .items-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(45, 122, 79, 0.4);
+}
+
+#module-reclamos .list-item-card {
+    min-width: 280px;
+    max-width: 280px;
+    flex-shrink: 0;
+    margin-bottom: 0;
+}
+
+#module-reclamos .list-item-card:hover {
+    transform: translateY(-3px);
+}
+
+#module-reclamos .detail-panel {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    #module-reclamos .list-panel {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    #module-reclamos .panel-search-box {
+        width: 100%;
+    }
+}
+
+/* --- Responsive Sidebar (Panel Comunal) --- */
+.sidebar-toggle {
+    display: none;
+}
+
+@media (max-width: 992px) {
+    .admin-dashboard-container {
+        flex-direction: column;
+        padding-top: 80px;
+    }
+
+    .admin-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--admin-border);
+        padding: 15px 20px;
+        position: relative;
+    }
+
+    .sidebar-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        background: var(--admin-accent-light);
+        border: 1px solid rgba(45, 122, 79, 0.2);
+        color: var(--admin-accent);
+        padding: 12px 18px;
+        border-radius: 10px;
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-toggle svg {
+        transition: transform 0.3s ease;
+    }
+
+    .admin-sidebar.menu-open .sidebar-toggle svg {
+        transform: rotate(180deg);
+    }
+
+    /* Ocultar menú por defecto en móvil */
+    .admin-sidebar .sidebar-menu,
+    .admin-sidebar .sidebar-footer {
+        display: none;
+        margin-top: 15px;
+    }
+
+    /* Mostrar menú cuando está abierto */
+    .admin-sidebar.menu-open .sidebar-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .admin-sidebar.menu-open .sidebar-footer {
+        display: block;
+        border-top: 1px dashed var(--admin-border);
+        padding-top: 15px;
+    }
+
+    .admin-main-panel {
+        padding: 20px 15px;
+    }
+
+    .admin-header-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+}

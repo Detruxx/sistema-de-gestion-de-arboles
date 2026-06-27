@@ -73,8 +73,19 @@ function showModule(moduleName) {
     
     const menuEl = document.getElementById(`menu-${moduleName}`);
     if(menuEl) menuEl.classList.add('active');
+
+    // Cerrar el menú desplegable en pantallas pequeñas
+    const sidebar = document.querySelector('.admin-sidebar');
+    if (sidebar) sidebar.classList.remove('menu-open');
 }
 window.showModule = showModule;
+
+// --- Toggle Sidebar en Móviles ---
+function toggleAdminSidebar() {
+    const sidebar = document.querySelector('.admin-sidebar');
+    if (sidebar) sidebar.classList.toggle('menu-open');
+}
+window.toggleAdminSidebar = toggleAdminSidebar;
 
 // --- Cargar Reclamos ---
 function loadClaimsList() {
@@ -476,13 +487,17 @@ async function loadTreesFromServer() {
             const result = await response.json();
             trees.length = 0;
             result.data.forEach(t => trees.push(t));
-            loadTreesList();
-            if (selectedTreeId) {
-                selectTree(selectedTreeId);
-            }
         }
     } catch (err) {
-        console.error("Error al cargar árboles:", err);
+        console.error("Error al cargar árboles del servidor, usando datos locales:", err);
+    }
+
+    // Ordenar los árboles por ID de forma numérica ascendente
+    trees.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+
+    loadTreesList();
+    if (selectedTreeId) {
+        selectTree(selectedTreeId);
     }
 }
 window.loadTreesFromServer = loadTreesFromServer;

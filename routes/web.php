@@ -85,3 +85,8 @@ Route::get('/api/reclamos', [App\Http\Controllers\ComplaintController::class, 'i
 Route::post('/api/reclamos', [App\Http\Controllers\ComplaintController::class, 'store']);
 Route::get('/api/reclamos/{id}', [App\Http\Controllers\ComplaintController::class, 'show']);
 Route::put('/api/reclamos/{id}/status', [App\Http\Controllers\ComplaintController::class, 'updateStatus']);
+
+//BORRAR
+Route::get('/register', function () {
+    return view('auth.register');
+});

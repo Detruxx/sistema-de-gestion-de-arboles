@@ -65,6 +65,12 @@
 
                     <button type="submit" class="login-btn" id="submit-btn">Ingresar al Sistema</button>
                 </form>
+
+                <div class="login-register-prompt" style="text-align: center; margin-top: 20px;">
+                    <p style="color: rgba(245, 249, 246, 0.7); font-size: 0.9rem; margin: 0;">
+                        ¿No tienes una cuenta? <a href="/register" style="color: var(--spring-leaf); text-decoration: none; font-weight: 600; transition: color 0.3s;" onmouseover="this.style.color='var(--paper-white)'" onmouseout="this.style.color='var(--spring-leaf)'">Regístrate aquí</a>
+                    </p>
+                </div>
             </div>
         </section>
     </main>
