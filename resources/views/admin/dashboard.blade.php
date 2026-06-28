@@ -148,7 +148,6 @@
             </div>
         </section>
 
-        <!-- MODULE: MESSAGES & CLAIMS -->
         <section id="module-reclamos" class="dashboard-module">
             <div class="admin-header-section">
                 <div>
@@ -157,12 +156,37 @@
                 </div>
             </div>
 
+            <!-- Filters Bar (horizontal) -->
+            <div class="inventory-filter-bar">
+                <div class="inventory-filter-group" style="flex: 1 1 250px;">
+                    <label for="search-claims">Buscar por vecino, dirección o ID</label>
+                    <input type="text" id="search-claims" placeholder="Ej. Laura Gómez, REC-2026-001..." oninput="filterClaims()">
+                </div>
+                <div class="inventory-filter-group" style="flex: 1 1 180px;">
+                    <label for="filter-claim-status">Estado</label>
+                    <select id="filter-claim-status" onchange="filterClaims()">
+                        <option value="">Todos los estados</option>
+                        <option value="recibido">Recibido</option>
+                        <option value="inspeccion">Inspección</option>
+                        <option value="poda">Poda Prog.</option>
+                        <option value="resuelto">Resuelto</option>
+                    </select>
+                </div>
+                <div class="inventory-filter-group" style="flex: 1 1 200px;">
+                    <label for="filter-claim-category">Categoría</label>
+                    <select id="filter-claim-category" onchange="filterClaims()">
+                        <option value="">Todas las categorías</option>
+                        <option value="Poda Urgente">Poda Urgente</option>
+                        <option value="Solicitud de Plantación">Solicitud de Plantación</option>
+                        <option value="Plantera Obstruida">Plantera Obstruida</option>
+                        <option value="Extracción por Peligro">Extracción por Peligro</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="split-layout">
                 <!-- Left Panel: List of claims -->
                 <div class="list-panel">
-                    <div class="panel-search-box">
-                        <input type="text" id="search-claims" placeholder="Buscar por vecino o dirección..." oninput="filterClaims()">
-                    </div>
                     <div class="items-list" id="claims-list-container">
                         <!-- Loaded via JS -->
                     </div>

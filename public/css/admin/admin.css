@@ -306,13 +306,14 @@
     color: var(--admin-text-secondary);
 }
 
-/* --- Detail View Panel --- */
 .detail-panel {
     background: var(--admin-card-bg);
     border: 1px solid var(--admin-border);
     border-radius: 20px;
     padding: 30px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+    max-height: 700px;
+    overflow-y: auto;
 }
 
 .badge-status {
@@ -893,83 +894,7 @@
     color: var(--admin-text-primary);
 }
 
-/* ================= Rediseño Horizontal para el Módulo de Reclamos ================= */
-#module-reclamos .split-layout {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-}
 
-#module-reclamos .list-panel {
-    max-height: none;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
-    padding: 15px 20px;
-}
-
-#module-reclamos .panel-search-box {
-    margin-bottom: 0;
-    min-width: 250px;
-    flex-shrink: 0;
-}
-
-#module-reclamos .items-list {
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    overflow-y: hidden;
-    gap: 15px;
-    padding: 5px 5px 12px 5px;
-    flex-grow: 1;
-    width: 100%;
-}
-
-#module-reclamos .items-list::-webkit-scrollbar {
-    height: 8px;
-}
-
-#module-reclamos .items-list::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 4px;
-}
-
-#module-reclamos .items-list::-webkit-scrollbar-thumb {
-    background: rgba(45, 122, 79, 0.2);
-    border-radius: 4px;
-}
-
-#module-reclamos .items-list::-webkit-scrollbar-thumb:hover {
-    background: rgba(45, 122, 79, 0.4);
-}
-
-#module-reclamos .list-item-card {
-    min-width: 280px;
-    max-width: 280px;
-    flex-shrink: 0;
-    margin-bottom: 0;
-}
-
-#module-reclamos .list-item-card:hover {
-    transform: translateY(-3px);
-}
-
-#module-reclamos .detail-panel {
-    width: 100%;
-}
-
-@media (max-width: 768px) {
-    #module-reclamos .list-panel {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 15px;
-    }
-    #module-reclamos .panel-search-box {
-        width: 100%;
-    }
-}
 
 /* --- Responsive Sidebar (Panel Comunal) --- */
 .sidebar-toggle {
