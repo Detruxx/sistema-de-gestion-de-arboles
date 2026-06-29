@@ -1,10 +1,10 @@
 // --- Lógica de Reclamos ---
 
-window.loadClaimsList = function() {
+window.loadClaimsList = function () {
     const container = document.getElementById('claims-list-container');
     if (!container) return;
     container.innerHTML = '';
-    
+
     window.claims.forEach(c => {
         const card = document.createElement('div');
         card.className = `list-item-card ${window.selectedClaimId === c.id ? 'active' : ''}`;
@@ -26,10 +26,10 @@ window.loadClaimsList = function() {
     });
 };
 
-window.selectClaim = function(id) {
+window.selectClaim = function (id) {
     window.selectedClaimId = id;
     window.loadClaimsList();
-    
+
     const claim = window.claims.find(c => c.id === id);
     const panel = document.getElementById('claim-detail-panel');
 
@@ -87,18 +87,18 @@ window.selectClaim = function(id) {
             <div class="status-tracker-title">Progreso del Reclamo (Haz clic en un paso para cambiar el estado)</div>
             <div class="status-steps">
                 ${window.requestStatuses.map(s => {
-                    const currentSeq = window.requestStatuses.find(rs => rs.slug === claim.estado)?.sequence || 0;
-                    const isCompleted = s.sequence && s.sequence <= currentSeq;
-                    const isActive = claim.estado === s.slug;
-                    if (s.sequence || isActive) {
-                        return `
+        const currentSeq = window.requestStatuses.find(rs => rs.slug === claim.estado)?.sequence || 0;
+        const isCompleted = s.sequence && s.sequence <= currentSeq;
+        const isActive = claim.estado === s.slug;
+        if (s.sequence || isActive) {
+            return `
                         <div class="status-step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}" onclick="window.setClaimStatus('${s.slug}')">
                             <div class="step-circle" style="background-color: ${isActive ? s.color : ''}; border-color: ${isActive ? s.color : ''}">${s.sequence || '!'}</div>
                             <div class="step-label">${s.status_name}</div>
                         </div>`;
-                    }
-                    return '';
-                }).join('')}
+        }
+        return '';
+    }).join('')}
             </div>
             
             <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
@@ -128,12 +128,12 @@ window.selectClaim = function(id) {
     `;
 };
 
-window.applyTemplate = function(type) {
+window.applyTemplate = function (type) {
     const claim = window.claims.find(c => c.id === window.selectedClaimId);
     if (!claim) return;
 
     const textarea = document.getElementById('response-text');
-    
+
     let text = '';
     if (type === 'open' || type === 'info') {
         text = `Estimado/a ${claim.vecino},\n\nHemos recibido su solicitud ID ${claim.id} sobre "${claim.categoria}". Un inspector del área técnica estará evaluando la situación a la brevedad. Si posee más imágenes del estado actual del ejemplar, por favor adjúntelas respondiendo a este correo.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
@@ -152,12 +152,12 @@ window.applyTemplate = function(type) {
     if (textarea) textarea.value = text;
 };
 
-window.clearResponse = function() {
+window.clearResponse = function () {
     const textarea = document.getElementById('response-text');
     if (textarea) textarea.value = '';
 };
 
-window.sendResponse = async function() {
+window.sendResponse = async function () {
     const claim = window.claims.find(c => c.id === window.selectedClaimId);
     if (!claim) return;
 
@@ -179,14 +179,14 @@ window.sendResponse = async function() {
 
         if (response.ok) {
             claim.respuesta_admin = responseText;
-            
+
             const banner = document.getElementById('notification-banner');
             const text = document.getElementById('notification-text');
-            if(text) text.innerText = `Respuesta enviada a ${claim.vecino} (${claim.email}) y guardada en el sistema.`;
-            if(banner) banner.style.display = 'flex';
+            if (text) text.innerText = `Respuesta enviada a ${claim.vecino} (${claim.email}) y guardada en el sistema.`;
+            if (banner) banner.style.display = 'flex';
 
             setTimeout(() => {
-                if(banner) banner.style.display = 'none';
+                if (banner) banner.style.display = 'none';
             }, 5000);
 
             window.clearResponse();
@@ -199,19 +199,19 @@ window.sendResponse = async function() {
     }
 };
 
-window.filterClaims = function() {
+window.filterClaims = function () {
     const query = document.getElementById('search-claims').value.toLowerCase();
     const statusFilter = document.getElementById('filter-claim-status') ? document.getElementById('filter-claim-status').value : '';
     const categoryFilter = document.getElementById('filter-claim-category') ? document.getElementById('filter-claim-category').value : '';
 
     const container = document.getElementById('claims-list-container');
-    if(!container) return;
+    if (!container) return;
     container.innerHTML = '';
 
     const filtered = window.claims.filter(c => {
-        const matchesQuery = c.vecino.toLowerCase().includes(query) || 
-                             c.direccion.toLowerCase().includes(query) ||
-                             c.id.toLowerCase().includes(query);
+        const matchesQuery = c.vecino.toLowerCase().includes(query) ||
+            c.direccion.toLowerCase().includes(query) ||
+            c.id.toLowerCase().includes(query);
         const matchesStatus = !statusFilter || c.estado === statusFilter;
         const matchesCategory = !categoryFilter || c.categoria === categoryFilter;
 
@@ -239,7 +239,7 @@ window.filterClaims = function() {
     });
 };
 
-window.setClaimStatus = async function(newStatus) {
+window.setClaimStatus = async function (newStatus) {
     const claim = window.claims.find(c => c.id === window.selectedClaimId);
     if (!claim) return;
 
@@ -247,7 +247,7 @@ window.setClaimStatus = async function(newStatus) {
 
     if (newStatus === 'vinculated') {
         const manualId = prompt('Ingrese el ID numérico del reclamo original al que desea vincularlo:');
-        if (!manualId) return; 
+        if (!manualId) return;
         payload.linked_to = parseInt(manualId);
     }
 
@@ -263,9 +263,15 @@ window.setClaimStatus = async function(newStatus) {
 
         if (response.ok) {
             claim.estado = newStatus;
-            if (payload.linked_to) claim.linked_to = payload.linked_to;
-            claim.suggested_duplicate_id = null; 
-            
+
+            if (newStatus === 'vinculated') {
+                claim.linked_to = payload.linked_to;
+            } else {
+                claim.linked_to = null; // Limpiar del array local para que se actualice la vista al instante
+            }
+
+            claim.suggested_duplicate_id = null;
+
             window.selectClaim(window.selectedClaimId);
             window.updateStats();
             window.applyTemplate(newStatus);
@@ -278,13 +284,13 @@ window.setClaimStatus = async function(newStatus) {
     }
 };
 
-window.resolveDuplicate = async function(isAccepted, duplicateId = null) {
+window.resolveDuplicate = async function (isAccepted, duplicateId = null) {
     const claim = window.claims.find(c => c.id === window.selectedClaimId);
     if (!claim) return;
 
     try {
         const payload = isAccepted ? { estado: 'vinculated', linked_to: duplicateId } : { ignore_suggestion: true };
-        
+
         const response = await fetch(`/requests/update-status/${window.selectedClaimId}`, {
             method: 'PUT',
             headers: {
@@ -300,7 +306,7 @@ window.resolveDuplicate = async function(isAccepted, duplicateId = null) {
                 claim.linked_to = duplicateId;
             }
             claim.suggested_duplicate_id = null;
-            
+
             window.selectClaim(window.selectedClaimId);
             window.updateStats();
             window.loadClaimsList();
@@ -312,7 +318,7 @@ window.resolveDuplicate = async function(isAccepted, duplicateId = null) {
     }
 };
 
-window.loadStatusesFromServer = async function() {
+window.loadStatusesFromServer = async function () {
     try {
         const response = await fetch('/api/request-statuses');
         if (response.ok) {
@@ -324,7 +330,7 @@ window.loadStatusesFromServer = async function() {
     }
 };
 
-window.loadClaimsFromServer = async function() {
+window.loadClaimsFromServer = async function () {
     if (window.requestStatuses.length === 0) {
         await window.loadStatusesFromServer();
     }

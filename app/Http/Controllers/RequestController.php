@@ -225,6 +225,10 @@ class RequestController extends Controller
             if ($dbSlug === 'vinculated' && $request->has('linked_to')) {
                 $linkedTo = $request->linked_to;
                 $suggestedDuplicateId = null;
+            } elseif ($dbSlug !== 'vinculated') {
+                // Si cambiamos de estado "vinculado" a cualquier otro (ej. por error),
+                // desvinculamos el reclamo limpiando la columna.
+                $linkedTo = null;
             }
         }
 

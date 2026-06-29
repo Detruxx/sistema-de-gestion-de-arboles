@@ -121,7 +121,7 @@ window.loadTreesFromServer = async function() {
             result.data.forEach(t => window.trees.push(t));
         }
     } catch (err) {
-        console.error("Error al cargar árboles del servidor, usando datos locales:", err);
+        console.error("Error al cargar árboles del servidor:", err);
     }
 
     // Ordenar los árboles por ID de forma numérica ascendente (mejora de Nacho)
