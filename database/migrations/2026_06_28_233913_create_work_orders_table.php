@@ -15,9 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('request_id')->constrained('requests')->onDelete('cascade');
             $table->foreignId('company_id')->constrained('companies')->onDelete('restrict');
-            $table->string('task_description'); // Ej: "Corte de raíz" o "Hacer vereda"
-            $table->date('scheduled_date')->nullable(); // Fecha que pacta la empresa
-            $table->enum('work_status', ['Asignado', 'En Proceso', 'Finalizado'])->default('Asignado');
+            $table->string('task_description');
+            $table->date('scheduled_date')->nullable();
+            
+            // Atributo numérico para ordenar la ejecución (1, 2, 3...)
+            $table->integer('execution_order')->default(1); 
+            
+            // Agregamos el estado 'En espera' al ciclo de vida
+            $table->enum('work_status', ['En espera', 'Asignado', 'En Proceso', 'Finalizado'])->default('Asignado');
             $table->timestamps();
         });
     }

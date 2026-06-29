@@ -11,6 +11,7 @@ class WorkOrder extends Model
         'company_id', 
         'task_description', 
         'scheduled_date', 
+        'execution_order',
         'work_status'
     ];
 
