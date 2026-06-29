@@ -23,7 +23,13 @@
 }
 
 .btn-main-cta svg {
+    width: 20px;
+    height: 20px;
     margin-right: 8px;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 html, body {

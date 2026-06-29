@@ -157,30 +157,29 @@
                 <h2 class="section-title text-center">Escríbenos</h2>
                 <p class="section-subtitle">¿Tienes alguna duda o sugerencia sobre el proyecto? Ponte en contacto con nosotros.</p>
                 
-                <!-- Si esta logueado muestra el formulario, si no muestra el mensaje de que inicie sesion -->
-                @auth
-                    @if(session('success'))
-                        <div class="alert alert-success">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-                    <form class="contact-form" action="{{ route('contacto.store') }}" method="POST">
-                        @csrf
-                        <div class="form-group">
-                            <label for="message">Tu Mensaje</label>
-                            <textarea id="message" name="mensaje" placeholder="Escribe tu mensaje aquí..." required rows="5"></textarea>
-                        </div>
-                        <button type="submit" class="btn-main-cta">Enviar Mensaje</button>
-                    </form>
-                @else
-                    <div class="contact-login-card">
-                        <span class="lock-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        </span>
-                        <p>Para enviarnos un mensaje directo, por favor inicia sesión en tu cuenta.</p>
-                        <a href="/login" class="btn-main-cta">Iniciar Sesión</a>
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
                     </div>
-                @endauth
+                @endif
+                <form class="contact-form" action="{{ route('contacto.store') }}" method="POST">
+                    @csrf
+                    @guest
+                        <div class="form-group">
+                            <label for="name">Nombre Completo</label>
+                            <input type="text" id="name" name="nombre" placeholder="Ingresa tu nombre..." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Correo Electrónico</label>
+                            <input type="email" id="email" name="email" placeholder="Ingresa tu correo electrónico..." required>
+                        </div>
+                    @endguest
+                    <div class="form-group">
+                        <label for="message">Tu Mensaje</label>
+                        <textarea id="message" name="mensaje" placeholder="Escribe tu mensaje aquí..." required rows="5"></textarea>
+                    </div>
+                    <button type="submit" class="btn-main-cta">Enviar Mensaje</button>
+                </form>
             </div>
         </section>
         <!-- Modal de Detalles de Especie -->

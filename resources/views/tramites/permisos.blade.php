@@ -41,9 +41,9 @@
                     </div>
 
                     <div class="permisos-list-item border-night">
-                        <h4 class="permisos-list-item-title">3. Modificación de Veredas (Cazuelas)</h4>
+                        <h4 class="permisos-list-item-title">3. Modificación de Veredas</h4>
                         <p class="permisos-list-item-text">
-                            Permiso para agrandar la cazuela del árbol para optimizar el paso del agua de lluvia y evitar el levantamiento de baldosas.
+                            Permiso para agrandar la plantera del árbol para optimizar el paso del agua de lluvia y evitar el levantamiento de baldosas.
                         </p>
                     </div>
                 </div>
