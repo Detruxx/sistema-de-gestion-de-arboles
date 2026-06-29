@@ -110,6 +110,42 @@
                                         </p>
                                     </div>
                                 @endif
+
+                                <!-- Sección de Cancelación del Reclamo (para Vecinos) -->
+                                @if($statusClass !== 'resolved' && $statusClass !== 'discarded')
+                                    <div class="vecino-cancel-section" id="cancel-section-{{ $id }}" style="margin-top: 20px; border-top: 1px dashed rgba(45, 122, 79, 0.2); padding-top: 20px;">
+                                        <!-- Botón inicial -->
+                                        <button type="button" class="btn-main-cta btn-cancel-trigger" onclick="showCancelForm('{{ $id }}')" style="background-color: transparent; border: 2px solid #d32f2f; color: #d32f2f; font-size: 0.9rem; padding: 8px 16px; margin: 0; display: inline-block; cursor: pointer; border-radius: 8px; font-weight: 600;">
+                                            Cancelar Reclamo
+                                        </button>
+
+                                        <!-- Formulario colapsado -->
+                                        <div class="cancel-form-box" id="cancel-form-{{ $id }}" style="display: none; margin-top: 15px; background: rgba(211, 47, 47, 0.05); border: 1px solid rgba(211, 47, 47, 0.2); padding: 15px; border-radius: 8px;">
+                                            <label for="cancel-reason-{{ $id }}" style="display: block; font-weight: 600; font-size: 0.85rem; color: #d32f2f; text-transform: uppercase; margin-bottom: 8px;">¿Por qué deseas cancelar este reclamo?</label>
+                                            <p style="font-size: 0.85rem; color: var(--forest-night); margin-top: 0; margin-bottom: 10px; opacity: 0.8;">
+                                                Por favor, indícanos el motivo (por ejemplo, si el trabajo será realizado por un privado/particular para registrar quién intervino el árbol).
+                                            </p>
+                                            <textarea id="cancel-reason-{{ $id }}" class="form-control" style="width: 100%; min-height: 80px; margin-bottom: 12px; padding: 10px; border-radius: 6px; border: 1px solid rgba(45, 122, 79, 0.25); box-sizing: border-box;" placeholder="Escribe aquí el motivo de la cancelación..."></textarea>
+                                            <div style="display: flex; gap: 10px;">
+                                                <button type="button" class="btn-main-cta" onclick="submitCancelClaim('{{ $id }}')" style="background-color: #d32f2f; border: none; font-size: 0.85rem; padding: 8px 16px; margin: 0; color: white; cursor: pointer; border-radius: 8px; font-weight: 600;">
+                                                    Confirmar Cancelación
+                                                </button>
+                                                <button type="button" class="btn-main-cta" onclick="hideCancelForm('{{ $id }}')" style="background-color: transparent; border: 1px solid var(--living-moss); color: var(--living-moss); font-size: 0.85rem; padding: 8px 16px; margin: 0; cursor: pointer; border-radius: 8px; font-weight: 600;">
+                                                    Volver
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <!-- Sección para mostrar el motivo de cancelación si ya fue cancelado -->
+                                <div class="cancellation-reason-display" id="cancellation-display-{{ $id }}" style="display: none; margin-top: 20px; background: rgba(211, 47, 47, 0.05); border: 1px solid rgba(211, 47, 47, 0.2); padding: 15px; border-radius: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 10px; color: #d32f2f; font-weight: 700; margin-bottom: 5px; font-size: 0.9rem;">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        Reclamo Cancelado por el Vecino
+                                    </div>
+                                    <p id="cancellation-text-{{ $id }}" style="font-size: 0.95rem; color: #b71c1c; margin: 0; line-height: 1.5; font-style: italic;"></p>
+                                </div>
                             </div>
                         </details>
                     @endforeach
@@ -117,4 +153,72 @@
             @endif
         </div>
     </main>
+@endsection
+
+@section('scripts')
+    <script>
+        function showCancelForm(id) {
+            document.getElementById('cancel-form-' + id).style.display = 'block';
+            const trigger = document.querySelector('#cancel-section-' + id + ' .btn-cancel-trigger');
+            if (trigger) trigger.style.display = 'none';
+        }
+
+        function hideCancelForm(id) {
+            document.getElementById('cancel-form-' + id).style.display = 'none';
+            const trigger = document.querySelector('#cancel-section-' + id + ' .btn-cancel-trigger');
+            if (trigger) trigger.style.display = 'inline-block';
+        }
+
+        function submitCancelClaim(id) {
+            const reason = document.getElementById('cancel-reason-' + id).value.trim();
+            if (!reason) {
+                alert('Por favor ingrese el motivo de la cancelación.');
+                return;
+            }
+
+            // Guardar en localStorage
+            localStorage.setItem('cancelled_claim_' + id + '_reason', reason);
+
+            // Actualizar la interfaz
+            applyLocalCancellations();
+            
+            // Cerrar el formulario
+            hideCancelForm(id);
+        }
+
+        function applyLocalCancellations() {
+            const cards = document.querySelectorAll('details.reclamo-card');
+            cards.forEach(card => {
+                const idSpan = card.querySelector('.reclamo-id');
+                if (!idSpan) return;
+                const id = idSpan.innerText.replace('#', '').trim();
+
+                const reason = localStorage.getItem('cancelled_claim_' + id + '_reason');
+                if (reason) {
+                    // Cambiar el badge de estado
+                    const badge = card.querySelector('.status-badge');
+                    if (badge) {
+                        badge.innerText = 'CANCELADO';
+                        badge.className = 'status-badge discarded';
+                    }
+
+                    // Ocultar sección de cancelar
+                    const cancelSec = document.getElementById('cancel-section-' + id);
+                    if (cancelSec) cancelSec.style.display = 'none';
+
+                    // Mostrar el display del motivo de cancelación
+                    const displayBox = document.getElementById('cancellation-display-' + id);
+                    const displayText = document.getElementById('cancellation-text-' + id);
+                    if (displayBox && displayText) {
+                        displayText.innerText = '"' + reason + '"';
+                        displayBox.style.display = 'block';
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            applyLocalCancellations();
+        });
+    </script>
 @endsection

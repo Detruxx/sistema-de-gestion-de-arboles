@@ -92,34 +92,6 @@ class ProfileController extends Controller
     }
 
     /**
-     * Muestra la lista de todos los reclamos para el inspector (Los mas viejos arriba).
-     */
-    public function verReclamos(Request $request)
-    {
-        $reclamos = collect();
-        $isMock = false;
-
-        try {
-            $reclamos = Reclamo::with(['user', 'street', 'Request_Type', 'tree.specie'])
-                ->orderBy('created_at', 'asc')
-                ->get();
-        } catch (\Exception $e) {
-            $isMock = true;
-        }
-
-        if ($reclamos->isEmpty() || $isMock) {
-            if (!$request->session()->has('mock_reclamos')) {
-                $this->initMockReclamos($request);
-            }
-            $allMock = collect($request->session()->get('mock_reclamos'));
-            // Los mas viejos arriba (ascendente) y que no esten descartados
-            $reclamos = $allMock->where('status', '!=', 'discarded')->sortBy('created_at');
-        }
-
-        return view('profile.ver-reclamos', compact('reclamos'));
-    }
-
-    /**
      * Actualiza el estado del reclamo (completar o descartar).
      */
     public function updateReclamoStatus(Request $request, $id)

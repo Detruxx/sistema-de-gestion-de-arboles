@@ -5,6 +5,7 @@
 
 @section('styles')
     <!-- Estilos adicionales locales para complementar -->
+    <link rel="stylesheet" href="{{ asset('css/admin/dynamic-status.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 @endsection
 
@@ -13,6 +14,12 @@
     
     <!-- Sidebar -->
     <aside class="admin-sidebar">
+        <!-- Toggle button only visible on mobile/tablet -->
+        <button class="sidebar-toggle" onclick="toggleAdminSidebar()">
+            <span>Menú del Panel Comunal</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+
         <div class="sidebar-menu">
             <h3 class="sidebar-menu-title">Panel Comunal</h3>
             <button class="sidebar-btn active" onclick="showModule('resumen')" id="menu-resumen">
@@ -142,7 +149,6 @@
             </div>
         </section>
 
-        <!-- MODULE: MESSAGES & CLAIMS -->
         <section id="module-reclamos" class="dashboard-module">
             <div class="admin-header-section">
                 <div>
@@ -151,12 +157,31 @@
                 </div>
             </div>
 
+            <!-- Filters Bar (horizontal) — Valores cargados dinámicamente desde la API -->
+            <div class="inventory-filter-bar">
+                <div class="inventory-filter-group" style="flex: 1 1 250px;">
+                    <label for="search-claims">Buscar por vecino, dirección o ID</label>
+                    <input type="text" id="search-claims" placeholder="Ej. Laura Gómez, REC-2026-001..." oninput="filterClaims()">
+                </div>
+                <div class="inventory-filter-group" style="flex: 1 1 180px;">
+                    <label for="filter-claim-status">Estado</label>
+                    <select id="filter-claim-status" onchange="filterClaims()">
+                        <option value="">Todos los estados</option>
+                        <!-- Opciones pobladas dinámicamente por claims.js -->
+                    </select>
+                </div>
+                <div class="inventory-filter-group" style="flex: 1 1 200px;">
+                    <label for="filter-claim-category">Categoría</label>
+                    <select id="filter-claim-category" onchange="filterClaims()">
+                        <option value="">Todas las categorías</option>
+                        <!-- Opciones pobladas dinámicamente por claims.js -->
+                    </select>
+                </div>
+            </div>
+
             <div class="split-layout">
                 <!-- Left Panel: List of claims -->
                 <div class="list-panel">
-                    <div class="panel-search-box">
-                        <input type="text" id="search-claims" placeholder="Buscar por vecino o dirección..." oninput="filterClaims()">
-                    </div>
                     <div class="items-list" id="claims-list-container">
                         <!-- Loaded via JS -->
                     </div>
@@ -341,5 +366,8 @@
 
 @section('scripts')
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-<script src="{{ asset('js/admin/dashboard.js') }}"></script>
+<script src="{{ asset('js/inspector/modules/core.js') }}"></script>
+<script src="{{ asset('js/inspector/modules/claims.js') }}"></script>
+<script src="{{ asset('js/inspector/modules/trees.js') }}"></script>
+<script src="{{ asset('js/inspector/modules/map.js') }}"></script>
 @endsection

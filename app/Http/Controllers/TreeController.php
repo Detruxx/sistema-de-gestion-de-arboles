@@ -239,7 +239,7 @@ class TreeController extends Controller
     }
 
     // Busca arboles que estan en estado critico
-    public function getCriticalTrees()
+    public function getCriticalTrees() 
     {
 
         // Se busca los arboles en estado critico

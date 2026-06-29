@@ -6,12 +6,13 @@
 @section('active-plantacion', 'active')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/plantacion.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/tramites/plantacion.css') }}?v={{ filemtime(public_path('css/tramites/plantacion.css')) }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 @endsection
 
 @section('content')
-    <main class="tramites-page-container">
+    <main class="tramites-page-container" style="position: relative; overflow: hidden;">
+        @include('backgrounds.forest')
         <section class="cuidados-header reveal">
             <h1 class="hero-title">Solicitud de Plantación</h1>
             <p class="section-subtitle">

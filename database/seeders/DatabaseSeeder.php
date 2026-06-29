@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
             ParkSeeder::class,        
             SpecieSeeder::class,
             PrioritySeeder::class,
-            CompanySeeder::class,     
+            CompanySeeder::class,
             RequestTypeSeeder::class,
             RequestStatusSeeder::class,
             PlanterSeeder::class,

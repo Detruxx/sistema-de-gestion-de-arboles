@@ -14,8 +14,27 @@ class RequestSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Creamos, por ejemplo, 10 reclamos de prueba usando el Factory
+        // 1. Creamos 10 reclamos aleatorios
         $reclamos = Request::factory()->count(10)->create();
+
+        // 1.5 Creamos un caso EXPLICITO de duplicado para probar el algoritmo
+        $reclamoMaestro = Request::factory()->create([
+            'street_id' => 1,
+            'request_type_id' => 1,
+            'request_status_id' => 2, // Relevado
+            'description' => 'Reclamo Original: Rama gigante a punto de caer'
+        ]);
+
+        $reclamoDuplicado = Request::factory()->create([
+            'street_id' => 1,
+            'request_type_id' => 1, // Misma calle y mismo tipo de reclamo
+            'request_status_id' => 1, // Nuevo reclamo pendiente
+            'description' => 'Reclamo Duplicado: Vecino reporta la misma rama gigante',
+            'suggested_duplicate_id' => $reclamoMaestro->id
+        ]);
+
+        $reclamos->push($reclamoMaestro);
+        $reclamos->push($reclamoDuplicado);
 
         // 2. Recorremos cada reclamo recién creado para generarle su "primer paso" en la bitácora
         foreach ($reclamos as $reclamo) {

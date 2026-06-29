@@ -26,7 +26,13 @@ return new class extends Migration
             $table->foreignId('request_status_id')->constrained('request_statuses')->onDelete('restrict');
             $table->text('cancellation_reason')->nullable(); //Lugar en que el inspector justificará por que cancela el reclamo
             $table->foreignId('priority_id')->nullable()->constrained('priorities')->onDelete('restrict');
-           
+
+            // Relaciones de vinculación y duplicados
+            $table->unsignedBigInteger('linked_to')->nullable();
+            $table->unsignedBigInteger('suggested_duplicate_id')->nullable();
+            $table->foreign('linked_to')->references('id')->on('requests')->onDelete('set null');
+            $table->foreign('suggested_duplicate_id')->references('id')->on('requests')->onDelete('set null');
+            
             $table->timestamps();
         });
     }

@@ -27,11 +27,11 @@
 }
 
 .logo {
-    width: 45px;
-    height: 45px;
-    border: 2px solid var(--spring-leaf);
+    width: 55px;
+    height: 55px;
+    border: none;
     border-radius: 50%;
-    background-color: var(--deep-canopy);
+    background-color: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -43,6 +43,7 @@
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
+    transform: scale(1.45);
 }
 
 .brand-name {

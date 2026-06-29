@@ -16,6 +16,30 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 1012, especie: 'Palo Borracho', direccion: 'Av. 9 de Julio 1200, San Nicolás, CABA' }
     ];
 
+    //////////  Trae los tipos de reclamo desde la API
+    const selectTipoReclamo = document.getElementById('tipo-reclamo');
+
+    fetch('/api/request-types')
+        .then(response => response.json())
+        .then(types => {
+            // Limpiamos opciones y dejamos solo el placeholder
+            selectTipoReclamo.innerHTML = '<option value="">Seleccione una opcion...</option>';
+
+            // Agregamos una opcion por cada tipo cargado en la BDD
+            types.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type.id;
+                option.textContent = type.task_description;
+
+                // Aca se muestran las opciones agregandolas al SELECT HTML
+                selectTipoReclamo.appendChild(option);
+
+            });
+
+        })
+        .catch(err => console.error('Error al cargar tipos de reclamo:', err));
+    /////////////////////////////////////
+
     const inputArbolId = document.getElementById('arbol-id');
     const inputDireccion = document.getElementById('direccion');
     const banner = document.getElementById('selected-tree-banner');
@@ -48,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         inputArbolId.value = arbolIdParam;
         inputArbolId.readOnly = true;
         inputArbolId.classList.add('readonly-input');
-        
+
         const matched = arboles.find(a => a.id == arbolIdParam);
         if (matched) {
             setSeleccionArbol(matched);
@@ -78,173 +102,46 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- LÓGICA DEL SELECTOR DE MAPA ESTILO UBER ---
-    const btnSelectMap = document.getElementById('btn-select-map');
-    const mapModal = document.getElementById('address-map-modal');
-    const mapModalClose = document.getElementById('address-map-modal-close');
-    const btnConfirmAddress = document.getElementById('btn-confirm-address');
-    const previewText = document.getElementById('address-preview-text');
-    const addressMapBody = document.querySelector('.address-map-body');
-    
-    let selectorMap = null;
-    let currentCoordsAddress = '';
-    let debounceTimer = null;
-
-    function initSelectorMap() {
-        if (selectorMap) return;
-
-        // Centrar en Plaza Armenia, Palermo (-34.5888, -58.4285)
-        selectorMap = L.map('address-map-canvas', {
-            zoomControl: false
-        }).setView([-34.5888, -58.4285], 16);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; OpenStreetMap'
-        }).addTo(selectorMap);
-
-        L.control.zoom({ position: 'topright' }).addTo(selectorMap);
-
-        // Función de geocodificación reversa usando Nominatim
-        function reverseGeocode(lat, lng) {
-            previewText.textContent = 'Buscando dirección...';
-            btnConfirmAddress.disabled = true;
-
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data && data.address) {
-                        const road = data.address.road || data.address.pedestrian || data.address.path || '';
-                        const number = data.address.house_number || '';
-                        const suburb = data.address.suburb || data.address.neighbourhood || '';
-                        
-                        if (road) {
-                            currentCoordsAddress = road + (number ? ' ' + number : '') + (suburb ? ', ' + suburb : '');
-                        } else {
-                            currentCoordsAddress = data.display_name.split(',').slice(0, 3).join(',').trim();
-                        }
-                    } else {
-                        currentCoordsAddress = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-                    }
-                    previewText.textContent = currentCoordsAddress;
-                    btnConfirmAddress.disabled = false;
-                })
-                .catch(err => {
-                    console.error('Nominatim error, usando fallback:', err);
-                    // Fallback de simulación en Palermo según cercanía
-                    const fallbacks = [
-                        { lat: -34.5888, lng: -58.4285, address: 'Costa Rica 4600' },
-                        { lat: -34.5795, lng: -58.4148, address: 'Av. Sarmiento 2400' },
-                        { lat: -34.6178, lng: -58.3712, address: 'Defensa 850' },
-                        { lat: -34.5835, lng: -58.3927, address: 'Plaza Francia 1100' },
-                        { lat: -34.5615, lng: -58.4552, address: 'Juramento 1900' }
-                    ];
-                    
-                    let closest = fallbacks[0];
-                    let minDist = Infinity;
-                    fallbacks.forEach(f => {
-                        let dist = Math.pow(f.lat - lat, 2) + Math.pow(f.lng - lng, 2);
-                        if (dist < minDist) {
-                            minDist = dist;
-                            closest = f;
-                        }
-                    });
-                    
-                    const simulatedNumber = Math.floor(100 + Math.random() * 800) * 10;
-                    const streetName = closest.address.split(' ').slice(0, -1).join(' ') || closest.address.split(' ')[0];
-                    currentCoordsAddress = streetName + ' ' + simulatedNumber + ', Palermo, CABA';
-                    previewText.textContent = currentCoordsAddress;
-                    btnConfirmAddress.disabled = false;
-                });
-        }
-
-        // Cargar dirección inicial
-        const initialCenter = selectorMap.getCenter();
-        reverseGeocode(initialCenter.lat, initialCenter.lng);
-
-        // Añadir efectos físicos de salto al pin
-        selectorMap.on('movestart', () => {
-            if(addressMapBody) addressMapBody.classList.add('map-moving');
-        });
-
-        selectorMap.on('moveend', () => {
-            if(addressMapBody) addressMapBody.classList.remove('map-moving');
-            
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                const center = selectorMap.getCenter();
-                reverseGeocode(center.lat, center.lng);
-            }, 500);
-        });
-    }
-
-    if (btnSelectMap) {
-        btnSelectMap.addEventListener('click', () => {
-            if(mapModal) mapModal.classList.add('active');
-            setTimeout(() => {
-                initSelectorMap();
-                if (selectorMap) {
-                    selectorMap.invalidateSize();
-                }
-            }, 100);
-        });
-    }
-
-    if (mapModalClose) {
-        mapModalClose.addEventListener('click', () => {
-            if(mapModal) mapModal.classList.remove('active');
-        });
-    }
-
-    if (btnConfirmAddress) {
-        btnConfirmAddress.addEventListener('click', () => {
-            if (currentCoordsAddress) {
-                if(inputDireccion) {
-                    inputDireccion.value = currentCoordsAddress;
-                    inputDireccion.readOnly = false;
-                    inputDireccion.classList.remove('readonly-input');
-                }
-                if(inputArbolId) inputArbolId.value = ''; 
-                if(banner) banner.style.display = 'none';
-                if(helpText) helpText.style.display = 'none';
-            }
-            if(mapModal) mapModal.classList.remove('active');
-        });
-    }
-
     // Lógica de envío de formulario a la API
     const reclamoForm = document.getElementById('reclamo-form');
     if (reclamoForm) {
         reclamoForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             // Requerimos el token CSRF desde el meta tag si existe, de lo contrario esto puede fallar si se depende de blade aquí
             const tokenEl = document.querySelector('meta[name="csrf-token"]');
             const token = tokenEl ? tokenEl.getAttribute('content') : '';
 
-            const data = {
-                categoria: document.getElementById('tipo-reclamo').value,
-                arbol_id: inputArbolId ? inputArbolId.value.trim() : null,
-                direccion: inputDireccion ? inputDireccion.value.trim() : '',
-                descripcion: document.getElementById('descripcion') ? document.getElementById('descripcion').value.trim() : '',
-                especie: urlParams.get('especie') || (inputArbolId && inputArbolId.value ? 'Especie ID ' + inputArbolId.value : 'No especificada'),
-                vecino: 'Vecino de Comuna 13',
-                email: 'vecino.comuna13@gmail.com'
-            };
+            // Usamos FormData en vez de Json para soportar subida de fotos
+            const formData = new FormData();
+            formData.append('request_type_id', document.getElementById('tipo-reclamo').value);
+
+            if (inputArbolId && inputArbolId.value.trim() !== '') {
+                formData.append('tree_id', inputArbolId.value.trim());
+            }
+
+            formData.append('address', inputDireccion ? inputDireccion.value.trim() : '');
+            formData.append('description', document.getElementById('descripcion') ? document.getElementById('descripcion').value.trim() : '');
+
+            const fileInput = document.getElementById('foto');
+            if (fileInput && fileInput.files.length > 0) {
+                formData.append('foto', fileInput.files[0]);
+            }
 
             try {
-                const response = await fetch('/api/reclamos', {
+                const response = await fetch('/requests', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': token
+                        // Al usar FormData NO se debe poner 'Content-Type': 'application/json',
+                        // el navegador seteará automáticamente 'multipart/form-data' y el boundary.
                     },
-                    body: JSON.stringify(data)
+                    body: formData
                 });
 
                 if (response.ok) {
                     const result = await response.json();
-                    alert(`Reclamo registrado con éxito bajo el ID: ${result.data.id}`);
+                    alert(`Reclamo registrado con éxito bajo el ID: ${result.data.tracking_code}`);
                     reclamoForm.reset();
                     setSeleccionArbol(null);
                 } else {
@@ -259,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Lógica de cambio de pestañas
-window.switchTab = function(tabName) {
+window.switchTab = function (tabName) {
     // Ocultar todos los contenidos
     document.querySelectorAll('.tab-content').forEach(el => {
         el.style.display = 'none';
@@ -280,10 +177,10 @@ window.switchTab = function(tabName) {
 };
 
 // Consultar estado de un reclamo individual
-window.trackComplaint = async function() {
+window.trackComplaint = async function () {
     const inputEl = document.getElementById('track-id-input');
-    if(!inputEl) return;
-    
+    if (!inputEl) return;
+
     const inputVal = inputEl.value.trim().toUpperCase();
     const errorDiv = document.getElementById('track-error');
     const resultDiv = document.getElementById('track-result');
@@ -293,84 +190,126 @@ window.trackComplaint = async function() {
         return;
     }
 
-    if(errorDiv) errorDiv.style.display = 'none';
-    if(resultDiv) resultDiv.style.display = 'none';
+    if (errorDiv) errorDiv.style.display = 'none';
+    if (resultDiv) resultDiv.style.display = 'none';
 
     try {
-        const response = await fetch(`/api/reclamos/${inputVal}`);
+        const response = await fetch(`/requests/${inputVal}`, {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
         if (response.ok) {
             const result = await response.json();
             const claim = result.data;
 
             // Poblar información
             const dirEl = document.getElementById('track-direccion');
-            if(dirEl) dirEl.textContent = claim.direccion;
-            
+            if (dirEl) dirEl.textContent = claim.direccion;
+
             const catEl = document.getElementById('track-categoria');
-            if(catEl) catEl.textContent = `${claim.categoria} (${claim.fecha})`;
-            
+            if (catEl) catEl.textContent = `${claim.categoria} (${claim.fecha})`;
+
             // Texto de respuesta
             const replyTextEl = document.getElementById('track-admin-reply');
             const adminReplyBox = document.getElementById('admin-reply-box');
             if (claim.respuesta_admin) {
-                if(replyTextEl) replyTextEl.textContent = claim.respuesta_admin;
-                if(adminReplyBox) adminReplyBox.style.borderColor = 'var(--living-moss)';
+                if (replyTextEl) replyTextEl.textContent = claim.respuesta_admin;
+                if (adminReplyBox) adminReplyBox.style.borderColor = 'var(--living-moss)';
             } else {
-                if(replyTextEl) replyTextEl.textContent = "La solicitud fue recibida correctamente. Aún no se ha redactado una respuesta oficial por los inspectores.";
-                if(adminReplyBox) adminReplyBox.style.borderColor = '#e5e7eb';
+                if (replyTextEl) replyTextEl.textContent = "La solicitud fue recibida correctamente. Aún no se ha redactado una respuesta oficial por los inspectores.";
+                if (adminReplyBox) adminReplyBox.style.borderColor = '#e5e7eb';
             }
 
-            // Resaltar el paso del proceso
-            const steps = ['recibido', 'inspeccion', 'poda', 'resuelto'];
-            const currentIdx = steps.indexOf(claim.estado);
+            // Buscar estados de la BD dinámicamente
+            const statusRes = await fetch('/api/request-statuses');
+            if (!statusRes.ok) throw new Error("Error cargando estados");
+            const statusResult = await statusRes.json();
+            const requestStatuses = statusResult.data;
 
-            steps.forEach((step, idx) => {
-                const stepEl = document.getElementById(`step-${step}`);
-                if(!stepEl) return;
-                
-                const numEl = stepEl.querySelector('.step-num');
-                const lblEl = stepEl.querySelector('.step-lbl');
+            // Renderizar la barra de progreso
+            const container = document.getElementById('dynamic-stepper-container');
+            if (container) {
+                // Filtramos solo los estados lineales (los que tienen secuencia definida)
+                const linearSteps = requestStatuses.filter(s => s.sequence !== null).sort((a, b) => a.sequence - b.sequence);
 
-                if (idx <= currentIdx) {
-                    // Paso completado o activo
-                    if(numEl) {
-                        numEl.style.background = 'var(--living-moss)';
-                        numEl.style.borderColor = 'var(--living-moss)';
-                        numEl.style.color = '#fff';
-                    }
-                    if(lblEl) {
-                        lblEl.style.color = 'var(--deep-canopy)';
-                        lblEl.style.fontWeight = '700';
-                    }
-                } else {
-                    // Paso futuro
-                    if(numEl) {
-                        numEl.style.background = '#e5e7eb';
-                        numEl.style.borderColor = '#e5e7eb';
-                        numEl.style.color = '#9ca3af';
-                    }
-                    if(lblEl) {
-                        lblEl.style.color = '#9ca3af';
-                        lblEl.style.fontWeight = '500';
-                    }
+                // Determinamos el estado actual
+                const currentState = requestStatuses.find(s => s.slug === claim.estado);
+                const isTerminalException = currentState && currentState.is_terminal && currentState.sequence === null;
+
+                // Obtenemos la secuencia en la que nos encontramos
+                let currentSeq = 0;
+                if (!isTerminalException && currentState) {
+                    currentSeq = currentState.sequence;
                 }
-            });
 
-            // Actualizar línea de fondo según el progreso
-            const line = document.getElementById('track-step-line');
-            if(line) {
-                let progressPercent = 0;
-                if (currentIdx === 1) progressPercent = 33;
-                else if (currentIdx === 2) progressPercent = 66;
-                else if (currentIdx === 3) progressPercent = 100;
-                
-                line.style.background = `linear-gradient(to right, var(--living-moss) ${progressPercent}%, #e5e7eb ${progressPercent}%)`;
+                let html = '<div class="track-step-line" id="track-step-line"></div>';
+
+                linearSteps.forEach((step) => {
+                    const isActive = step.sequence === currentSeq;
+                    const isPassed = step.sequence < currentSeq;
+
+                    let bgNum = '#e5e7eb'; // Gris por defecto
+                    let colorNum = '#9ca3af';
+                    let colorLbl = '#9ca3af';
+                    let fontLbl = '500';
+                    let borderNum = '#e5e7eb';
+
+                    let labelText = step.status_name;
+                    let numText = step.sequence;
+
+                    if (isTerminalException) {
+                        if (step.sequence === 1) {
+                            bgNum = currentState.color; // Color BD (Rojo o Magenta)
+                            borderNum = currentState.color;
+                            colorNum = '#fff';
+                            colorLbl = currentState.color; // Texto BD
+                            labelText = currentState.status_name;
+                            numText = currentState.slug === 'denied' ? '✖' : '●'; // Cruz o Punto
+                        }
+                    } else if (isActive) {
+                        bgNum = '#166534'; // Verde oscuro bolita actual
+                        borderNum = '#166534';
+                        colorNum = '#ffffff';
+                        colorLbl = currentState.color; // Texto hereda color BD (Violeta, azul, etc)
+                        fontLbl = '700';
+                    } else if (isPassed) {
+                        bgNum = '#e5e7eb'; // Gris claro bolitas pasadas
+                        borderNum = '#e5e7eb';
+                        colorNum = '#9ca3af';
+                        colorLbl = '#9ca3af';
+                    }
+
+                    html += `
+                        <div class="track-step-item" id="step-${step.slug}">
+                            <div class="step-num ${isTerminalException && step.sequence === 1 && currentState.slug === 'denied' ? 'is-denied' : ''}" style="background:${bgNum}; border-color:${borderNum}; color:${colorNum}">${numText}</div>
+                            <span class="step-lbl" style="color:${colorLbl}; font-weight:${fontLbl}">${labelText}</span>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+
+                // Actualizar porcentaje de la línea
+                const line = document.getElementById('track-step-line');
+                if (line) {
+                    let progressPercent = 0;
+                    if (!isTerminalException && currentSeq > 1) {
+                        progressPercent = ((currentSeq - 1) / (linearSteps.length - 1)) * 100;
+                    }
+                    let lineBg = '#166534'; // Mismo verde oscuro que la pelotita actual
+                    if (isTerminalException) {
+                        lineBg = currentState.color;
+                        progressPercent = 0;
+                    }
+                    line.style.background = `linear-gradient(to right, ${lineBg} ${progressPercent}%, #e5e7eb ${progressPercent}%)`;
+                }
             }
 
             // Mostrar contenedor de resultados
-            if(resultDiv) resultDiv.style.display = 'block';
+            if (resultDiv) resultDiv.style.display = 'block';
         } else {
-            if(errorDiv) errorDiv.style.display = 'block';
+            if (errorDiv) errorDiv.style.display = 'block';
         }
     } catch (err) {
         console.error("Error tracking claim:", err);

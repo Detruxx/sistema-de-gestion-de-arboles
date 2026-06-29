@@ -64,15 +64,18 @@
             @endguest
             @auth <!-- Si el usuario esta logueado, se muestra el menu de perfil -->
                 <div class="nav-dropdown">
-                    <button class="nav-pill dropdown-trigger" aria-expanded="false" style="background: none; border: 1px solid transparent; padding: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; color: var(--paper-white);" title="Perfil de {{ Auth::user()->name }}">
-                        <!-- Icono SVG de persona (cabeza y cuerpo) -->
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
+                    <button class="nav-pill dropdown-trigger" aria-expanded="false" style="background: none; border: 1px solid transparent; padding: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; color: var(--paper-white); overflow: hidden;" title="Perfil de {{ Auth::user()->name }}">
+                        <!-- Icono SVG de persona (cabeza y cuerpo) o imagen del avatar -->
+                        <span id="nav-avatar-container" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 50%; overflow: hidden;">
+                            <svg id="nav-avatar-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <img id="nav-avatar-img" src="" alt="Avatar" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                        </span>
                     </button>
                     <div class="dropdown-menu">
-                        <a href="/configuracion">Configuración</a>
+                        <a href="/configuracion">Mi Perfil</a>
                         @if(Auth::user()->role === 'vecino')
                             <a href="/mis-reclamos">Mis Reclamos</a>
                         @else
@@ -94,22 +97,42 @@
     <footer class="main-footer">
         <div class="footer-container">
             <div class="footer-brand">
-                <div class="footer-logo">
-                    <div class="logo"><img src="{{ asset('img/logo.png') }}" alt="logo"></div>
-                    <span class="brand-name">TreeBA</span>
-                </div>
-                <p class="footer-tagline">Mapeando el futuro verde de la ciudad.</p>
-                <p class="footer-source">Datos abiertos obtenidos de BA Data - GCBA.</p>
-                <p class="footer-source" style="margin-top: 5px; opacity: 0.85;">Basado en el modelo de gestión de la Comuna 13 (Belgrano, Colegiales y Núñez).</p>
+        <div class="container footer-grid">
+            <div class="footer-info">
+                <h4>Comuna 13</h4>
+                <p>Belgrano, Colegiales, Núñez</p>
+                <p>Av. Cabildo 3067, CABA</p>
+                <p>Lunes a Viernes de 8:30 a 14:30 hs.</p>
             </div>
             
             <div class="footer-links">
-                <h4>Navegación</h4>
+                <h4>Enlaces Rápidos</h4>
                 <ul>
-                    <li><a href="/">Inicio</a></li>
+                    <li><a href="/#tramites">Trámites</a></li>
                     <li><a href="/mapa">Mapa Interactivo</a></li>
                     <li><a href="/cuidados">Cuidados del Árbol</a></li>
                     <li><a href="/#sobre-nosotros">Sobre Nosotros</a></li>
+                    @auth
+                        @if(Auth::user()->role === 'inspector' || Auth::user()->role === 'admin')
+                            <li><a href="/mensajes">Mensajes</a></li>
+                        @else
+                            <li><a href="/#contacto">Contacto</a></li>
+                        @endif
+                    @else
+                        <li><a href="/#contacto">Contacto</a></li>
+                    @endauth
+                    @guest
+                        <li><a href="/login">Login</a></li>
+                    @endguest
+                    @auth
+                        <li><a href="/configuracion">Configuración</a></li>
+                        @if(Auth::user()->role === 'vecino')
+                            <li><a href="/mis-reclamos">Mis Reclamos</a></li>
+                        @else
+                            <li><a href="/admin/dashboard">Panel de Control</a></li>
+                        @endif
+                        <li><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="color: #d32f2f;">Cerrar Sesión</a></li>
+                    @endauth
                 </ul>
             </div>
 
