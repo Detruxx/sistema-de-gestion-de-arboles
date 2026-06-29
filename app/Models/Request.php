@@ -12,7 +12,8 @@ class Request extends Model
     // Asegúrate de tener 'request_status_id' en tu array $fillable si lo usás
     protected $fillable = [
         'user_id', 'tree_id', 'request_type_id', 'street_id', 
-        'description', 'path', 'request_status_id'
+        'description', 'path', 'request_status_id',
+        'linked_to', 'suggested_duplicate_id'
     ];
 
     // Esto es para que se pueda acceder al codigo de seguimiento como si fuera una propiedad normal
@@ -54,6 +55,16 @@ class Request extends Model
     public function street()
     {
         return $this->belongsTo(Street::class);
+    }
+
+    public function linkedRequest()
+    {
+        return $this->belongsTo(Request::class, 'linked_to');
+    }
+
+    public function suggestedDuplicate()
+    {
+        return $this->belongsTo(Request::class, 'suggested_duplicate_id');
     }
 
     /**

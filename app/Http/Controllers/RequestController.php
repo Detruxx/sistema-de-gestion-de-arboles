@@ -21,13 +21,15 @@ class RequestController extends Controller
             return [
                 'id' => $req->tracking_code,
                 'vecino' => $req->user ? $req->user->name : 'Vecino Anónimo',
-                'categoria' => $req->requestType ? $req->requestType->name : 'General',
+                'categoria' => $req->requestType ? $req->requestType->task_description : 'General',
                 'fecha' => $req->created_at->format('Y-m-d'),
                 'estado' => $req->status ? $req->status->slug : 'open',
                 'descripcion' => $req->description,
                 'direccion' => $req->street ? $req->street->street_name . ' ' . $req->street->street_number : 'Sin dirección',
                 'especie' => $req->tree ? $req->tree->species_name : 'No vinculada',
-                'email' => $req->user ? $req->user->email : 'sin-email@treeba.gob.ar'
+                'email' => $req->user ? $req->user->email : 'sin-email@treeba.gob.ar',
+                'linked_to' => $req->linked_to,
+                'suggested_duplicate_id' => $req->suggested_duplicate_id
             ];
         });
 
@@ -82,6 +84,13 @@ class RequestController extends Controller
             $photoPath = $request->file('foto')->store('fotos/reclamos', 'public');
         }
 
+        // Algoritmo de Detección de Duplicados (Híbrido)
+        $estadosTerminalesIds = \App\Models\RequestStatus::where('is_terminal', true)->pluck('id')->toArray();
+        $posibleDuplicado = \App\Models\Request::where('street_id', $street->id)
+                                ->where('request_type_id', $request->request_type_id)
+                                ->whereNotIn('request_status_id', $estadosTerminalesIds)
+                                ->first();
+
         // 4. Crear el reclamo en la base de datos
         $incident = \App\Models\Request::create([
             'user_id'           => $userId,
@@ -91,6 +100,7 @@ class RequestController extends Controller
             'description'       => $request->description,
             'path'              => $photoPath,
             'request_status_id' => 1,
+            'suggested_duplicate_id' => $posibleDuplicado ? $posibleDuplicado->id : null,
         ]);
 
         // Registrar en la bitácora
@@ -194,9 +204,13 @@ class RequestController extends Controller
         $request->validate([
             'estado'    => 'nullable|string',
             'respuesta' => 'nullable|string|max:1000',
+            'linked_to' => 'nullable|integer',
+            'ignore_suggestion' => 'nullable|boolean'
         ]);
 
         $statusId = $treeRequest->request_status_id;
+        $linkedTo = $treeRequest->linked_to;
+        $suggestedDuplicateId = $treeRequest->suggested_duplicate_id;
         
         // Si mandan un estado nuevo desde el JS (el slug real)
         if ($request->has('estado')) {
@@ -206,6 +220,17 @@ class RequestController extends Controller
             if ($statusObj) {
                 $statusId = $statusObj->id;
             }
+
+            // Lógica de duplicado manual o automático
+            if ($dbSlug === 'vinculated' && $request->has('linked_to')) {
+                $linkedTo = $request->linked_to;
+                $suggestedDuplicateId = null;
+            }
+        }
+
+        // Ignorar sugerencia
+        if ($request->has('ignore_suggestion') && $request->ignore_suggestion == true) {
+            $suggestedDuplicateId = null;
         }
 
         $justification = $request->input('respuesta');
@@ -215,9 +240,11 @@ class RequestController extends Controller
 
         $userId = auth()->id() ?? 1;
 
-        DB::transaction(function () use ($treeRequest, $statusId, $userId, $justification) {
+        DB::transaction(function () use ($treeRequest, $statusId, $userId, $justification, $linkedTo, $suggestedDuplicateId) {
             $treeRequest->update([
-                'request_status_id' => $statusId
+                'request_status_id' => $statusId,
+                'linked_to' => $linkedTo,
+                'suggested_duplicate_id' => $suggestedDuplicateId
             ]);
 
             // Solo creamos historial si hay un cambio de estado o una respuesta nueva

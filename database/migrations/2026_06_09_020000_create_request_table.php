@@ -20,6 +20,13 @@ return new class extends Migration
             $table->text('description');
             $table->foreignId('request_status_id')->constrained('request_statuses')->onDelete('restrict');
             $table->string('path')->nullable(); // path que lleva a la foto
+            
+            // Relaciones de vinculación y duplicados
+            $table->unsignedBigInteger('linked_to')->nullable();
+            $table->unsignedBigInteger('suggested_duplicate_id')->nullable();
+            $table->foreign('linked_to')->references('id')->on('requests')->onDelete('set null');
+            $table->foreign('suggested_duplicate_id')->references('id')->on('requests')->onDelete('set null');
+            
             $table->timestamps();
         });
     }

@@ -242,31 +242,43 @@ window.trackComplaint = async function () {
                 let html = '<div class="track-step-line" id="track-step-line"></div>';
                 
                 linearSteps.forEach((step) => {
-                    const isCompleted = step.sequence <= currentSeq;
+                    const isActive = step.sequence === currentSeq;
+                    const isPassed = step.sequence < currentSeq;
                     
-                    let bgNum = isCompleted ? 'var(--living-moss)' : '#e5e7eb';
-                    let colorNum = isCompleted ? '#fff' : '#9ca3af';
-                    let colorLbl = isCompleted ? 'var(--deep-canopy)' : '#9ca3af';
-                    let fontLbl = isCompleted ? '700' : '500';
+                    let bgNum = '#e5e7eb'; // Gris por defecto
+                    let colorNum = '#9ca3af';
+                    let colorLbl = '#9ca3af';
+                    let fontLbl = '500';
+                    let borderNum = '#e5e7eb';
                     
                     let labelText = step.status_name;
+                    let numText = step.sequence;
 
-                    // Manejo visual de Excepciones (Denegado/Vinculado)
                     if (isTerminalException) {
-                        // Resaltamos de color distinto el primer paso y le cambiamos el nombre
                         if (step.sequence === 1) {
-                            bgNum = currentState.slug === 'denied' ? '#ef4444' : '#6b7280'; // rojo o gris
+                            bgNum = currentState.color; // Color BD (Rojo o Magenta)
+                            borderNum = currentState.color;
                             colorNum = '#fff';
-                            colorLbl = bgNum;
+                            colorLbl = currentState.color; // Texto BD
                             labelText = currentState.status_name;
-                        } else {
-                            bgNum = '#e5e7eb'; colorNum = '#9ca3af'; colorLbl = '#9ca3af'; fontLbl = '500';
+                            numText = currentState.slug === 'denied' ? '✖' : '●'; // Cruz o Punto
                         }
+                    } else if (isActive) {
+                        bgNum = '#166534'; // Verde oscuro bolita actual
+                        borderNum = '#166534';
+                        colorNum = '#ffffff';
+                        colorLbl = currentState.color; // Texto hereda color BD (Violeta, azul, etc)
+                        fontLbl = '700';
+                    } else if (isPassed) {
+                        bgNum = '#e5e7eb'; // Gris claro bolitas pasadas
+                        borderNum = '#e5e7eb';
+                        colorNum = '#9ca3af';
+                        colorLbl = '#9ca3af';
                     }
 
                     html += `
                         <div class="track-step-item" id="step-${step.slug}">
-                            <div class="step-num" style="background:${bgNum}; border-color:${bgNum}; color:${colorNum}">${step.sequence}</div>
+                            <div class="step-num ${isTerminalException && step.sequence === 1 && currentState.slug === 'denied' ? 'is-denied' : ''}" style="background:${bgNum}; border-color:${borderNum}; color:${colorNum}">${numText}</div>
                             <span class="step-lbl" style="color:${colorLbl}; font-weight:${fontLbl}">${labelText}</span>
                         </div>
                     `;
@@ -281,10 +293,10 @@ window.trackComplaint = async function () {
                     if (!isTerminalException && currentSeq > 1) {
                         progressPercent = ((currentSeq - 1) / (linearSteps.length - 1)) * 100;
                     }
-                    let lineBg = 'var(--living-moss)';
+                    let lineBg = '#166534'; // Mismo verde oscuro que la pelotita actual
                     if (isTerminalException) {
-                        lineBg = currentState.slug === 'denied' ? '#ef4444' : '#6b7280';
-                        progressPercent = 0; // Línea frena al inicio
+                        lineBg = currentState.color;
+                        progressPercent = 0;
                     }
                     line.style.background = `linear-gradient(to right, ${lineBg} ${progressPercent}%, #e5e7eb ${progressPercent}%)`;
                 }

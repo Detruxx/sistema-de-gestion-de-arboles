@@ -5,6 +5,7 @@
 
 @section('styles')
     <!-- Estilos adicionales locales para complementar -->
+    <link rel="stylesheet" href="{{ asset('css/admin/dynamic-status.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 @endsection
 
@@ -341,5 +342,8 @@
 
 @section('scripts')
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-<script src="{{ asset('js/admin/dashboard.js') }}"></script>
+<script src="{{ asset('js/inspector/modules/core.js') }}"></script>
+<script src="{{ asset('js/inspector/modules/claims.js') }}"></script>
+<script src="{{ asset('js/inspector/modules/trees.js') }}"></script>
+<script src="{{ asset('js/inspector/modules/map.js') }}"></script>
 @endsection
