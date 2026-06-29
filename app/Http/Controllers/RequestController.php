@@ -199,7 +199,7 @@ class RequestController extends Controller
         $parts = explode('-', $id);
         $numericId = (int) end($parts);
 
-        $treeRequest = \App\Models\Request::findOrFail($numericId);
+        $userRequest = \App\Models\Request::findOrFail($numericId);
 
         $request->validate([
             'estado'    => 'nullable|string',
@@ -208,9 +208,9 @@ class RequestController extends Controller
             'ignore_suggestion' => 'nullable|boolean'
         ]);
 
-        $statusId = $treeRequest->request_status_id;
-        $linkedTo = $treeRequest->linked_to;
-        $suggestedDuplicateId = $treeRequest->suggested_duplicate_id;
+        $statusId = $userRequest->request_status_id;
+        $linkedTo = $userRequest->linked_to;
+        $suggestedDuplicateId = $userRequest->suggested_duplicate_id;
         
         // Si mandan un estado nuevo desde el JS (el slug real)
         if ($request->has('estado')) {
@@ -238,10 +238,12 @@ class RequestController extends Controller
             $justification = 'Cambio de estado a: ' . $request->estado;
         }
 
+        // Aca se define el usuario que va a hacer el cambio de status. Por defecto es 1
+        
         $userId = auth()->id() ?? 1;
 
-        DB::transaction(function () use ($treeRequest, $statusId, $userId, $justification, $linkedTo, $suggestedDuplicateId) {
-            $treeRequest->update([
+        DB::transaction(function () use ($userRequest, $statusId, $userId, $justification, $linkedTo, $suggestedDuplicateId) {
+            $userRequest->update([
                 'request_status_id' => $statusId,
                 'linked_to' => $linkedTo,
                 'suggested_duplicate_id' => $suggestedDuplicateId
@@ -249,7 +251,7 @@ class RequestController extends Controller
 
             // Solo creamos historial si hay un cambio de estado o una respuesta nueva
             if ($justification) {
-                $treeRequest->histories()->create([
+                $userRequest->histories()->create([
                     'request_status_id' => $statusId,
                     'user_id'           => $userId,
                     'justification'     => $justification,
@@ -261,7 +263,7 @@ class RequestController extends Controller
             return response()->json([
                 'status'    => 'success',
                 'message'   => 'Solicitud actualizada con éxito',
-                'data'      => $treeRequest,
+                'data'      => $userRequest,
             ], 200);
         }
 
