@@ -6,6 +6,7 @@ use App\Http\Controllers\TreeController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\WorkOrderController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -85,3 +86,6 @@ Route::get('/api/reclamos', [App\Http\Controllers\ComplaintController::class, 'i
 Route::post('/api/reclamos', [App\Http\Controllers\ComplaintController::class, 'store']);
 Route::get('/api/reclamos/{id}', [App\Http\Controllers\ComplaintController::class, 'show']);
 Route::put('/api/reclamos/{id}/status', [App\Http\Controllers\ComplaintController::class, 'updateStatus']);
+
+// Ruta para crear órdenes de trabajo/tareas de empresas contratistas
+Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');

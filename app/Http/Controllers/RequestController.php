@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\RequestType; 
 use App\Models\RequestStatus;
 use App\Models\Street;
+use App\Models\Priority; 
+use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -81,9 +83,17 @@ class RequestController extends Controller
     /**
      * Muestra el reclamo especificado.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        // Traemos el reclamo con sus historiales, sus órdenes de trabajo y las empresas de esas órdenes
+        $treeRequest = \App\Models\Request::with(['histories.status', 'workOrders.company'])->findOrFail($id);
+        
+        // Traemos los catálogos para los formularios
+        $estados = RequestStatus::all();
+        $prioridades = Priority::all();
+        $empresas = Company::all();
+
+        return view('requests.show', compact('treeRequest', 'estados', 'prioridades', 'empresas'));
     }
 
     /**
