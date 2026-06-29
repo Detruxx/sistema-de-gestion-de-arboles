@@ -12,7 +12,7 @@
 
 @section('content')
     <main class="tramites-page-container" style="position: relative; overflow: hidden;">
-        @include('partials.forest-background')
+        @include('backgrounds.forest')
         <section class="cuidados-header reveal">
             <h1 class="hero-title">Registro de Reclamos</h1>
             <p class="section-subtitle">
