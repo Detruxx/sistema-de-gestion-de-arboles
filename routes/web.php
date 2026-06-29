@@ -7,6 +7,7 @@ use App\Http\Controllers\RequestController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\RequestTypeController;
+use App\Http\Controllers\WorkOrderController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -86,3 +87,5 @@ Route::get('/api/request-types',[RequestTypeController::class, 'index']);
 // Endpoint para traer todos los estados de reclamo con su metadata UI
 Route::get('/api/request-statuses', [\App\Http\Controllers\RequestController::class, 'getStatuses']);
 
+// Ruta para crear órdenes de trabajo/tareas de empresas contratistas
+Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');

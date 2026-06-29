@@ -5,6 +5,7 @@
 @section('active-tramites', 'active')
 @section('active-reclamos', 'active')
 
+@section('styles')
     <link rel="stylesheet" href="{{ asset('css/tramites/reclamos.css') }}?v={{ filemtime(public_path('css/tramites/reclamos.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/admin/dynamic-status.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>

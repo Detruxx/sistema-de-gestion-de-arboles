@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\RequestType; 
 use App\Models\RequestStatus;
 use App\Models\Street;
+use App\Models\Priority;
+use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +17,7 @@ class RequestController extends Controller
      */
     public function index(Request $request)
     {
-        $requests = \App\Models\Request::with(['user', 'street', 'requestType', 'tree', 'histories', 'status'])->orderBy('created_at', 'desc')->get();
+        $requests = \App\Models\Request::with(['user', 'street', 'requestType', 'tree', 'histories.status', 'status', 'workOrders.company', 'priority'])->orderBy('created_at', 'desc')->get();
 
         $mapped = $requests->map(function ($req) {
             return [
@@ -134,7 +136,7 @@ class RequestController extends Controller
 
         // 2. Buscar el reclamo en la base de datos
         // Usamos with() para traer los datos relacionados y no hacer múltiples consultas
-        $incident = \App\Models\Request::with(['street', 'requestType', 'histories', 'status'])->find($numericId);
+        $incident = \App\Models\Request::with(['street', 'requestType', 'histories.status', 'status', 'workOrders.company', 'priority'])->find($numericId);
 
         if (!$incident) {
             return response()->json([

@@ -18,9 +18,13 @@ return new class extends Migration
             $table->foreignId('request_type_id')->constrained('request_types')->onDelete('restrict');
             $table->foreignId('street_id')->constrained('streets')->onDelete('restrict');
             $table->text('description');
-            $table->foreignId('request_status_id')->constrained('request_statuses')->onDelete('restrict');
             $table->string('path')->nullable(); // path que lleva a la foto
             
+            //Parte que pasa a ser completada por inspectores
+            $table->foreignId('request_status_id')->constrained('request_statuses')->onDelete('restrict');
+            $table->text('cancellation_reason')->nullable(); //Lugar en que el inspector justificará por que cancela el reclamo
+            $table->foreignId('priority_id')->nullable()->constrained('priorities')->onDelete('restrict');
+
             // Relaciones de vinculación y duplicados
             $table->unsignedBigInteger('linked_to')->nullable();
             $table->unsignedBigInteger('suggested_duplicate_id')->nullable();
