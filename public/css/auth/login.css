@@ -7,9 +7,9 @@
 }
 
 .login-wrapper {
-    max-width: 450px;
+    max-width: 550px;
     width: 100%;
-    margin: 20px auto;
+    margin: 10px auto 0 auto;
     z-index: 10;
     position: relative;
 }
@@ -38,7 +38,7 @@
 }
 
 #role-subtitle {
-    color: var(--spring-leaf);
+    color: var(--morning-dew);
     font-size: 0.95rem;
     font-weight: 500;
 }
@@ -104,7 +104,7 @@
 .login-label {
     display: block;
     margin-bottom: 8px;
-    color: var(--paper-white);
+    color: var(--morning-dew);
     font-weight: 500;
     font-size: 0.9rem;
 }
@@ -120,6 +120,10 @@
     width: 100%;
     outline: none;
     transition: all 0.3s ease;
+}
+
+.login-input::placeholder {
+    color: rgba(200, 242, 212, 0.45);
 }
 
 .login-input:focus {

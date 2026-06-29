@@ -92,5 +92,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ================= LÓGICA DE CARGA DINÁMICA DEL AVATAR =================
+    const navAvatarSvg = document.getElementById('nav-avatar-svg');
+    const navAvatarImg = document.getElementById('nav-avatar-img');
+    const savedAvatar = localStorage.getItem('user_avatar');
 
+    if (savedAvatar && navAvatarSvg && navAvatarImg) {
+        navAvatarImg.src = savedAvatar;
+        navAvatarImg.style.display = 'block';
+        navAvatarSvg.style.display = 'none';
+    }
 });

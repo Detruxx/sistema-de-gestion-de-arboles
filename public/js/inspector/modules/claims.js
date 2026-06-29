@@ -201,15 +201,22 @@ window.sendResponse = async function() {
 
 window.filterClaims = function() {
     const query = document.getElementById('search-claims').value.toLowerCase();
+    const statusFilter = document.getElementById('filter-claim-status') ? document.getElementById('filter-claim-status').value : '';
+    const categoryFilter = document.getElementById('filter-claim-category') ? document.getElementById('filter-claim-category').value : '';
+
     const container = document.getElementById('claims-list-container');
     if(!container) return;
     container.innerHTML = '';
 
-    const filtered = window.claims.filter(c => 
-        c.vecino.toLowerCase().includes(query) || 
-        c.direccion.toLowerCase().includes(query) ||
-        c.id.toLowerCase().includes(query)
-    );
+    const filtered = window.claims.filter(c => {
+        const matchesQuery = c.vecino.toLowerCase().includes(query) || 
+                             c.direccion.toLowerCase().includes(query) ||
+                             c.id.toLowerCase().includes(query);
+        const matchesStatus = !statusFilter || c.estado === statusFilter;
+        const matchesCategory = !categoryFilter || c.categoria === categoryFilter;
+
+        return matchesQuery && matchesStatus && matchesCategory;
+    });
 
     filtered.forEach(c => {
         const card = document.createElement('div');
@@ -321,6 +328,18 @@ window.loadClaimsFromServer = async function() {
     if (window.requestStatuses.length === 0) {
         await window.loadStatusesFromServer();
     }
+
+    // Poblar el selector de estados dinámicamente desde la BD
+    const statusSelect = document.getElementById('filter-claim-status');
+    if (statusSelect && statusSelect.options.length <= 1) {
+        window.requestStatuses.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.slug;
+            opt.textContent = s.status_name;
+            statusSelect.appendChild(opt);
+        });
+    }
+
     try {
         const response = await fetch('/requests', {
             headers: {
@@ -332,6 +351,19 @@ window.loadClaimsFromServer = async function() {
             window.claims = result.data;
             window.updateStats();
             window.loadClaimsList();
+
+            // Poblar el selector de categorías dinámicamente desde los reclamos cargados
+            const catSelect = document.getElementById('filter-claim-category');
+            if (catSelect && catSelect.options.length <= 1) {
+                const uniqueCategories = [...new Set(window.claims.map(c => c.categoria))];
+                uniqueCategories.forEach(cat => {
+                    const opt = document.createElement('option');
+                    opt.value = cat;
+                    opt.textContent = cat;
+                    catSelect.appendChild(opt);
+                });
+            }
+
             if (window.selectedClaimId) {
                 window.selectClaim(window.selectedClaimId);
             }

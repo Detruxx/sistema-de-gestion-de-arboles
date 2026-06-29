@@ -119,12 +119,16 @@ window.loadTreesFromServer = async function() {
             const result = await response.json();
             window.trees.length = 0;
             result.data.forEach(t => window.trees.push(t));
-            window.loadTreesList();
-            if (window.selectedTreeId) {
-                window.selectTree(window.selectedTreeId);
-            }
         }
     } catch (err) {
-        console.error("Error al cargar árboles:", err);
+        console.error("Error al cargar árboles del servidor, usando datos locales:", err);
+    }
+
+    // Ordenar los árboles por ID de forma numérica ascendente (mejora de Nacho)
+    window.trees.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+
+    window.loadTreesList();
+    if (window.selectedTreeId) {
+        window.selectTree(window.selectedTreeId);
     }
 };

@@ -85,3 +85,4 @@ Route::get('/api/arboles/{id}', [TreeController::class, 'getTreeDetails']);
 Route::get('/api/request-types',[RequestTypeController::class, 'index']);
 // Endpoint para traer todos los estados de reclamo con su metadata UI
 Route::get('/api/request-statuses', [\App\Http\Controllers\RequestController::class, 'getStatuses']);
+

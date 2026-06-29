@@ -20,6 +20,16 @@ window.showModule = function(moduleName) {
     
     const menuEl = document.getElementById(`menu-${moduleName}`);
     if(menuEl) menuEl.classList.add('active');
+
+    // Cerrar el menú desplegable en pantallas pequeñas (mejora de Nacho)
+    const sidebar = document.querySelector('.admin-sidebar');
+    if (sidebar) sidebar.classList.remove('menu-open');
+};
+
+// --- Toggle Sidebar en Móviles (mejora de Nacho) ---
+window.toggleAdminSidebar = function() {
+    const sidebar = document.querySelector('.admin-sidebar');
+    if (sidebar) sidebar.classList.toggle('menu-open');
 };
 
 window.updateStats = function() {

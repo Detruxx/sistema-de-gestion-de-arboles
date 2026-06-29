@@ -64,15 +64,18 @@
             @endguest
             @auth <!-- Si el usuario esta logueado, se muestra el menu de perfil -->
                 <div class="nav-dropdown">
-                    <button class="nav-pill dropdown-trigger" aria-expanded="false" style="background: none; border: 1px solid transparent; padding: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; color: var(--paper-white);" title="Perfil de {{ Auth::user()->name }}">
-                        <!-- Icono SVG de persona (cabeza y cuerpo) -->
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
+                    <button class="nav-pill dropdown-trigger" aria-expanded="false" style="background: none; border: 1px solid transparent; padding: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; color: var(--paper-white); overflow: hidden;" title="Perfil de {{ Auth::user()->name }}">
+                        <!-- Icono SVG de persona (cabeza y cuerpo) o imagen del avatar -->
+                        <span id="nav-avatar-container" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 50%; overflow: hidden;">
+                            <svg id="nav-avatar-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <img id="nav-avatar-img" src="" alt="Avatar" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                        </span>
                     </button>
                     <div class="dropdown-menu">
-                        <a href="/configuracion">Configuración</a>
+                        <a href="/configuracion">Mi Perfil</a>
                         @if(Auth::user()->role === 'vecino')
                             <a href="/mis-reclamos">Mis Reclamos</a>
                         @else
