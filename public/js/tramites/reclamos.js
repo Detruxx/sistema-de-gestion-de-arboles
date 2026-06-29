@@ -194,7 +194,11 @@ window.trackComplaint = async function () {
     if (resultDiv) resultDiv.style.display = 'none';
 
     try {
-        const response = await fetch(`/api/reclamos/${inputVal}`);
+        const response = await fetch(`/requests/${inputVal}`, {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
         if (response.ok) {
             const result = await response.json();
             const claim = result.data;
@@ -227,12 +231,12 @@ window.trackComplaint = async function () {
             const container = document.getElementById('dynamic-stepper-container');
             if (container) {
                 // Filtramos solo los estados lineales (los que tienen secuencia definida)
-                const linearSteps = requestStatuses.filter(s => s.sequence !== null).sort((a,b) => a.sequence - b.sequence);
-                
+                const linearSteps = requestStatuses.filter(s => s.sequence !== null).sort((a, b) => a.sequence - b.sequence);
+
                 // Determinamos el estado actual
                 const currentState = requestStatuses.find(s => s.slug === claim.estado);
                 const isTerminalException = currentState && currentState.is_terminal && currentState.sequence === null;
-                
+
                 // Obtenemos la secuencia en la que nos encontramos
                 let currentSeq = 0;
                 if (!isTerminalException && currentState) {
@@ -240,17 +244,17 @@ window.trackComplaint = async function () {
                 }
 
                 let html = '<div class="track-step-line" id="track-step-line"></div>';
-                
+
                 linearSteps.forEach((step) => {
                     const isActive = step.sequence === currentSeq;
                     const isPassed = step.sequence < currentSeq;
-                    
+
                     let bgNum = '#e5e7eb'; // Gris por defecto
                     let colorNum = '#9ca3af';
                     let colorLbl = '#9ca3af';
                     let fontLbl = '500';
                     let borderNum = '#e5e7eb';
-                    
+
                     let labelText = step.status_name;
                     let numText = step.sequence;
 
@@ -283,9 +287,9 @@ window.trackComplaint = async function () {
                         </div>
                     `;
                 });
-                
+
                 container.innerHTML = html;
-                
+
                 // Actualizar porcentaje de la línea
                 const line = document.getElementById('track-step-line');
                 if (line) {
