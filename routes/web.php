@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\RequestTypeController;
 use App\Http\Controllers\WorkOrderController;
+use App\Http\Controllers\Auth\RegisterController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -89,3 +90,7 @@ Route::get('/api/request-statuses', [\App\Http\Controllers\RequestController::cl
 
 // Ruta para crear órdenes de trabajo/tareas de empresas contratistas
 Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
+
+// Rutas para el Registro 
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register']);
