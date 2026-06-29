@@ -15,6 +15,10 @@ class Request extends Model
         'description', 'path', 'request_status_id'
     ];
 
+    // Esto es para que se pueda acceder al codigo de seguimiento como si fuera una propiedad normal
+    
+    protected $appends = ['tracking_code'];
+
     /**
      * Relación: Un reclamo tiene UN estado asignado
      */
@@ -50,5 +54,15 @@ class Request extends Model
     public function street()
     {
         return $this->belongsTo(Street::class);
+    }
+
+    /**
+     * Obtiene el código formateado de seguimiento.
+     * Se accede como $request->tracking_code
+     */
+    public function getTrackingCodeAttribute()
+    {
+        $year = $this->created_at ? $this->created_at->format('Y') : date('Y');
+        return 'REC-' . $year . '-' . str_pad($this->id, 3, '0', STR_PAD_LEFT);
     }
 }

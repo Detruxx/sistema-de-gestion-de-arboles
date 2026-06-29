@@ -46,14 +46,9 @@
 
                 <form class="contact-form" id="reclamo-form">
                     <div class="form-group">
-                        <label for="tipo-reclamo">Tipo de Incidencia</label>
+                        <label for="tipo-reclamo">Tipo de Incidencia <span class="required-asterisk">*</span></label>
                         <select id="tipo-reclamo" class="form-control" required>
-                            <option value="">Selecciona una opción...</option>
-                            <option value="caido">Árbol o rama de gran porte caído</option>
-                            <option value="seco">Árbol seco con riesgo de caída</option>
-                            <option value="ramas">Ramas obstruyendo cables o alumbrado</option>
-                            <option value="raices">Raíces levantando la acera</option>
-                            <option value="otro">Otros daños o plagas</option>
+                        <!-- Aca se rellena solo con el JS -->
                         </select>
                     </div>
 
@@ -64,7 +59,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="direccion">Dirección / Ubicación aproximada</label>
+                        <label for="direccion">Dirección / Ubicación aproximada <span class="required-asterisk">*</span></label>
                         <div class="input-with-button">
                             <input type="text" id="direccion" placeholder="Ej: Av. Santa Fe 2500, Palermo" class="form-control" required>
                             <button type="button" id="btn-select-map" class="btn-main-cta track-btn">
@@ -78,8 +73,14 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="descripcion">Detalles del Reclamo</label>
+                        <label for="descripcion">Detalles del Reclamo <span class="required-asterisk">*</span></label>
                         <textarea id="descripcion" placeholder="Describe brevemente la situación para ayudar a los inspectores..." required rows="4" class="form-control"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="foto">Adjuntar Foto (Opcional)</label>
+                        <input type="file" id="foto" accept="image/*" class="form-control foto-input">
+                        <small class="foto-help-text">Formatos soportados: JPG, PNG. Tamaño máximo: 5MB.</small>
                     </div>
 
                     <div class="form-actions">
@@ -111,26 +112,8 @@
                 <div class="track-stepper">
                     <h3 class="track-stepper-title">Estado de Gestión</h3>
                     
-                    <div class="track-stepper-row">
-                        <!-- line background -->
-                        <div class="track-step-line" id="track-step-line"></div>
-                        
-                        <div class="track-step-item" id="step-recibido">
-                            <div class="step-num">1</div>
-                            <span class="step-lbl">Recibido</span>
-                        </div>
-                        <div class="track-step-item" id="step-inspeccion">
-                            <div class="step-num">2</div>
-                            <span class="step-lbl">Inspección</span>
-                        </div>
-                        <div class="track-step-item" id="step-poda">
-                            <div class="step-num">3</div>
-                            <span class="step-lbl">Planificado</span>
-                        </div>
-                        <div class="track-step-item" id="step-resuelto">
-                            <div class="step-num">4</div>
-                            <span class="step-lbl">Resuelto</span>
-                        </div>
+                    <div class="track-stepper-row" id="dynamic-stepper-container">
+                        <!-- El Stepper se generará dinámicamente vía Javascript -->
                     </div>
                 </div>
 
@@ -195,5 +178,6 @@
 
 @section('scripts')
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="{{ asset('js/tramites/reclamos-mapa.js') }}"></script>
     <script src="{{ asset('js/tramites/reclamos.js') }}"></script>
 @endsection

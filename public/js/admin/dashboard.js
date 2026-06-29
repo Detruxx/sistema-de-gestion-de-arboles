@@ -1,50 +1,6 @@
-// --- Base de Datos Simulada ---
-let claims = [
-    {
-        id: 'REC-2026-001',
-        vecino: 'Laura Gómez',
-        categoria: 'Poda Urgente',
-        fecha: '2026-06-20',
-        estado: 'inspeccion',
-        descripcion: 'Hay una rama gigante del Jacarandá que se está apoyando peligrosamente sobre los cables de luz y hace chispas cuando hay viento fuerte.',
-        direccion: 'Av. Cabildo 2800, Belgrano',
-        especie: 'Jacarandá',
-        email: 'laura.gomez@gmail.com'
-    },
-    {
-        id: 'REC-2026-002',
-        vecino: 'Carlos Bianchi',
-        categoria: 'Solicitud de Plantación',
-        fecha: '2026-06-18',
-        estado: 'poda',
-        descripcion: 'Solicito la plantación de un árbol autóctono en la cazuela que quedó vacía frente a mi domicilio tras la última tormenta de viento.',
-        direccion: 'Mendoza 1500, Belgrano',
-        especie: 'Fresno',
-        email: 'carlos.b@yahoo.com.ar'
-    },
-    {
-        id: 'REC-2026-003',
-        vecino: 'Sofía Martínez',
-        categoria: 'Plantera Obstruida',
-        fecha: '2026-06-17',
-        estado: 'recibido',
-        descripcion: 'Un comercio vecino cementó por completo la plantera del fresno de la vereda, impidiendo el drenaje. El árbol empezó a secarse rápidamente.',
-        direccion: 'Vuelta de Obligado 2200, Belgrano',
-        especie: 'Fresno',
-        email: 'sofia.martinez@live.com'
-    },
-    {
-        id: 'REC-2026-004',
-        vecino: 'Marcos Paz',
-        categoria: 'Extracción por Peligro',
-        fecha: '2026-06-15',
-        estado: 'resuelto',
-        descripcion: 'Árbol totalmente inclinado con raíces levantadas luego del temporal del fin de semana. Peligro de caída inminente en zona peatonal.',
-        direccion: 'La Pampa 1900, Belgrano',
-        especie: 'Palo Borracho',
-        email: 'paz.marcos@gmail.com'
-    }
-];
+// --- Base de Datos Dinámica ---
+let claims = [];
+let requestStatuses = [];
 
 const trees = [
     { id: '10045', especie: 'Jacarandá', altura: 'Media (8-12m)', estado: 'Saludable', calle: 'Av. Cabildo 2900', edad: 'Adulto (15 años)', circun: '95cm' },
@@ -87,12 +43,8 @@ function loadClaimsList() {
         card.className = `list-item-card ${selectedClaimId === c.id ? 'active' : ''}`;
         card.onclick = () => selectClaim(c.id);
 
-        let statusLabel = '';
-        if (c.estado === 'recibido') statusLabel = 'Recibido';
-        if (c.estado === 'inspeccion') statusLabel = 'Inspección';
-        if (c.estado === 'poda') statusLabel = 'Poda Prog.';
-        if (c.estado === 'resuelto') statusLabel = 'Resuelto';
-
+        const statusObj = requestStatuses.find(rs => rs.slug === c.estado);
+        let statusLabel = statusObj ? statusObj.status_name : c.estado.toUpperCase();
         card.innerHTML = `
             <div class="list-item-header">
                 <span class="list-item-id">${c.id}</span>
@@ -145,32 +97,31 @@ function selectClaim(id) {
         <div class="status-tracker-container">
             <div class="status-tracker-title">Progreso del Reclamo (Haz clic en un paso para cambiar el estado)</div>
             <div class="status-steps">
-                <div class="status-step ${['recibido', 'inspeccion', 'poda', 'resuelto'].includes(claim.estado) ? 'completed' : ''} ${claim.estado === 'recibido' ? 'active' : ''}" onclick="setClaimStatus('recibido')">
-                    <div class="step-circle">1</div>
-                    <div class="step-label">Recibido</div>
-                </div>
-                <div class="status-step ${['inspeccion', 'poda', 'resuelto'].includes(claim.estado) ? 'completed' : ''} ${claim.estado === 'inspeccion' ? 'active' : ''}" onclick="setClaimStatus('inspeccion')">
-                    <div class="step-circle">2</div>
-                    <div class="step-label">Inspección</div>
-                </div>
-                <div class="status-step ${['poda', 'resuelto'].includes(claim.estado) ? 'completed' : ''} ${claim.estado === 'poda' ? 'active' : ''}" onclick="setClaimStatus('poda')">
-                    <div class="step-circle">3</div>
-                    <div class="step-label">Planificado</div>
-                </div>
-                <div class="status-step ${claim.estado === 'resuelto' ? 'active completed' : ''}" onclick="setClaimStatus('resuelto')">
-                    <div class="step-circle">4</div>
-                    <div class="step-label">Resuelto</div>
-                </div>
+                ${requestStatuses.map(s => {
+                    const currentSeq = requestStatuses.find(rs => rs.slug === claim.estado)?.sequence || 0;
+                    const isCompleted = s.sequence && s.sequence <= currentSeq;
+                    const isActive = claim.estado === s.slug;
+                    // Mostrar si tiene secuencia o si es el estado final activo
+                    if (s.sequence || isActive) {
+                        return `
+                        <div class="status-step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}" onclick="setClaimStatus('${s.slug}')">
+                            <div class="step-circle" style="background-color: ${isActive ? 'var(--bs-' + s.color + ')' : ''}; border-color: ${isActive ? 'var(--bs-' + s.color + ')' : ''}">${s.sequence || '!'}</div>
+                            <div class="step-label">${s.status_name}</div>
+                        </div>`;
+                    }
+                    return '';
+                }).join('')}
             </div>
         </div>
 
-        <!-- Response Panel -->
         <div class="response-section">
             <h4 class="detail-title" style="font-size: 1.2rem;">Responder al Vecino</h4>
             <div class="template-selector">
                 <button class="template-btn" onclick="applyTemplate('info')">Pedir más info</button>
-                <button class="template-btn" onclick="applyTemplate('inspeccion')">Avisar Inspección</button>
-                <button class="template-btn" onclick="applyTemplate('resuelto')">Informar Resolución</button>
+                <button class="template-btn" onclick="applyTemplate('relevated')">Avisar Inspección</button>
+                <button class="template-btn" onclick="applyTemplate('scheduled')">Avisar Poda</button>
+                <button class="template-btn" onclick="applyTemplate('resolved')">Informar Resolución</button>
+                <button class="template-btn" onclick="applyTemplate('denied')">Rechazar</button>
             </div>
             <textarea id="response-text" class="response-textarea" placeholder="Escribe un mensaje personalizado para enviar al correo del vecino..."></textarea>
             <div class="action-row">
@@ -189,14 +140,18 @@ function applyTemplate(type) {
     const textarea = document.getElementById('response-text');
     
     let text = '';
-    if (type === 'recibido' || type === 'info') {
+    if (type === 'open' || type === 'info') {
         text = `Estimado/a ${claim.vecino},\n\nHemos recibido su solicitud ID ${claim.id} sobre "${claim.categoria}". Un inspector del área técnica estará evaluando la situación a la brevedad. Si posee más imágenes del estado actual del ejemplar, por favor adjúntelas respondiendo a este correo.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
-    } else if (type === 'inspeccion') {
+    } else if (type === 'relevated') {
         text = `Estimado/a ${claim.vecino},\n\nLe informamos que su solicitud ID ${claim.id} se encuentra en etapa de Inspección Técnica. Personal calificado visitará la dirección ${claim.direccion} dentro de los próximos 3 días hábiles para diagnosticar el árbol (${claim.especie}) y planificar el plan de acción.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
-    } else if (type === 'poda') {
+    } else if (type === 'scheduled' || type === 'in_progress') {
         text = `Estimado/a ${claim.vecino},\n\nTras la inspección realizada en ${claim.direccion}, se ha planificado la intervención correspondiente para el día [Fecha]. Se realizará un saneamiento/poda de despeje preventivo para resguardar la seguridad pública.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
-    } else if (type === 'resuelto') {
+    } else if (type === 'resolved') {
         text = `Estimado/a ${claim.vecino},\n\nNos complace informarle que la solicitud ID ${claim.id} ha sido completada de manera exitosa. Las tareas operativas y el despeje final en la zona han concluido.\n\nMuchas gracias por colaborar con el mantenimiento del arbolado de la Ciudad.\n\nAtentamente,\nGobierno de la Ciudad de Buenos Aires - Comuna 13.`;
+    } else if (type === 'denied') {
+        text = `Estimado/a ${claim.vecino},\n\nTras la evaluación técnica de su solicitud ID ${claim.id}, lamentamos informarle que la misma ha sido rechazada por no cumplir con los criterios de intervención de la Ley de Arbolado.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
+    } else if (type === 'vinculated') {
+        text = `Estimado/a ${claim.vecino},\n\nLe informamos que su solicitud ID ${claim.id} ha sido vinculada a un trámite preexistente sobre el mismo ejemplar o incidencia.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
     }
 
     if (textarea) textarea.value = text;
@@ -220,7 +175,7 @@ async function sendResponse() {
     }
 
     try {
-        const response = await fetch(`/api/reclamos/${selectedClaimId}/status`, {
+        const response = await fetch(`/requests/update-status/${selectedClaimId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -272,12 +227,8 @@ function filterClaims() {
         card.className = `list-item-card ${selectedClaimId === c.id ? 'active' : ''}`;
         card.onclick = () => selectClaim(c.id);
 
-        let statusLabel = '';
-        if (c.estado === 'recibido') statusLabel = 'Recibido';
-        if (c.estado === 'inspeccion') statusLabel = 'Inspección';
-        if (c.estado === 'poda') statusLabel = 'Poda Prog.';
-        if (c.estado === 'resuelto') statusLabel = 'Resuelto';
-
+        const statusObj = requestStatuses.find(rs => rs.slug === c.estado);
+        let statusLabel = statusObj ? statusObj.status_name : c.estado.toUpperCase();
         card.innerHTML = `
             <div class="list-item-header">
                 <span class="list-item-id">${c.id}</span>
@@ -298,10 +249,15 @@ function updateStats() {
     const elPendientes = document.getElementById('stat-pending-claims');
     const elUnread = document.getElementById('unread-count-badge');
     
+    const isTerminal = (slug) => {
+        const s = requestStatuses.find(rs => rs.slug === slug);
+        return s ? s.is_terminal : false;
+    };
+    
     if(elTotal) elTotal.innerText = claims.length;
-    if(elResueltos) elResueltos.innerText = claims.filter(c => c.estado === 'resuelto').length;
-    if(elPendientes) elPendientes.innerText = claims.filter(c => c.estado !== 'resuelto').length;
-    if(elUnread) elUnread.innerText = claims.filter(c => c.estado !== 'resuelto').length;
+    if(elResueltos) elResueltos.innerText = claims.filter(c => isTerminal(c.estado)).length;
+    if(elPendientes) elPendientes.innerText = claims.filter(c => !isTerminal(c.estado)).length;
+    if(elUnread) elUnread.innerText = claims.filter(c => !isTerminal(c.estado)).length;
 }
 window.updateStats = updateStats;
 
@@ -422,9 +378,28 @@ function filterTrees() {
 window.filterTrees = filterTrees;
 
 // --- API Integrations ---
-async function loadClaimsFromServer() {
+async function loadStatusesFromServer() {
     try {
-        const response = await fetch('/api/reclamos');
+        const response = await fetch('/api/request-statuses');
+        if (response.ok) {
+            const result = await response.json();
+            requestStatuses = result.data;
+        }
+    } catch (err) {
+        console.error("Error al cargar estados:", err);
+    }
+}
+
+async function loadClaimsFromServer() {
+    if (requestStatuses.length === 0) {
+        await loadStatusesFromServer();
+    }
+    try {
+        const response = await fetch('/requests', {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
         if (response.ok) {
             const result = await response.json();
             claims = result.data;
@@ -444,7 +419,7 @@ async function setClaimStatus(newStatus) {
     const claim = claims.find(c => c.id === selectedClaimId);
     if (claim) {
         try {
-            const response = await fetch(`/api/reclamos/${selectedClaimId}/status`, {
+            const response = await fetch(`/requests/update-status/${selectedClaimId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

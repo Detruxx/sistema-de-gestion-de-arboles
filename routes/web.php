@@ -6,6 +6,7 @@ use App\Http\Controllers\TreeController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\RequestTypeController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -36,7 +37,7 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// PARTE DE RECLAMOS (de testing)
+// PARTE DE RECLAMOS
 Route::resource('requests', RequestController::class);
 
 // Ruta específica para que el inspector actualice el estado y la justificación de un RECLAMO
@@ -80,8 +81,7 @@ Route::get('/api/arboles/pines', [TreeController::class, 'getMapPins']);
 // Endpoint para traer el detalle de un árbol específico
 Route::get('/api/arboles/{id}', [TreeController::class, 'getTreeDetails']);
 
-// API de Reclamos (de rediseño-home - usada por el Dashboard y el formulario de reclamos)
-Route::get('/api/reclamos', [App\Http\Controllers\ComplaintController::class, 'index']);
-Route::post('/api/reclamos', [App\Http\Controllers\ComplaintController::class, 'store']);
-Route::get('/api/reclamos/{id}', [App\Http\Controllers\ComplaintController::class, 'show']);
-Route::put('/api/reclamos/{id}/status', [App\Http\Controllers\ComplaintController::class, 'updateStatus']);
+// Endpoint para traer todos los tipos de reclamo
+Route::get('/api/request-types',[RequestTypeController::class, 'index']);
+// Endpoint para traer todos los estados de reclamo con su metadata UI
+Route::get('/api/request-statuses', [\App\Http\Controllers\RequestController::class, 'getStatuses']);

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('request_status_id')->constrained('request_statuses')->onDelete('restrict');
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict'); // Quién cambia el estado
             
-            // La justificación o bitácora del inspector
+            // La justificación del inspector
             $table->text('justification')->nullable(); 
             
             $table->timestamps(); // created_at nos dará el momento exacto del cambio
