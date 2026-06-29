@@ -51,4 +51,13 @@ class Request extends Model
     {
         return $this->belongsTo(Street::class);
     }
+
+    /**
+    * Vinculamos las Ordenes de Trabajo al reclamo
+    * Obtener las órdenes de trabajo/empresas asignadas a este reclamo.
+    */
+    public function workOrders()
+    {
+        return $this->hasMany(WorkOrder::class);
+    }
 }
