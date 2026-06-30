@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('password');
             $table->enum('role', ['vecino', 'inspector', 'admin', 'empresa'])->default('vecino'); //Definimos el rol. Por defecto, cualquiera que se registre es 'vecino'
             $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('restrict'); //Para conectar directamente el usuario con su empresa correspondiente
+            $table->string('profile_photo')->nullable(); //guarda la ruta de la foto de perfil
             $table->rememberToken();
             $table->timestamps();
         });
