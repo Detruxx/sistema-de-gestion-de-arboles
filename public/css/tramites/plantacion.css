@@ -135,3 +135,57 @@
     position: relative;
     z-index: 1;
 }
+
+/* Background Image styling */
+.bg-blurred-image {
+    position: absolute;
+    top: -5%;
+    left: -5%;
+    width: 110%;
+    height: 110%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(8px) brightness(0.5);
+    z-index: 0;
+}
+
+.plantacion-bg {
+    background-image: url('../../img/plantacion_bg.png');
+}
+
+.tramites-page-container .cuidados-header .hero-title,
+.tramites-page-container .cuidados-header .section-subtitle {
+    color: var(--paper-white);
+}
+
+.custom-file-upload {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.custom-file-upload .file-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background-color: var(--deep-canopy);
+    border: 1px solid var(--living-moss);
+    border-radius: 8px;
+    color: var(--paper-white);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.custom-file-upload .file-label:hover {
+    background-color: var(--forest-night);
+    border-color: var(--spring-leaf);
+}
+
+.custom-file-upload .file-name {
+    font-size: 0.9rem;
+    color: #666;
+    margin-left: 10px;
+}

@@ -12,7 +12,7 @@
 
 .cuidados-page-container,
 .tramites-page-container {
-    padding: 140px 8% 80px 8%;
+    padding: 140px 8% 120px 8%;
     background-color: var(--paper-white);
     min-height: 100vh;
     position: relative;
