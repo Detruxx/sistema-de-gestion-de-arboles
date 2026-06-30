@@ -20,9 +20,11 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'last_name',
         'email',
         'password',
         'role',
+        'company_id',
     ];
 
     /**
@@ -46,5 +48,11 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // Un usuario puede pertenecer a una empresa contratista
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }

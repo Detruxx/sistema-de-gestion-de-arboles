@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\RequestTypeController;
 use App\Http\Controllers\WorkOrderController;
+use App\Http\Controllers\CompanyPanelController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -73,8 +74,19 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/dashboard', function () {
             return view('admin.dashboard');
         })->name('admin.dashboard');
+
+        // Ruta para crear órdenes de trabajo/tareas de empresas contratistas
+        // Movida acá adentro por seguridad: Solo el inspector/admin genera órdenes de trabajo
+        Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
+    });
+
+    //Panel Exclusivo para Empresas Tercerizadas
+    Route::middleware(['role:empresa'])->group(function () {
+        Route::get('/company/dashboard', [CompanyPanelController::class, 'index'])->name('company.dashboard');
     });
 });
+
+//ENDPOINTS PUBLICOS DE API
 
 // Endpoint para traer los pines livianos
 Route::get('/api/arboles/pines', [TreeController::class, 'getMapPins']);
@@ -84,8 +96,8 @@ Route::get('/api/arboles/{id}', [TreeController::class, 'getTreeDetails']);
 
 // Endpoint para traer todos los tipos de reclamo
 Route::get('/api/request-types',[RequestTypeController::class, 'index']);
+
 // Endpoint para traer todos los estados de reclamo con su metadata UI
 Route::get('/api/request-statuses', [\App\Http\Controllers\RequestController::class, 'getStatuses']);
 
-// Ruta para crear órdenes de trabajo/tareas de empresas contratistas
-Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
+
