@@ -187,11 +187,9 @@
             </div>
         </div>
     </div>
+    </div>
 @endsection
 
-@section('footer')
-
-@endsection
 
 @section('scripts')
     

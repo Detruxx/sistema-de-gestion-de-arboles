@@ -12,7 +12,7 @@
 
 @section('content')
     <main class="tramites-page-container" style="position: relative; overflow: hidden;">
-        @include('backgrounds.forest')
+        <div class="bg-blurred-image plantacion-bg"></div>
         <section class="cuidados-header reveal">
             <h1 class="hero-title">Solicitud de Plantación</h1>
             <p class="section-subtitle">
@@ -22,19 +22,11 @@
 
         <section class="plantacion-form-container reveal delay-1">
             @auth
-                <form class="contact-form" onsubmit="event.preventDefault(); alert('Solicitud enviada con éxito (Simulación).');">
-                    <div class="form-group">
-                        <label for="ancho-vereda">Ancho Estimado de la Vereda</label>
-                        <select id="ancho-vereda" class="form-control" required>
-                            <option value="">Selecciona una opción...</option>
-                            <option value="angosta">Angosta (Menos de 2 metros)</option>
-                            <option value="media">Media (Entre 2 y 3.5 metros)</option>
-                            <option value="ancha">Ancha (Más de 3.5 metros)</option>
-                        </select>
-                    </div>
+                <form class="contact-form" onsubmit="event.preventDefault(); showSuccessModal('¡Solicitud Enviada!', 'Tu solicitud de plantación ha sido registrada correctamente. Nuestro equipo la evaluará a la brevedad.'); this.reset();">
+
 
                     <div class="form-group">
-                        <label for="cazuela-estado">¿La cazuela (espacio de tierra) está disponible?</label>
+                        <label for="cazuela-estado">¿La plantera (espacio de tierra) está disponible?</label>
                         <select id="cazuela-estado" class="form-control" required>
                             <option value="">Selecciona una opción...</option>
                             <option value="si">Sí, está abierta y con tierra suelta</option>
@@ -57,8 +49,26 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label for="descripcion-plantacion">Descripción / Motivo (Opcional)</label>
+                        <textarea id="descripcion-plantacion" class="form-control" rows="3" placeholder="Explica brevemente por qué solicitas la plantación (ej. sombra, reemplazo de árbol seco, etc.)."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Adjuntar Foto del lugar (Opcional)</label>
+                        <div class="custom-file-upload">
+                            <label for="foto-plantacion" class="file-label">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-paperclip"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                                <span>Seleccionar archivo</span>
+                            </label>
+                            <input type="file" id="foto-plantacion" accept="image/*" class="foto-input" style="display: none;" onchange="document.getElementById('foto-plantacion-name').textContent = this.files[0] ? this.files[0].name : 'Ningún archivo seleccionado'">
+                            <span class="file-name" id="foto-plantacion-name">Ningún archivo seleccionado</span>
+                        </div>
+                        <small class="foto-help-text">Formatos soportados: JPG, PNG. Tamaño máximo: 5MB.</small>
+                    </div>
+
                     <div class="form-group checkbox-group">
-                        <input type="checkbox" id="compromiso" required>
+                        <input type="checkbox" id="compromiso" required oninvalid="this.setCustomValidity('Es un campo obligatorio.')" oninput="this.setCustomValidity('')">
                         <label for="compromiso">
                             Me comprometo a cuidar y regar el árbol regularmente durante sus primeros 3 años de vida para asegurar su crecimiento saludable.
                         </label>
