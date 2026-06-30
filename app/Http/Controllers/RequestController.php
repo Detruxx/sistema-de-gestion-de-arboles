@@ -127,7 +127,7 @@ class RequestController extends Controller
     /**
      * Muestra el reclamo especificado (Búsqueda de Seguimiento).
      */
-    public function show(string $id)
+    public function show($id)
     {
         // 1. Extraer el ID numérico del código (Ej: de "REC-2026-018" extraer "18")
         // Si el usuario ingresa solo "18", también funcionará.

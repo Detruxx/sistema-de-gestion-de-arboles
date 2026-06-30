@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Request as Reclamo;
 
@@ -193,5 +194,30 @@ class ProfileController extends Controller
         ];
 
         $request->session()->put('mock_reclamos', $mocks);
+    }
+
+    public function updateProfilePhoto(Request $request) 
+    {
+        // 1. Validamos que sea una imagen real y no supere los 2MB
+        $request->validate([
+            'profile_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $user = Auth::user();
+
+        // 2. Si el usuario ya tenía una foto vieja, la borramos del servidor para no acumular basura
+        if ($user->profile_photo) {
+            Storage::disk('public')->delete($user->profile_photo);
+        }
+
+        // 3. Guardamos el nuevo archivo en la carpeta 'avatars' dentro del disco público
+        $path = $request->file('profile_photo')->store('avatars', 'public');
+
+        // 4. Guardamos la ruta en la base de datos
+        $user->update([
+            'profile_photo' => $path
+        ]);
+
+        return redirect()->back()->with('status', '¡Foto de perfil actualizada con éxito!');
     }
 }

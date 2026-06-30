@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('requests', function (Blueprint $table) {
             $table->id();
+
+            //Parte que rellena el usuario /se manda por el formulario
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict');
             $table->foreignId('tree_id')->nullable()->constrained('trees')->onDelete('restrict');
             $table->foreignId('request_type_id')->constrained('request_types')->onDelete('restrict');
