@@ -21,6 +21,10 @@ class RequestTypeSeeder extends Seeder
             ['task_description' => 'Plantación'],
             ['task_description' => 'Retiro de ramas'],
             ['task_description' => 'Problemas por intervención'],
+<<<<<<< HEAD
+=======
+            ['task_description' => 'Árbol no mapeado'],
+>>>>>>> 7df9417fa65fa2849e01939f57c5d7913c14c79a
             ['task_description' => 'Otros'],
         ];
 

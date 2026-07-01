@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Aca va el icono de la pagina -->
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
     <title>@yield('title', 'TreeBA | Mapeado de Arboles')</title>
 
     <!-- Aca van las fuentes que usa la pagina -->
@@ -48,18 +50,38 @@
             </div>
             
             <a href="/#sobre-nosotros" class="nav-pill">Sobre Nosotros</a>
-            <a href="/#contacto" class="nav-pill">Contacto</a>
+            @auth
+                @if(Auth::user()->role === 'inspector' || Auth::user()->role === 'admin')
+                    <a href="/mensajes" class="nav-pill">Mensajes</a>
+                @else
+                    <a href="/#contacto" class="nav-pill">Contacto</a>
+                @endif
+            @else
+                <a href="/#contacto" class="nav-pill">Contacto</a>
+            @endauth
             @guest <!-- Si el usuario no esta logueado, se muestra el boton de login -->
                 <a href="/login" class="nav-pill btn-login @yield('active-login')">Login</a>
             @endguest
-            @auth <!-- Si el usuario esta logueado, se muestra el boton de cerrar sesion -->
+            @auth <!-- Si el usuario esta logueado, se muestra el menu de perfil -->
                 <div class="nav-dropdown">
-                    <button class="nav-pill dropdown-trigger" aria-expanded="false" style="background: none; border: 1px solid transparent; font-family: inherit; font-size: inherit; color: inherit; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                        {{ Auth::user()->name }}
-                        <svg class="dropdown-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    <button class="nav-pill dropdown-trigger" aria-expanded="false" style="background: none; border: 1px solid transparent; padding: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; color: var(--paper-white); overflow: hidden;" title="Perfil de {{ Auth::user()->name }}">
+                        <!-- Icono SVG de persona (cabeza y cuerpo) o imagen del avatar -->
+                        <span id="nav-avatar-container" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 50%; overflow: hidden;">
+                            <svg id="nav-avatar-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <img id="nav-avatar-img" src="" alt="Avatar" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                        </span>
                     </button>
                     <div class="dropdown-menu">
-                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Cerrar Sesión</a>
+                        <a href="/configuracion">Mi Perfil</a>
+                        @if(Auth::user()->role === 'vecino')
+                            <a href="/mis-reclamos">Mis Reclamos</a>
+                        @else
+                            <a href="/admin/dashboard">Panel de Control</a>
+                        @endif
+                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="border-top: 1px solid rgba(45, 122, 79, 0.15); color: #d32f2f;">Cerrar Sesión</a>
                     </div>
                 </div>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -75,22 +97,42 @@
     <footer class="main-footer">
         <div class="footer-container">
             <div class="footer-brand">
-                <div class="footer-logo">
-                    <div class="logo"><img src="{{ asset('img/logo.png') }}" alt="logo"></div>
-                    <span class="brand-name">TreeBA</span>
-                </div>
-                <p class="footer-tagline">Mapeando el futuro verde de la ciudad.</p>
-                <p class="footer-source">Datos abiertos obtenidos de BA Data - GCBA.</p>
-                <p class="footer-source" style="margin-top: 5px; opacity: 0.85;">Basado en el modelo de gestión de la Comuna 13 (Belgrano, Colegiales y Núñez).</p>
+        <div class="container footer-grid">
+            <div class="footer-info">
+                <h4>Comuna 13</h4>
+                <p>Belgrano, Colegiales, Núñez</p>
+                <p>Av. Cabildo 3067, CABA</p>
+                <p>Lunes a Viernes de 8:30 a 14:30 hs.</p>
             </div>
             
             <div class="footer-links">
-                <h4>Navegación</h4>
+                <h4>Enlaces Rápidos</h4>
                 <ul>
-                    <li><a href="/">Inicio</a></li>
+                    <li><a href="/#tramites">Trámites</a></li>
                     <li><a href="/mapa">Mapa Interactivo</a></li>
                     <li><a href="/cuidados">Cuidados del Árbol</a></li>
                     <li><a href="/#sobre-nosotros">Sobre Nosotros</a></li>
+                    @auth
+                        @if(Auth::user()->role === 'inspector' || Auth::user()->role === 'admin')
+                            <li><a href="/mensajes">Mensajes</a></li>
+                        @else
+                            <li><a href="/#contacto">Contacto</a></li>
+                        @endif
+                    @else
+                        <li><a href="/#contacto">Contacto</a></li>
+                    @endauth
+                    @guest
+                        <li><a href="/login">Login</a></li>
+                    @endguest
+                    @auth
+                        <li><a href="/configuracion">Configuración</a></li>
+                        @if(Auth::user()->role === 'vecino')
+                            <li><a href="/mis-reclamos">Mis Reclamos</a></li>
+                        @else
+                            <li><a href="/admin/dashboard">Panel de Control</a></li>
+                        @endif
+                        <li><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="color: #d32f2f;">Cerrar Sesión</a></li>
+                    @endauth
                 </ul>
             </div>
 
@@ -139,7 +181,7 @@
     @show
 
     @yield('scripts') <!-- Aca van los scripts de cada vista -->
-    <script src="{{ asset('js/navbar.js') }}"></script> <!-- script de la barra de navegacion -->
-    <script src="{{ asset('js/reveal.js') }}"></script> <!-- script de revelacion de elementos -->
+    <script src="{{ asset('js/generales/navbar.js') }}"></script> <!-- script de la barra de navegacion -->
+    <script src="{{ asset('js/generales/reveal.js') }}"></script> <!-- script de revelacion de elementos -->
 </body>
 </html>

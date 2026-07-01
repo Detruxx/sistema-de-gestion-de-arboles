@@ -5,8 +5,14 @@
 @section('active-tramites', 'active')
 @section('active-plantacion', 'active')
 
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/tramites/plantacion.css') }}?v={{ filemtime(public_path('css/tramites/plantacion.css')) }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+@endsection
+
 @section('content')
-    <main class="tramites-page-container">
+    <main class="tramites-page-container" style="position: relative; overflow: hidden;">
+        @include('backgrounds.forest')
         <section class="cuidados-header reveal">
             <h1 class="hero-title">Solicitud de Plantación</h1>
             <p class="section-subtitle">
@@ -14,44 +20,102 @@
             </p>
         </section>
 
-        <section style="max-width: 800px; margin: 0 auto; position: relative; z-index: 10;" class="reveal delay-1">
-            <form class="contact-form" onsubmit="event.preventDefault(); alert('Solicitud enviada con éxito (Simulación).');">
-                <div class="form-group">
-                    <label for="ancho-vereda">Ancho Estimado de la Vereda</label>
-                    <select id="ancho-vereda" style="background-color: var(--paper-white); border: 1px solid rgba(45, 122, 79, 0.3); border-radius: 8px; padding: 15px; color: var(--forest-night); font-family: var(--font-body); font-size: 1rem; width: 100%;" required>
-                        <option value="">Selecciona una opción...</option>
-                        <option value="angosta">Angosta (Menos de 2 metros)</option>
-                        <option value="media">Media (Entre 2 y 3.5 metros)</option>
-                        <option value="ancha">Ancha (Más de 3.5 metros)</option>
-                    </select>
-                </div>
+        <section class="plantacion-form-container reveal delay-1">
+            @auth
+                <form class="contact-form" onsubmit="event.preventDefault(); alert('Solicitud enviada con éxito (Simulación).');">
+                    <div class="form-group">
+                        <label for="ancho-vereda">Ancho Estimado de la Vereda</label>
+                        <select id="ancho-vereda" class="form-control" required>
+                            <option value="">Selecciona una opción...</option>
+                            <option value="angosta">Angosta (Menos de 2 metros)</option>
+                            <option value="media">Media (Entre 2 y 3.5 metros)</option>
+                            <option value="ancha">Ancha (Más de 3.5 metros)</option>
+                        </select>
+                    </div>
 
-                <div class="form-group" style="margin-top: 20px;">
-                    <label for="cazuela-estado">¿La cazuela (espacio de tierra) está disponible?</label>
-                    <select id="cazuela-estado" style="background-color: var(--paper-white); border: 1px solid rgba(45, 122, 79, 0.3); border-radius: 8px; padding: 15px; color: var(--forest-night); font-family: var(--font-body); font-size: 1rem; width: 100%;" required>
-                        <option value="">Selecciona una opción...</option>
-                        <option value="si">Sí, está abierta y con tierra suelta</option>
-                        <option value="cemento">No, la vereda está completamente cementada</option>
-                        <option value="tocon">No, hay un tronco/muñón viejo que debe extraerse primero</option>
-                    </select>
-                </div>
+                    <div class="form-group">
+                        <label for="cazuela-estado">¿La cazuela (espacio de tierra) está disponible?</label>
+                        <select id="cazuela-estado" class="form-control" required>
+                            <option value="">Selecciona una opción...</option>
+                            <option value="si">Sí, está abierta y con tierra suelta</option>
+                            <option value="cemento">No, la vereda está completamente cementada</option>
+                            <option value="tocon">No, hay un tronco/muñón viejo que debe extraerse primero</option>
+                        </select>
+                    </div>
 
-                <div class="form-group" style="margin-top: 20px;">
-                    <label for="direccion-solicitud">Dirección Exacta</label>
-                    <input type="text" id="direccion-solicitud" placeholder="Ej: Av. Rivadavia 4800, Caballito" style="background-color: var(--paper-white); border: 1px solid rgba(45, 122, 79, 0.3); border-radius: 8px; padding: 15px; color: var(--forest-night); font-family: var(--font-body); font-size: 1rem; width: 100%;" required>
-                </div>
+                    <div class="form-group">
+                        <label for="direccion-solicitud">Dirección Exacta</label>
+                        <div class="input-with-button">
+                            <input type="text" id="direccion-solicitud" class="form-control" placeholder="Ej: Av. Rivadavia 4800, Caballito" required>
+                            <button type="button" id="btn-select-map" class="btn-main-cta">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--spring-leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                Seleccionar en Mapa
+                            </button>
+                        </div>
+                    </div>
 
-                <div class="form-group" style="margin-top: 25px; display: flex; flex-direction: row; align-items: flex-start; gap: 10px;">
-                    <input type="checkbox" id="compromiso" style="margin-top: 6px; cursor: pointer;" required>
-                    <label for="compromiso" style="font-weight: 500; font-size: 0.95rem; color: var(--forest-night); line-height: 1.4;">
-                        Me comprometo a cuidar y regar el árbol regularmente durante sus primeros 3 años de vida para asegurar su crecimiento saludable.
-                    </label>
-                </div>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="compromiso" required>
+                        <label for="compromiso">
+                            Me comprometo a cuidar y regar el árbol regularmente durante sus primeros 3 años de vida para asegurar su crecimiento saludable.
+                        </label>
+                    </div>
 
-                <div style="margin-top: 30px; display: flex; justify-content: flex-end;">
-                    <button type="submit" class="btn-main-cta">Enviar Solicitud</button>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-main-cta">Enviar Solicitud</button>
+                    </div>
+                </form>
+            @else
+                <div class="contact-login-card">
+                    <span class="lock-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </span>
+                    <p>Para solicitar la plantación de un nuevo árbol, por favor inicia sesión en tu cuenta de vecino.</p>
+                    <a href="/login" class="btn-main-cta">Iniciar Sesión</a>
                 </div>
-            </form>
+            @endauth
         </section>
     </main>
+
+    @auth
+    <!-- Modal de Selección de Dirección desde Mapa (Estilo Uber) -->
+    <div id="address-map-modal" class="address-map-modal-overlay">
+        <div class="address-map-modal-container">
+            <div class="address-map-modal-header">
+                <h3>Selecciona la ubicación</h3>
+                <button type="button" id="address-map-modal-close" class="address-map-modal-close">&times;</button>
+            </div>
+            <div class="address-map-body">
+                <div id="address-map-canvas-plantacion"></div>
+                <!-- Pin flotante central y sombra (Estilo Uber) -->
+                <div class="map-center-pin-shadow"></div>
+                <div class="map-center-pin">
+                    <svg width="34" height="46" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 0C5.37 0 0 5.37 0 12C0 21 12 32 12 32C12 32 24 21 24 12C24 5.37 18.63 0 12 0ZM12 16.5C9.51 16.5 7.5 14.49 7.5 12C7.5 9.51 9.51 7.5 12 7.5C14.49 7.5 16.5 9.51 16.5 12C16.5 14.49 14.49 16.5 12 16.5Z" fill="#C62828"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="address-map-modal-footer">
+                <div class="address-preview-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <span id="address-preview-text" class="address-preview-text">Buscando dirección...</span>
+                </div>
+                <button type="button" id="btn-confirm-address" class="btn-main-cta btn-confirm-address" disabled>Confirmar Ubicación</button>
+            </div>
+        </div>
+    </div>
+    @endauth
+@endsection
+
+@section('scripts')
+    @auth
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="{{ asset('js/tramites/plantacion.js') }}"></script>
+    @endauth
 @endsection
