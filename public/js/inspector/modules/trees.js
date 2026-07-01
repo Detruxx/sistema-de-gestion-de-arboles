@@ -128,6 +128,12 @@ window.loadTreesFromServer = async function() {
     window.trees.sort((a, b) => parseInt(a.id) - parseInt(b.id));
 
     window.loadTreesList();
+    
+    const totalTreesEl = document.getElementById('stat-total-trees');
+    if (totalTreesEl) {
+        totalTreesEl.innerText = window.trees.length.toLocaleString('es-AR');
+    }
+
     if (window.selectedTreeId) {
         window.selectTree(window.selectedTreeId);
     }

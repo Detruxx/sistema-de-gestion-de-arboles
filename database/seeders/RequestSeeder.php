@@ -5,10 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Request;
-<<<<<<< HEAD
-=======
 use App\Models\RequestStatusHistory;
->>>>>>> 7df9417fa65fa2849e01939f57c5d7913c14c79a
+use App\Models\User; 
 
 class RequestSeeder extends Seeder
 {
@@ -17,9 +15,24 @@ class RequestSeeder extends Seeder
      */
     public function run(): void
     {
-<<<<<<< HEAD
-        Request::factory()->count(20)->create();
-=======
+        // 📍 Creamos un usuario vecino temporal para asociar al historial inicial
+        $vecinoTemporal = User::factory()->create([
+            'name' => 'Vecino',
+            'last_name' => 'Digital',
+            'role' => 'vecino',
+            'email' => 'vecino.temporal@example.com',
+            'password' => bcrypt('password')
+        ]);
+
+        // 📍 Creamos un inspector temporal para asociar a los movimientos avanzados
+        $inspectorTemporal = User::factory()->create([
+            'name' => 'Inspector',
+            'last_name' => 'Turno',
+            'role' => 'inspector',
+            'email' => 'inspector.temporal@example.com',
+            'password' => bcrypt('password')
+        ]);
+
         // 1. Creamos 10 reclamos aleatorios
         $reclamos = Request::factory()->count(10)->create();
 
@@ -47,7 +60,7 @@ class RequestSeeder extends Seeder
             RequestStatusHistory::create([
                 'request_id'        => $reclamo->id,
                 'request_status_id' => $reclamo->request_status_id, // Usamos el mismo estado con el que nació el reclamo
-                'user_id'           => 1, // Asumimos que lo inició el vecino (ID 1) o el sistema
+                'user_id'           => $vecinoTemporal->id, // 📍 Reemplazado el 1 fijo por el ID del vecino temporal
                 'justification'     => 'Registro inicial del reclamo ingresado por el ciudadano de forma digital.',
             ]);
 
@@ -56,11 +69,10 @@ class RequestSeeder extends Seeder
                 RequestStatusHistory::create([
                     'request_id'        => $reclamo->id,
                     'request_status_id' => $reclamo->request_status_id, // Estado actual
-                    'user_id'           => 2, // El inspector Carlos (ID 2) hizo el movimiento
+                    'user_id'           => $inspectorTemporal->id, // 📍 Reemplazado el 2 fijo por el ID del inspector temporal
                     'justification'     => 'Simulación de actualización realizada por el cuerpo de inspectores de arbolado.',
                 ]);
             }
         }
->>>>>>> 7df9417fa65fa2849e01939f57c5d7913c14c79a
     }
 }

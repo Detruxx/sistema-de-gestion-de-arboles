@@ -92,5 +92,4 @@ class WorkOrderController extends Controller
 
         return redirect()->back()->with('work_updated', 'Estado de la orden de trabajo actualizado correctamente.');
     }
-
 }

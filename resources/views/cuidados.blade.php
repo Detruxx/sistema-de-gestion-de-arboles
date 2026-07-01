@@ -19,7 +19,7 @@
                   data-title="Riego Consciente y Eficiente" 
                   data-description="El agua es vital para el establecimiento de los árboles en las veredas, especialmente durante los primeros 3 años posteriores a su plantación. Durante este periodo, sus raíces aún no están lo suficientemente extendidas para buscar agua por sí mismas de manera eficiente en el suelo urbano." 
                   data-tips="Riega con 20 a 40 litros de agua una vez a la semana, preferentemente al caer la tarde.;Hazlo de forma lenta para que el suelo absorba toda la humedad y no se escurra.;En verano o épocas de sequía prolongada, duplica la frecuencia a dos veces por semana.;Evita mojar las hojas a pleno sol para prevenir quemaduras de sol y proliferación de hongos." 
-                  data-image="{{ asset('img/riego_arbol.png') }}">
+                  data-image="{{ asset('img/cuidados/riego_arbol.png') }}">
                 <div class="tip-card-header">
                     <span class="tip-icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
@@ -43,7 +43,7 @@
                   data-title="Poda y Mantenimiento del Arbolado" 
                   data-description="La Ley N° 3263 de la Ciudad de Buenos Aires prohíbe terminantemente la poda, tala o cualquier daño al arbolado público por parte de particulares. La poda inadecuada debilita la estructura del árbol y reduce drásticamente su expectativa de vida al permitir la entrada de plagas." 
                   data-tips="Solicita el servicio de poda a través de la línea de reclamos del Gobierno de la Ciudad (BA 147).;La temporada oficial de poda se realiza exclusivamente en invierno (mayo a agosto) para evitar la pérdida excesiva de savia.;La poda particular sin autorización conlleva multas severas y sanciones legales por daño al patrimonio público.;Solo los inspectores comunales capacitados pueden determinar si un árbol requiere poda de despeje o saneamiento." 
-                  data-image="{{ asset('img/poda_arbol.png') }}">
+                  data-image="{{ asset('img/cuidados/poda_arbol.png') }}">
                 <div class="tip-card-header">
                     <span class="tip-icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="9.8" y1="8.2" x2="21" y2="19"></line><line x1="9.8" y1="15.8" x2="21" y2="5"></line></svg>
@@ -67,7 +67,7 @@
                   data-title="Plantación Autorizada de Especies" 
                   data-description="Para plantar un árbol en la vereda pública se requiere obligatoriamente una autorización de la comuna correspondiente. Cada calle y ancho de vereda cuenta con un catálogo de especies aptas para evitar daños en la infraestructura subterránea y aérea." 
                   data-tips="Realiza la solicitud formal a través de la <a href='https://buenosaires.gob.ar/tramites/plantacion-de-arbol' target='_blank' class='modal-inline-link'>web oficial del gobierno de la ciudad (GCBA)</a>.;El vivero de la ciudad proveerá e indicará la especie adecuada (por ejemplo, Jacarandá, Crespón o Árbol de Judea).;Nunca plantes especies invasoras, con espinas, o raíces sumamente agresivas (como gomeros o sauces) en la acera pública.;Asegúrate de dejar el espacio de paso reglamentario para peatones y personas con movilidad reducida." 
-                  data-image="{{ asset('img/plantacion_arbol.png') }}">
+                  data-image="{{ asset('img/cuidados/plantacion_arbol.png') }}">
                 <div class="tip-card-header">
                     <span class="tip-icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 19v3M12 3L9 8h1.5L7.5 13h1.5L5 19h14l-4-6h1.5l-3-5h1.5Z"/></svg>
@@ -91,7 +91,7 @@
                   data-title="Plantera Libre de Cemento y Químicos" 
                   data-description="La plantera (el espacio cuadrado de tierra en la vereda) es la boca de alimentación y respiración principal del árbol. El cementado o pavimentación de la plantera asfixia las raíces, impidiendo el paso del oxígeno y el agua de lluvia." 
                   data-tips="Mantén la tierra de la plantera suelta, desmalezada y completamente libre de escombros o basura.;Queda estrictamente prohibido rellenar la plantera con cemento, baldosas o colocar rejas totalmente cerradas.;Nunca arrojes agua con detergentes, lavandina, aceites ni desinfectantes químicos en la plantera.;Planta flores de raíz superficial en la plantera; ayudan a retener la humedad del suelo y embellecen la vereda." 
-                  data-image="{{ asset('img/plantera_libre.png') }}">
+                  data-image="{{ asset('img/cuidados/plantera_libre.png') }}">
                 <div class="tip-card-header">
                     <span class="tip-icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
@@ -115,7 +115,7 @@
                   data-title="Acolchado y Nutrición Orgánica (Mulch)" 
                   data-description="El mulching consiste en colocar una capa de material orgánico triturado en la base del árbol. Este proceso emula el suelo de un bosque natural, previniendo la compactación urbana y mejorando notablemente la salud radicular." 
                   data-tips="Coloca una capa de 5 a 10 cm de chips de madera triturados, corteza de pino u hojas secas en la base.;Deja un espacio libre de unos 5 cm alrededor del tronco para evitar la humedad excesiva y pudrición de la corteza.;El mulch retiene hasta un 50% más de humedad en el suelo, reduciendo la necesidad de riegos constantes.;Al descomponerse lentamente, aporta nutrientes esenciales y materia orgánica al suelo de la cazuela." 
-                  data-image="{{ asset('img/mulch_arbol.png') }}">
+                  data-image="{{ asset('img/cuidados/mulch_arbol.png') }}">
                 <div class="tip-card-header">
                     <span class="tip-icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 1 9.8a7 7 0 0 1-9 8.2z"></path><path d="M9 22v-4"></path></svg>
@@ -139,7 +139,7 @@
                   data-title="Protección de la Corteza y el Tronco" 
                   data-description="La corteza es la 'piel' protectora del árbol. Cualquier herida física expuesta en el tronco interrumpe la circulación de savia e invita de forma directa a hongos, insectos y plagas fatales a pudrir la madera interna." 
                   data-tips="Evita atar bicicletas, motos o colocar carteles publicitarios con clavos o cadenas alrededor del tronco.;No utilices la corteza para fijar cables, luces navideñas tensas o colgar elementos punzantes.;Ten extremo cuidado al usar bordadoras de césped o cortadoras cerca de la base para no 'anillar' y matar al árbol.;Si observas heridas con savia expuesta o presencia de hongos lignívoros, repórtalo de inmediato para tratamiento." 
-                  data-image="{{ asset('img/corteza_arbol.png') }}">
+                  data-image="{{ asset('img/home/corteza_arbol.png') }}">
                 <div class="tip-card-header">
                     <span class="tip-icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
@@ -187,11 +187,9 @@
             </div>
         </div>
     </div>
+    </div>
 @endsection
 
-@section('footer')
-
-@endsection
 
 @section('scripts')
     

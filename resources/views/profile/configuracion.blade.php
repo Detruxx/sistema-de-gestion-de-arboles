@@ -56,9 +56,9 @@
                 <div class="avatar-selection-container" style="border-top: 1px solid rgba(45, 122, 79, 0.15); border-bottom: 1px solid rgba(45, 122, 79, 0.15); padding: 20px 0; display: flex; flex-direction: column; gap: 15px; align-items: center;">
                     <span class="info-label" style="font-size: 0.8rem;">Elegir avatar o subir foto</span>
                     <div class="default-avatars" style="display: flex; gap: 15px; justify-content: center;">
-                        <img class="default-avatar-option" data-avatar="/img/avatar1.png" src="{{ asset('img/avatar1.png') }}" alt="Avatar 1" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.2s ease;">
-                        <img class="default-avatar-option" data-avatar="/img/avatar2.png" src="{{ asset('img/avatar2.png') }}" alt="Avatar 2" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.2s ease;">
-                        <img class="default-avatar-option" data-avatar="/img/avatar3.png" src="{{ asset('img/avatar3.png') }}" alt="Avatar 3" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.2s ease;">
+                        <img class="default-avatar-option" data-avatar="/img/user/avatar1.png" src="{{ asset('img/user/avatar1.png') }}" alt="Avatar 1" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.2s ease;">
+                        <img class="default-avatar-option" data-avatar="/img/user/avatar2.png" src="{{ asset('img/user/avatar2.png') }}" alt="Avatar 2" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.2s ease;">
+                        <img class="default-avatar-option" data-avatar="/img/user/avatar3.png" src="{{ asset('img/user/avatar3.png') }}" alt="Avatar 3" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.2s ease;">
                     </div>
                     <div style="display: flex; justify-content: center; gap: 10px; width: 100%; flex-wrap: wrap;">
                         <button type="button" class="btn-main-cta" onclick="document.getElementById('avatar-file-input').click()" style="background-color: transparent; border: 2px solid var(--living-moss); color: var(--living-moss); font-size: 0.85rem; padding: 6px 12px; margin: 0;">

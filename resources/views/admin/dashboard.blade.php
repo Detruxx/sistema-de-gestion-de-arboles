@@ -45,6 +45,18 @@
                 Inventario de Arbolado
             </button>
             
+            @if(auth()->user()->role === 'admin')
+            <button class="sidebar-btn" onclick="showModule('roles')" id="menu-roles">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                Gestión de Roles
+            </button>
+            @endif
+            
             <h3 class="sidebar-menu-title mt-25">Herramientas</h3>
             <a href="/mapa" target="_blank" class="sidebar-btn sidebar-btn-link">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -115,7 +127,7 @@
                     </div>
                     <div class="stat-info">
                         <h4>Árboles Registrados</h4>
-                        <p>12,450</p>
+                        <p id="stat-total-trees">...</p>
                     </div>
                 </div>
             </div>
@@ -264,8 +276,56 @@
             </div>
         </section>
 
+        @if(auth()->user()->role === 'admin')
+        <!-- MODULE: GESTION DE ROLES -->
+        <section id="module-roles" class="dashboard-module">
+            <div class="admin-header-section">
+                <div>
+                    <h2>Gestión de Roles de Usuarios</h2>
+                    <p>Visualiza los usuarios registrados y modifica sus roles de acceso (Vecino, Inspector, Administrador)</p>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="inventory-filter-bar">
+                <div class="inventory-filter-group" style="flex: 1 1 300px;">
+                    <label for="search-users">Buscar por nombre o email</label>
+                    <input type="text" id="search-users" placeholder="Ej. Carlos, vecino@example.com..." oninput="filterUsers()">
+                </div>
+                <div class="inventory-filter-group" style="flex: 1 1 200px;">
+                    <label for="filter-user-role">Filtrar por Rol</label>
+                    <select id="filter-user-role" onchange="filterUsers()">
+                        <option value="">Todos los roles</option>
+                        <option value="vecino">Vecino</option>
+                        <option value="inspector">Inspector</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="split-layout">
+                <!-- Left Panel: Users list -->
+                <div class="list-panel">
+                    <div class="items-list" id="users-list-container">
+                        <!-- Loaded via JS -->
+                    </div>
+                </div>
+
+                <!-- Right Panel: User detailed card -->
+                <div class="detail-panel" id="user-detail-panel">
+                    <div class="empty-state-panel">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-state-icon">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                        </svg>
+                        <p>Selecciona un usuario de la lista para visualizar sus detalles y modificar su rol.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        @endif
+
     </main>
-</div>
 
 <!-- Modal Registrar Nuevo Árbol -->
 <div id="create-tree-modal" class="admin-modal-overlay">
@@ -358,6 +418,7 @@
     </svg>
     <span id="notification-text">Respuesta enviada con éxito.</span>
 </div>
+</div>
 @endsection
 
 @section('footer')
@@ -365,9 +426,15 @@
 @endsection
 
 @section('scripts')
+<script>
+    window.currentUserRole = "{{ auth()->user()->role }}";
+</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="{{ asset('js/inspector/modules/core.js') }}"></script>
 <script src="{{ asset('js/inspector/modules/claims.js') }}"></script>
 <script src="{{ asset('js/inspector/modules/trees.js') }}"></script>
 <script src="{{ asset('js/inspector/modules/map.js') }}"></script>
+@if(auth()->user()->role === 'admin')
+<script src="{{ asset('js/inspector/modules/roles.js') }}"></script>
+@endif
 @endsection

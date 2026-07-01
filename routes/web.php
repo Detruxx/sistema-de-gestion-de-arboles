@@ -11,6 +11,9 @@ use App\Http\Controllers\WorkOrderController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\UserController; 
 use App\Http\Controllers\PriorityController;
+use App\Http\Controllers\CompanyPanelController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('welcome');
@@ -62,22 +65,57 @@ Route::get('/requests/type/{typeId}', [RequestController::class, 'getRequestsByT
 // Rutas de Contacto (de rediseño-home)
 Route::post('/contacto', [ContactController::class, 'store'])->name('contacto.store');
 
-// Rutas protegidas por autenticación (de rediseño-home)
+// Rutas protegidas por autenticación
 Route::middleware(['auth'])->group(function () {
-    Route::get('/configuracion', [ProfileController::class, 'configuracion'])->name('profile.configuracion');
-    Route::post('/configuracion/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
-    Route::get('/mis-reclamos', [ProfileController::class, 'misReclamos'])->name('profile.mis-reclamos');
-    Route::post('/reclamos/{id}/status', [ProfileController::class, 'updateReclamoStatus'])->name('profile.reclamo.status');
-    Route::get('/mensajes', [ContactController::class, 'index'])->name('contact.index');
-    Route::post('/mensajes/{id}/read', [ContactController::class, 'markRead'])->name('contact.read');
 
-    // Dashboard de Admin/Inspector
-    Route::middleware(['role:admin,inspector'])->group(function () {
-        Route::get('/admin/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('admin.dashboard');
+    // --- VERIFICACIÓN DE EMAIL ---
+
+    // 1. La pantalla que le avisa al usuario: "Te mandamos un mail, verificalo"
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->name('verification.notice');
+
+    // 2. La ruta que procesa el LINK del mail (Laravel se encarga de la lógica internamente)
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill(); // Marca al usuario como verificado estampando la fecha
+        return redirect('/mapa')->with('success', '¡Email verificado con éxito!');
+    })->middleware(['signed'])->name('verification.verify');
+
+    // 3. Botón por si el usuario pide reenviar el correo de verificación
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('message', '¡Se ha reenviado el enlace de verificación!');
+    })->middleware(['throttle:6,1'])->name('verification.send');
+
+    // --- RUTAS QUE REQUIEREN EMAIL VERIFICADO ---
+    Route::middleware(['verified'])->group(function () {
+
+        Route::get('/configuracion', [ProfileController::class, 'configuracion'])->name('profile.configuracion');
+        Route::post('/configuracion/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+        Route::get('/mis-reclamos', [ProfileController::class, 'misReclamos'])->name('profile.mis-reclamos');
+        Route::post('/reclamos/{id}/status', [ProfileController::class, 'updateReclamoStatus'])->name('profile.reclamo.status');
+        Route::get('/bandeja-entrada', [ProfileController::class, 'misMensajes'])->name('profile.bandeja-entrada');
+        Route::get('/mensajes', [ContactController::class, 'index'])->name('contact.index');
+        Route::post('/mensajes/{id}/read', [ContactController::class, 'markRead'])->name('contact.read');
+
+        // Dashboard de Admin/Inspector
+        Route::middleware(['role:admin,inspector'])->group(function () {
+            Route::get('/admin/dashboard', function () {
+                return view('admin.dashboard');
+            })->name('admin.dashboard');
+
+            // Ruta para crear órdenes de trabajo/tareas de empresas contratistas
+            Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
+        });
+
+        //Panel Exclusivo para Empresas Tercerizadas
+        Route::middleware(['role:empresa'])->group(function () {
+            Route::get('/company/dashboard', [CompanyPanelController::class, 'index'])->name('company.dashboard');
+        });
     });
 });
+
+//ENDPOINTS PUBLICOS DE API
 
 // Endpoint para traer los pines livianos
 Route::get('/api/arboles/pines', [TreeController::class, 'getMapPins']);
@@ -87,11 +125,9 @@ Route::get('/api/arboles/{id}', [TreeController::class, 'getTreeDetails']);
 
 // Endpoint para traer todos los tipos de reclamo
 Route::get('/api/request-types',[RequestTypeController::class, 'index']);
+
 // Endpoint para traer todos los estados de reclamo con su metadata UI
 Route::get('/api/request-statuses', [\App\Http\Controllers\RequestController::class, 'getStatuses']);
-
-// Ruta para crear órdenes de trabajo/tareas de empresas contratistas
-Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
 
 // Rutas para el Registro 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
@@ -105,12 +141,10 @@ Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')
     Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
-
    
     // 2. CONTROLADOR DE TRABAJOS (WorkOrderController)
     Route::get('/work-orders', [WorkOrderController::class, 'index'])->name('work_orders.index');
     Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work_orders.store');
-
 
     // 3. CONTROLADOR DE PRIORIDADES (PriorityController)
     Route::get('/priorities', [PriorityController::class, 'index'])->name('priorities.index');
@@ -121,19 +155,15 @@ Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')
 
 // Grupo compartido: Accesible por Admin e Inspector
 Route::middleware(['auth', 'check.role:admin,inspector'])->group(function () {
-    
     // Traer todos los árboles formateados para el AJAX del front
     Route::get('/api/admin/arboles', [TreeController::class, 'getAdminTrees'])->name('api.admin.trees');
-
 });
 
 // Grupo nuevo exclusivo: Solo el Administrador puede entrar
 Route::middleware(['auth', 'check.role:admin'])->group(function () {
-    
     // Listado global de usuarios en formato JSON
     Route::get('/api/admin/users', [UserController::class, 'index'])->name('api.admin.users.index');
     
     // Modificar el rol de un usuario específico (PATCH)
     Route::patch('/api/admin/users/{user}/role', [UserController::class, 'updateRole'])->name('api.admin.users.updateRole');
-
 });

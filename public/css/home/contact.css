@@ -2,10 +2,8 @@
 .contact-section {
     position: relative;
     z-index: auto;
-    padding: 100px 8%;
+    padding: 100px 8% 140px 8%;
     background-color: var(--paper-white);
-    border-radius: 0 0 40px 40px;
-    margin-bottom: 40px;
     scroll-margin-top: 95px;
 }
 
@@ -98,13 +96,13 @@
     resize: vertical;
 }
 
-.form-group input:hover,
+.form-group input:not([type="checkbox"]):not([type="file"]):hover,
 .form-group textarea:hover {
     border-color: var(--living-moss);
     background-color: rgba(91, 191, 140, 0.04);
 }
 
-.form-group input:focus,
+.form-group input:not([type="checkbox"]):not([type="file"]):focus,
 .form-group textarea:focus {
     outline: none;
     border-color: var(--living-moss);
@@ -117,7 +115,7 @@
     z-index: 2;
     background-color: #ffffff;
     backdrop-filter: blur(10px);
-    border: 2px dashed rgba(45, 122, 79, 0.4);
+    border: 2px solid rgba(45, 122, 79, 0.4);
     border-radius: 16px;
     padding: 45px 30px;
     display: flex;
