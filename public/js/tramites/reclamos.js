@@ -141,7 +141,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (response.ok) {
                     const result = await response.json();
-                    alert(`Reclamo registrado con éxito bajo el ID: ${result.data.tracking_code}`);
+                    if (typeof window.showSuccessModal === 'function') {
+                        window.showSuccessModal('¡Reclamo Enviado!', `El reclamo se registró con éxito bajo el código de seguimiento: ${result.data.tracking_code}`);
+                    } else {
+                        alert(`Reclamo registrado con éxito bajo el ID: ${result.data.tracking_code}`);
+                    }
                     reclamoForm.reset();
                     setSeleccionArbol(null);
                 } else {

@@ -13,7 +13,7 @@
 
 @section('content')
     <main class="tramites-page-container" style="position: relative; overflow: hidden;">
-        @include('backgrounds.forest')
+        <div class="bg-blurred-image reclamos-bg"></div>
         <section class="cuidados-header reveal">
             <h1 class="hero-title">Registro de Reclamos</h1>
             <p class="section-subtitle">
@@ -47,6 +47,7 @@
                     </div>
                 </div>
 
+                @auth
                 <form class="contact-form" id="reclamo-form">
                     <div class="form-group">
                         <label for="tipo-reclamo">Tipo de Incidencia <span class="required-asterisk">*</span></label>
@@ -81,8 +82,15 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="foto">Adjuntar Foto (Opcional)</label>
-                        <input type="file" id="foto" accept="image/*" class="form-control foto-input">
+                        <label>Adjuntar Foto (Opcional)</label>
+                        <div class="custom-file-upload">
+                            <label for="foto" class="file-label">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-paperclip"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                                <span>Seleccionar archivo</span>
+                            </label>
+                            <input type="file" id="foto" accept="image/*" class="foto-input" style="display: none;" onchange="document.getElementById('foto-name').textContent = this.files[0] ? this.files[0].name : 'Ningún archivo seleccionado'">
+                            <span class="file-name" id="foto-name">Ningún archivo seleccionado</span>
+                        </div>
                         <small class="foto-help-text">Formatos soportados: JPG, PNG. Tamaño máximo: 5MB.</small>
                     </div>
 
@@ -90,6 +98,15 @@
                         <button type="submit" class="btn-main-cta">Enviar Reclamo</button>
                     </div>
                 </form>
+                @else
+                <div class="contact-login-card">
+                    <span class="lock-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </span>
+                    <p>Para registrar un reclamo, por favor inicia sesión en tu cuenta de vecino.</p>
+                    <a href="/login" class="btn-main-cta">Iniciar Sesión</a>
+                </div>
+                @endauth
             </section>
         </div>
 

@@ -595,17 +595,20 @@
     position: fixed;
     bottom: 30px;
     right: 30px;
-    background: var(--admin-card-bg);
-    border: 1.5px solid var(--admin-accent);
+    background: rgba(240, 247, 244, 0.96);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1.5px solid rgba(45, 122, 79, 0.25);
     border-radius: 12px;
     padding: 16px 24px;
     display: flex;
     align-items: center;
     gap: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 10px 30px rgba(45, 122, 79, 0.1);
     z-index: 9999;
     animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    color: var(--admin-text-primary);
+    color: #1e4d34;
+    font-weight: 600;
 }
 
 @keyframes slideInUp {

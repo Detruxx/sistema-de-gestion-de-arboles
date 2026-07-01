@@ -10,7 +10,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\RequestTypeController;
 use App\Http\Controllers\WorkOrderController;
 use App\Http\Controllers\CompanyPanelController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest; // 📍 NUEVO: Necesario para el link del mail
+use Illuminate\Foundation\Auth\EmailVerificationRequest; //Necesario para el link del mail
 use Illuminate\Http\Request;
 
 Route::get('/', function () {

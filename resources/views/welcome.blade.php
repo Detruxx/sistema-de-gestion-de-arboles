@@ -21,7 +21,7 @@
                 </div>
                 <div class="hero-image-right">
                     <div class="organic-image-mask">
-                        <img src="{{ asset('img/copa_arboles.png') }}" alt="Arboles urbanos">
+                        <img src="{{ asset('img/home/copa_arboles.png') }}" alt="Arboles urbanos">
                     </div>
                 </div>
             </div>
@@ -47,9 +47,9 @@
                       data-scientific="Jacaranda mimosifolia"
                       data-description="Famoso por su espectacular floración violeta en noviembre. Aporta frescura y biodiversidad a las avenidas de la ciudad. Es un árbol originario de las selvas de montaña del noroeste argentino (Yungas), adaptado perfectamente al clima de Buenos Aires."
                       data-tips="Floración: Flores violáceas/azules en forma de campana que cubren la copa a fines de primavera.;Tamaño: Árbol mediano a grande, que puede alcanzar de 12 a 15 metros de altura.;Follaje: Hojas caducas de aspecto plumoso y delicado, que caen tarde en invierno.;Ubicación: Ideal para veredas anchas y avenidas debido a su copa abierta y raíces moderadas."
-                      data-image="{{ asset('img/jacaranda_arbol.png') }}">
+                      data-image="{{ asset('img/home/jacaranda_arbol.png') }}">
                     <div class="species-image">
-                        <img src="{{ asset('img/jacaranda_arbol.png') }}" alt="Jacarandá">
+                        <img src="{{ asset('img/home/jacaranda_arbol.png') }}" alt="Jacarandá">
                         <span class="species-percentage">8% de veredas</span>
                     </div>
                     <div class="species-info">
@@ -70,9 +70,9 @@
                       data-scientific="Erythrina crista-galli"
                       data-description="Nuestra flor nacional. De vistoso color rojo, crece principalmente en parques, plazas y zonas húmedas cercanas a la ribera. Es una especie autóctona de la región del Delta y del Río de la Plata, muy querida por su valor cultural."
                       data-tips="Floración: Flores de color rojo carmín intenso, agrupadas en racimos durante primavera y verano.;Tamaño: Árbol de tamaño mediano, de entre 5 a 10 metros de altura, de tronco tortuoso.;Corteza: Rugosa y suberosa (corchosa), muy característica del paisaje ribereño.;Ubicación: Se desarrolla óptimamente en terrenos húmedos, linderos a cursos de agua o en parques amplios."
-                      data-image="{{ asset('img/ceibo_arbol.png') }}">
+                      data-image="{{ asset('img/home/ceibo_arbol.png') }}">
                     <div class="species-image">
-                        <img src="{{ asset('img/ceibo_arbol.png') }}" alt="Ceibo">
+                        <img src="{{ asset('img/home/ceibo_arbol.png') }}" alt="Ceibo">
                         <span class="species-percentage">Flor Nacional</span>
                     </div>
                     <div class="species-info">
@@ -93,9 +93,9 @@
                       data-scientific="Fraxinus pennsylvanica"
                       data-description="El árbol más abundante en las veredas de Buenos Aires. Provee una sombra tupida en verano y un tono dorado en otoño. Es una especie exótica originaria de América del Norte que se ha adaptado masivamente al ejido urbano porteño."
                       data-tips="Follaje: Hojas caducas que se tornan de color amarillo dorado en otoño antes de caer.;Sombra: Copa globosa muy tupida que reduce la radiación solar sobre el pavimento y fachadas en verano.;Resistencia: Excelente tolerancia a la polución urbana, la poda severa y la compactación del suelo.;Frecuencia: Constituye casi 4 de cada 10 árboles plantados en las veredas de la ciudad."
-                      data-image="{{ asset('img/fresno_arbol.png') }}">
+                      data-image="{{ asset('img/home/fresno_arbol.png') }}">
                     <div class="species-image">
-                        <img src="{{ asset('img/fresno_arbol.png') }}" alt="Fresno">
+                        <img src="{{ asset('img/home/fresno_arbol.png') }}" alt="Fresno">
                         <span class="species-percentage">38% de veredas</span>
                     </div>
                     <div class="species-info">
