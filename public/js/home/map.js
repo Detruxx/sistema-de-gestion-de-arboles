@@ -77,6 +77,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let arboles = [];
 
+        // Exponer la función globalmente para poder llamarla desde el HTML del popup
+        window.abrirDetalleArbol = function(arbolId, lat, lng) {
+            mostrarDatosArbol(arbolId);
+            if (lat && lng) {
+                map.flyTo([lat, lng], 16, { duration: 0.5 });
+            }
+        };
+
         // Función para inyectar los datos en el panel al hacer clic
         async function mostrarDatosArbol(arbolId) {
             try {
@@ -203,10 +211,37 @@ document.addEventListener('DOMContentLoaded', () => {
                     fillOpacity: 0.8
                 }).addTo(map);
 
+                let direccionBasica = 'Sin dirección';
+                if (arbol.park) {
+                    direccionBasica = arbol.park.park_name;
+                } else if (arbol.street) {
+                    direccionBasica = `${arbol.street.street_name} ${arbol.street.street_number || ''}`.trim();
+                }
+                const nombreEspeciePopup = arbol.specie ? arbol.specie.common_name : 'Desconocida';
 
+                const template = document.getElementById('tree-popup-template');
+                let popupNode = document.createElement('div');
+                
+                if (template) {
+                    const clone = template.content.cloneNode(true);
+                    clone.querySelector('.tree-popup-title').textContent = nombreEspeciePopup;
+                    clone.querySelector('.address-text').textContent = direccionBasica;
+                    const btn = clone.querySelector('.tree-popup-btn');
+                    // Asignamos el evento de esta manera manteniendo separada la lógica
+                    btn.onclick = () => window.abrirDetalleArbol(arbol.id, arbol.latitude, arbol.longitude);
+                    popupNode.appendChild(clone);
+                }
+
+                marker.bindPopup(popupNode, {
+                    closeButton: false,
+                    className: 'custom-tree-popup',
+                    offset: [0, -5]
+                });
+
+                // Ya no abrimos el sidebar inmediatamente ni forzamos flyTo aquí, 
+                // Leaflet abre automáticamente el popup.
                 marker.on('click', () => {
-                    mostrarDatosArbol(arbol.id); // Pasamos solo el ID para que haga fetch del detalle
-                    map.flyTo([arbol.latitude, arbol.longitude], 16, { duration: 0.5 });
+                    // map.flyTo([arbol.latitude, arbol.longitude], 16, { duration: 0.5 });
                 });
 
                 mapMarkers.push(marker);
