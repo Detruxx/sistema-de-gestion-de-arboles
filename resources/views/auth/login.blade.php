@@ -11,7 +11,7 @@
         <section class="login-wrapper reveal" style="max-width: 500px; width: 100%; position: relative; z-index: 10;">
             <div class="contact-form">
                 <div style="text-align: center; margin-bottom: 30px;">
-                    <h2 style="font-family: var(--font-display); color: var(--deep-canopy); font-size: 2.2rem; margin-bottom: 8px;">Ingresar</h2>
+                    <h2 style="font-family: var(--font-display); color: var(--deep-canopy); font-size: 2.2rem; margin-bottom: 8px; line-height: 1.3; padding-bottom: 5px;">Ingresar</h2>
                     <p style="color: var(--forest-night); font-size: 1rem;">Inicia sesión en la plataforma TreeBA</p>
                 </div>
 
@@ -46,9 +46,9 @@
                         </div>
                     </div>
 
-                    <div class="form-group checkbox-group" style="margin-top: 15px;">
-                        <input type="checkbox" name="remember" id="remember">
-                        <label for="remember" style="font-weight: normal; color: var(--forest-night);">Recordar sesión</label>
+                    <div class="form-group checkbox-group" style="margin-top: 15px; display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" name="remember" id="remember" style="accent-color: var(--spring-leaf); margin: 0; width: 18px; height: 18px; cursor: pointer;">
+                        <label for="remember" style="font-weight: normal; color: var(--forest-night); margin: 0; cursor: pointer;">Recordar sesión</label>
                     </div>
 
                     <div class="form-actions" style="margin-top: 30px; text-align: center;">

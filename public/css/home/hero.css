@@ -74,7 +74,7 @@
 /* Máscara de recorte orgánica en forma de hoja */
 .organic-image-mask {
     width: 100%;
-    max-width: 420px;
+    max-width: clamp(420px, 35vw, 550px);
     height: auto;
     aspect-ratio: 420 / 480;
     overflow: hidden;

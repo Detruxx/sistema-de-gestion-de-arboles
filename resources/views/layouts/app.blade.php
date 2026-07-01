@@ -17,6 +17,7 @@
     @yield('styles') <!-- Aca se colocan estilos especificos de cada vista -->
     
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=1.1"> <!-- Aca va el css de la pagina -->
+    <link rel="stylesheet" href="{{ asset('css/generales/modal.css') }}">
 </head>
 <body class="@yield('body-class')">
     @yield('canvas') <!-- Aca va el canvas de la pagina -->
@@ -78,10 +79,14 @@
                         <a href="/configuracion">Mi Perfil</a>
                         @if(Auth::user()->role === 'vecino')
                             <a href="/mis-reclamos">Mis Reclamos</a>
+                            <a href="/bandeja-entrada">Bandeja de Entrada</a>
                         @else
                             <a href="/admin/dashboard">Panel de Control</a>
                         @endif
-                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="border-top: 1px solid rgba(45, 122, 79, 0.15); color: #d32f2f;">Cerrar Sesión</a>
+                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="border-top: 1px solid rgba(45, 122, 79, 0.15); color: #d32f2f; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                            <span>Cerrar Sesión</span>
+                            <img src="{{ asset('img/logout_icon_red.webp') }}" alt="Cerrar Sesión" style="width: 18px; height: auto;">
+                        </a>
                     </div>
                 </div>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
