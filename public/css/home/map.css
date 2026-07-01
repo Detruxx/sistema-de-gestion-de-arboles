@@ -476,3 +476,58 @@
         width: calc(100vw - 30px);
     }
 }
+
+/* --- ESTILOS DEL POPUP DE LEAFLET --- */
+.custom-tree-popup .leaflet-popup-content-wrapper {
+    padding: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.custom-tree-popup .leaflet-popup-content {
+    margin: 0;
+    width: auto !important;
+}
+
+.tree-popup {
+    min-width: 160px;
+    font-family: 'Inter', sans-serif;
+    padding: 12px;
+    background: #ffffff;
+}
+
+.tree-popup-title {
+    margin: 0 0 4px 0;
+    font-size: 15px;
+    color: #2d7a4f;
+    font-weight: 600;
+}
+
+.tree-popup-address {
+    margin: 0 0 12px 0;
+    font-size: 13px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tree-popup-btn {
+    width: 100%;
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: none;
+    background: #2d7a4f;
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(45,122,79,0.2);
+    text-align: center;
+}
+
+.tree-popup-btn:hover {
+    background: #24633f;
+}
