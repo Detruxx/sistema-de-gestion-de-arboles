@@ -4,14 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\TreeController;
 use App\Http\Controllers\RequestController;
-<<<<<<< HEAD
-=======
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\RequestTypeController;
 use App\Http\Controllers\WorkOrderController;
 use App\Http\Controllers\Auth\RegisterController;
->>>>>>> 7df9417fa65fa2849e01939f57c5d7913c14c79a
+use App\Http\Controllers\UserController; 
+use App\Http\Controllers\PriorityController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -94,23 +93,47 @@ Route::get('/api/request-statuses', [\App\Http\Controllers\RequestController::cl
 // Ruta para crear órdenes de trabajo/tareas de empresas contratistas
 Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
 
-<<<<<<< HEAD
-// Crear un nuevo reclamo
-Route::post('/requests', [RequestController::class, 'store']);
-
-// Cambiar el estado de un reclamo
-Route::put('/requests/update-status/{id}', [RequestController::class, 'updateStatus']);
-
-// Obtener el historial de reclamos de un árbol específico
-Route::get('/requests/tree/{treeId}', [RequestController::class, 'getRequestsByTree']);
-
-// Filtrar reclamos por tipo de opción elegida
-Route::get('/requests/type/{typeId}', [RequestController::class, 'getRequestsByType']);
-
-
-
-=======
 // Rutas para el Registro 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
->>>>>>> 7df9417fa65fa2849e01939f57c5d7913c14c79a
+
+// 🛡️ Grupo de Administración Protegido (Rutas post-Register)
+Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    // 1. CONTROLADOR DE USUARIOS (UserController)
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+
+   
+    // 2. CONTROLADOR DE TRABAJOS (WorkOrderController)
+    Route::get('/work-orders', [WorkOrderController::class, 'index'])->name('work_orders.index');
+    Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work_orders.store');
+
+
+    // 3. CONTROLADOR DE PRIORIDADES (PriorityController)
+    Route::get('/priorities', [PriorityController::class, 'index'])->name('priorities.index');
+    Route::post('/priorities', [PriorityController::class, 'store'])->name('priorities.store');
+    Route::put('/priorities/{id}', [PriorityController::class, 'update'])->name('priorities.update');
+    Route::delete('/priorities/{id}', [PriorityController::class, 'destroy'])->name('priorities.destroy');    
+});
+
+// Grupo compartido: Accesible por Admin e Inspector
+Route::middleware(['auth', 'check.role:admin,inspector'])->group(function () {
+    
+    // Traer todos los árboles formateados para el AJAX del front
+    Route::get('/api/admin/arboles', [TreeController::class, 'getAdminTrees'])->name('api.admin.trees');
+
+});
+
+// Grupo nuevo exclusivo: Solo el Administrador puede entrar
+Route::middleware(['auth', 'check.role:admin'])->group(function () {
+    
+    // Listado global de usuarios en formato JSON
+    Route::get('/api/admin/users', [UserController::class, 'index'])->name('api.admin.users.index');
+    
+    // Modificar el rol de un usuario específico (PATCH)
+    Route::patch('/api/admin/users/{user}/role', [UserController::class, 'updateRole'])->name('api.admin.users.updateRole');
+
+});
