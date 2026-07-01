@@ -56,8 +56,6 @@ class Request extends Model
     {
         return $this->belongsTo(Street::class);
     }
-<<<<<<< HEAD
-=======
 
     public function priority()
     {
@@ -92,5 +90,4 @@ class Request extends Model
         $year = $this->created_at ? $this->created_at->format('Y') : date('Y');
         return 'REC-' . $year . '-' . str_pad($this->id, 3, '0', STR_PAD_LEFT);
     }
->>>>>>> b4619f85ce7365f09993321fe82f406954597893
 }

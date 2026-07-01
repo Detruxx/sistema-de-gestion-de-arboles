@@ -26,6 +26,91 @@
                 </div>
             </div>
         </section>
+
+        <!-- Seccion especies destacadas -->
+        <section class="featured-species-section reveal">
+            <!-- Divisor de estilo ondulado SVG (De oscuro del Hero a claro de Especies) -->
+            <div class="wave-divider wave-top">
+                <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z"></path>
+                </svg>
+            </div>
+
+            <h2 class="section-title">Especies Emblemáticas</h2>
+            <p class="section-subtitle">Conoce las especies más características que embellecen y protegen las calles de Buenos Aires.</p>
+            
+            <div class="species-grid">
+                <!-- Jacarandá -->
+                <div class="species-card"
+                      data-badge="8% de veredas"
+                      data-title="Jacarandá"
+                      data-scientific="Jacaranda mimosifolia"
+                      data-description="Famoso por su espectacular floración violeta en noviembre. Aporta frescura y biodiversidad a las avenidas de la ciudad. Es un árbol originario de las selvas de montaña del noroeste argentino (Yungas), adaptado perfectamente al clima de Buenos Aires."
+                      data-tips="Floración: Flores violáceas/azules en forma de campana que cubren la copa a fines de primavera.;Tamaño: Árbol mediano a grande, que puede alcanzar de 12 a 15 metros de altura.;Follaje: Hojas caducas de aspecto plumoso y delicado, que caen tarde en invierno.;Ubicación: Ideal para veredas anchas y avenidas debido a su copa abierta y raíces moderadas."
+                      data-image="{{ asset('img/home/jacaranda_arbol.png') }}">
+                    <div class="species-image">
+                        <img src="{{ asset('img/home/jacaranda_arbol.png') }}" alt="Jacarandá">
+                        <span class="species-percentage">8% de veredas</span>
+                    </div>
+                    <div class="species-info">
+                        <h3>Jacarandá</h3>
+                        <span class="scientific-name">Jacaranda mimosifolia</span>
+                        <p>Famoso por su espectacular floración violeta en noviembre. Aporta frescura y biodiversidad a las avenidas de la ciudad.</p>
+                        <span class="read-more-link">
+                            Leer más
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Ceibo -->
+                <div class="species-card"
+                      data-badge="Flor Nacional"
+                      data-title="Ceibo"
+                      data-scientific="Erythrina crista-galli"
+                      data-description="Nuestra flor nacional. De vistoso color rojo, crece principalmente en parques, plazas y zonas húmedas cercanas a la ribera. Es una especie autóctona de la región del Delta y del Río de la Plata, muy querida por su valor cultural."
+                      data-tips="Floración: Flores de color rojo carmín intenso, agrupadas en racimos durante primavera y verano.;Tamaño: Árbol de tamaño mediano, de entre 5 a 10 metros de altura, de tronco tortuoso.;Corteza: Rugosa y suberosa (corchosa), muy característica del paisaje ribereño.;Ubicación: Se desarrolla óptimamente en terrenos húmedos, linderos a cursos de agua o en parques amplios."
+                      data-image="{{ asset('img/home/ceibo_arbol.png') }}">
+                    <div class="species-image">
+                        <img src="{{ asset('img/home/ceibo_arbol.png') }}" alt="Ceibo">
+                        <span class="species-percentage">Flor Nacional</span>
+                    </div>
+                    <div class="species-info">
+                        <h3>Ceibo</h3>
+                        <span class="scientific-name">Erythrina crista-galli</span>
+                        <p>Nuestra flor nacional. De vistoso color rojo, crece principalmente en parques, plazas y zonas húmedas cercanas a la ribera.</p>
+                        <span class="read-more-link">
+                            Leer más
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Fresno -->
+                <div class="species-card"
+                      data-badge="38% de veredas"
+                      data-title="Fresno Americano"
+                      data-scientific="Fraxinus pennsylvanica"
+                      data-description="El árbol más abundante en las veredas de Buenos Aires. Provee una sombra tupida en verano y un tono dorado en otoño. Es una especie exótica originaria de América del Norte que se ha adaptado masivamente al ejido urbano porteño."
+                      data-tips="Follaje: Hojas caducas que se tornan de color amarillo dorado en otoño antes de caer.;Sombra: Copa globosa muy tupida que reduce la radiación solar sobre el pavimento y fachadas en verano.;Resistencia: Excelente tolerancia a la polución urbana, la poda severa y la compactación del suelo.;Frecuencia: Constituye casi 4 de cada 10 árboles plantados en las veredas de la ciudad."
+                      data-image="{{ asset('img/home/fresno_arbol.png') }}">
+                    <div class="species-image">
+                        <img src="{{ asset('img/home/fresno_arbol.png') }}" alt="Fresno">
+                        <span class="species-percentage">38% de veredas</span>
+                    </div>
+                    <div class="species-info">
+                        <h3>Fresno Americano</h3>
+                        <span class="scientific-name">Fraxinus pennsylvanica</span>
+                        <p>El árbol más abundante en las veredas de Buenos Aires. Provee una sombra tupida en verano y un tono dorado en otoño.</p>
+                        <span class="read-more-link">
+                            Leer más
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Seccion sobre nosotros -->
         <section id="sobre-nosotros" class="about-section">
             <div class="about-container">

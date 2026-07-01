@@ -361,6 +361,7 @@ class RequestController extends Controller
             'data'   => $requests,
         ], 200);
     }
+
     /**
      * Devuelve todos los estados disponibles con su configuración visual.
      */
