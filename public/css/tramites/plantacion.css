@@ -1,0 +1,191 @@
+/* Contenedor principal del formulario de Plantación */
+.plantacion-form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+}
+
+/* Campos de formulario generales */
+.form-group+.form-group {
+    margin-top: 20px;
+}
+
+.form-control {
+    background-color: var(--paper-white);
+    border: 1px solid rgba(45, 122, 79, 0.3);
+    border-radius: 8px;
+    padding: 15px;
+    color: var(--forest-night);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+/* Checkbox container */
+.checkbox-group {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-top: 6px;
+    cursor: pointer;
+}
+
+.checkbox-group label {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--forest-night);
+    line-height: 1.4;
+}
+
+/* Input con botón al lado */
+.input-with-button {
+    display: flex;
+    gap: 10px;
+}
+
+.input-with-button .form-control {
+    flex-grow: 1;
+}
+
+/* Botón Seleccionar Mapa */
+#btn-select-map {
+    flex-shrink: 0;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    text-transform: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: var(--deep-canopy);
+    border: 1px solid var(--living-moss);
+    box-shadow: 0 4px 10px rgba(45, 122, 79, 0.15);
+}
+
+/* Contenedor de botones de acción */
+.form-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Responsividad para móviles */
+.contact-login-card {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+@media (max-width: 768px) {
+    .input-with-button {
+        flex-direction: column;
+    }
+    #btn-select-map {
+        width: 100%;
+    }
+}
+
+/* ================= Fondos Line-Art Minimalistas ================= */
+.lineart-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+.branch-tl {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 450px;
+    max-width: 80vw;
+    aspect-ratio: 5 / 4;
+    overflow: visible;
+}
+.branch-tr {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 320px;
+    max-width: 60vw;
+    aspect-ratio: 4 / 3;
+    overflow: visible;
+}
+.branch-br {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 550px;
+    max-width: 90vw;
+    aspect-ratio: 6 / 5;
+    overflow: visible;
+}
+
+.cuidados-header, .plantacion-form-container {
+    position: relative;
+    z-index: 1;
+}
+
+/* Background Image styling */
+.bg-blurred-image {
+    position: absolute;
+    top: -5%;
+    left: -5%;
+    width: 110%;
+    height: 110%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(8px) brightness(0.5);
+    z-index: 0;
+}
+
+.plantacion-bg {
+    background-image: url('../../img/tramites/plantacion_bg.png');
+}
+
+.tramites-page-container .cuidados-header .hero-title,
+.tramites-page-container .cuidados-header .section-subtitle {
+    color: var(--paper-white);
+}
+
+.custom-file-upload {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.custom-file-upload .file-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background-color: var(--deep-canopy);
+    border: 1px solid var(--living-moss);
+    border-radius: 8px;
+    color: var(--paper-white);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.custom-file-upload .file-label:hover {
+    background-color: var(--forest-night);
+    border-color: var(--spring-leaf);
+}
+
+.custom-file-upload .file-name {
+    font-size: 0.9rem;
+    color: #666;
+    margin-left: 10px;
+}

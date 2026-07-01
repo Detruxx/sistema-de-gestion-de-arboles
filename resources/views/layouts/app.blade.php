@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Aca va el icono de la pagina -->
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
     <title>@yield('title', 'TreeBA | Mapeado de Arboles')</title>
 
     <!-- Aca van las fuentes que usa la pagina -->
@@ -15,6 +17,7 @@
     @yield('styles') <!-- Aca se colocan estilos especificos de cada vista -->
     
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=1.1"> <!-- Aca va el css de la pagina -->
+    <link rel="stylesheet" href="{{ asset('css/generales/modal.css') }}">
 </head>
 <body class="@yield('body-class')">
     @yield('canvas') <!-- Aca va el canvas de la pagina -->
@@ -48,18 +51,42 @@
             </div>
             
             <a href="/#sobre-nosotros" class="nav-pill">Sobre Nosotros</a>
-            <a href="/#contacto" class="nav-pill">Contacto</a>
+            @auth
+                @if(Auth::user()->role === 'inspector' || Auth::user()->role === 'admin')
+                    <a href="/mensajes" class="nav-pill">Mensajes</a>
+                @else
+                    <a href="/#contacto" class="nav-pill">Contacto</a>
+                @endif
+            @else
+                <a href="/#contacto" class="nav-pill">Contacto</a>
+            @endauth
             @guest <!-- Si el usuario no esta logueado, se muestra el boton de login -->
                 <a href="/login" class="nav-pill btn-login @yield('active-login')">Login</a>
             @endguest
-            @auth <!-- Si el usuario esta logueado, se muestra el boton de cerrar sesion -->
+            @auth <!-- Si el usuario esta logueado, se muestra el menu de perfil -->
                 <div class="nav-dropdown">
-                    <button class="nav-pill dropdown-trigger" aria-expanded="false" style="background: none; border: 1px solid transparent; font-family: inherit; font-size: inherit; color: inherit; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                        {{ Auth::user()->name }}
-                        <svg class="dropdown-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    <button class="nav-pill dropdown-trigger" aria-expanded="false" style="background: none; border: 1px solid transparent; padding: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; color: var(--paper-white); overflow: hidden;" title="Perfil de {{ Auth::user()->name }}">
+                        <!-- Icono SVG de persona (cabeza y cuerpo) o imagen del avatar -->
+                        <span id="nav-avatar-container" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 50%; overflow: hidden;">
+                            <svg id="nav-avatar-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <img id="nav-avatar-img" src="" alt="Avatar" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                        </span>
                     </button>
                     <div class="dropdown-menu">
-                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Cerrar Sesión</a>
+                        <a href="/configuracion">Mi Perfil</a>
+                        @if(Auth::user()->role === 'vecino')
+                            <a href="/mis-reclamos">Mis Reclamos</a>
+                            <a href="/bandeja-entrada">Bandeja de Entrada</a>
+                        @else
+                            <a href="/admin/dashboard">Panel de Control</a>
+                        @endif
+                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="border-top: 1px solid rgba(45, 122, 79, 0.15); color: #d32f2f; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                            <span>Cerrar Sesión</span>
+                            <img src="{{ asset('img/logout_icon_red.webp') }}" alt="Cerrar Sesión" style="width: 18px; height: auto;">
+                        </a>
                     </div>
                 </div>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -91,6 +118,27 @@
                     <li><a href="/mapa">Mapa Interactivo</a></li>
                     <li><a href="/cuidados">Cuidados del Árbol</a></li>
                     <li><a href="/#sobre-nosotros">Sobre Nosotros</a></li>
+                    @auth
+                        @if(Auth::user()->role === 'inspector' || Auth::user()->role === 'admin')
+                            <li><a href="/mensajes">Mensajes</a></li>
+                        @else
+                            <li><a href="/#contacto">Contacto</a></li>
+                        @endif
+                    @else
+                        <li><a href="/#contacto">Contacto</a></li>
+                    @endauth
+                    @guest
+                        <li><a href="/login">Login</a></li>
+                    @endguest
+                    @auth
+                        <li><a href="/configuracion">Configuración</a></li>
+                        @if(Auth::user()->role === 'vecino')
+                            <li><a href="/mis-reclamos">Mis Reclamos</a></li>
+                        @else
+                            <li><a href="/admin/dashboard">Panel de Control</a></li>
+                        @endif
+                        <li><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="color: #d32f2f;">Cerrar Sesión</a></li>
+                    @endauth
                 </ul>
             </div>
 
@@ -139,7 +187,45 @@
     @show
 
     @yield('scripts') <!-- Aca van los scripts de cada vista -->
-    <script src="{{ asset('js/navbar.js') }}"></script> <!-- script de la barra de navegacion -->
-    <script src="{{ asset('js/reveal.js') }}"></script> <!-- script de revelacion de elementos -->
+    <script src="{{ asset('js/generales/navbar.js') }}"></script> <!-- script de la barra de navegacion -->
+    <script src="{{ asset('js/generales/reveal.js') }}"></script> <!-- script de revelacion de elementos -->
+    <!-- Modal de Éxito Global -->
+    <div id="success-modal" class="address-map-modal-overlay" style="display: none; align-items: center; justify-content: center; z-index: 9999; background: rgba(0, 0, 0, 0.7);">
+        <div class="address-map-modal-container" style="background-color: var(--paper-white); max-width: 400px; text-align: center; padding: 40px 30px; border-radius: 20px;">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--spring-leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 20px;">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <h3 id="success-modal-title" style="color: var(--deep-canopy); margin-bottom: 15px; font-family: var(--font-display); font-size: 1.8rem;">¡Éxito!</h3>
+            <p id="success-modal-message" style="color: var(--forest-night); margin-bottom: 30px; font-size: 1.1rem; line-height: 1.5;"></p>
+            <button type="button" onclick="closeSuccessModal()" class="btn-main-cta">Aceptar</button>
+        </div>
+    </div>
+
+    <script>
+        window.showSuccessModal = function(title, message) {
+            document.getElementById('success-modal-title').textContent = title;
+            document.getElementById('success-modal-message').textContent = message;
+            document.getElementById('success-modal').style.display = 'flex';
+        }
+        
+        window.closeSuccessModal = function() {
+            document.getElementById('success-modal').style.display = 'none';
+        }
+
+        window.togglePasswordVisibility = function(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const svg = btn.querySelector('svg');
+            if (input.type === 'password') {
+                input.type = 'text';
+                // Ícono de ojo tachado (eye-off)
+                svg.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+            } else {
+                input.type = 'password';
+                // Ícono de ojo normal (eye)
+                svg.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+            }
+        }
+    </script>
 </body>
 </html>

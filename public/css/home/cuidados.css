@@ -1,0 +1,165 @@
+/* ================= Página de Cuidados ================= */
+#cuidados-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.cuidados-page-container,
+.tramites-page-container {
+    padding: 140px 8% 120px 8%;
+    background-color: var(--paper-white);
+    min-height: 100vh;
+    position: relative;
+    z-index: auto;
+}
+
+.cuidados-header {
+    max-width: 800px;
+    margin: 0 auto 60px auto;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+}
+
+.cuidados-header h1 {
+    color: var(--deep-canopy);
+}
+
+.cuidados-header p {
+    color: var(--forest-night);
+}
+
+.tips-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    position: relative;
+    z-index: 10;
+}
+
+.tip-card {
+    background-color: rgba(26, 61, 40, 0.25);
+    border: 2px solid var(--deep-canopy);
+    border-radius: 16px;
+    padding: 35px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 10px 25px rgba(10, 26, 13, 0.3);
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+}
+
+.tip-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--spring-leaf);
+    box-shadow: 0 15px 35px rgba(91, 191, 140, 0.15);
+    background-color: rgba(26, 61, 40, 0.4);
+}
+
+.tip-card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.tip-icon-box {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background-color: var(--deep-canopy);
+    border: 1px solid var(--living-moss);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--spring-leaf);
+}
+
+.tip-icon-box svg {
+    width: 24px;
+    height: 24px;
+    stroke: var(--spring-leaf);
+    fill: none;
+    stroke-width: 2px;
+    display: block;
+}
+
+.tip-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--deep-canopy);
+    font-weight: 700;
+}
+
+.tip-card p {
+    font-size: 1rem;
+    color: var(--forest-night);
+    line-height: 1.6;
+    flex-grow: 1;
+}
+
+.tip-badge {
+    align-self: flex-start;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 50px;
+    background-color: rgba(45, 122, 79, 0.1);
+    color: var(--deep-canopy);
+    border: 1px solid rgba(45, 122, 79, 0.3);
+}
+
+.tip-badge.warning {
+    background-color: rgba(211, 47, 47, 0.1);
+    color: #d32f2f;
+    border: 1px solid rgba(211, 47, 47, 0.3);
+}
+
+.tip-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    width: 100%;
+}
+
+.read-more-link {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--forest-night);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.read-more-link svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2px;
+    transition: transform 0.3s ease;
+}
+
+.tip-card:hover .read-more-link {
+    color: var(--morning-dew);
+}
+
+.tip-card:hover .read-more-link svg {
+    transform: translateX(4px);
+}

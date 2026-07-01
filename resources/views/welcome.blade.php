@@ -8,17 +8,25 @@
     <main>
         <!-- Seccion hero -->
         <section class="hero">
-            <div class="hero-content">
-                <h1 class="hero-title">El bosque urbano<br>en tus manos</h1>
-                <p class="hero-description">
-                    Plataforma de ciencia ciudadana para mapear, reportar y aprender sobre el arbolado de la Ciudad de Buenos Aires.
-                </p>
-                <a href="/mapa" class="btn-main-cta">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg>
-                    ABRIR MAPA
-                </a>
+            <div class="hero-split-container">
+                <div class="hero-content-left">
+                    <h1 class="hero-title">El bosque urbano<br>en tus <span>manos</span></h1>
+                    <p class="hero-description">
+                        Plataforma de ciencia ciudadana para mapear, reportar y aprender sobre el arbolado de la Ciudad de Buenos Aires.
+                    </p>
+                    <a href="/mapa" class="btn-main-cta">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg>
+                        ABRIR MAPA
+                    </a>
+                </div>
+                <div class="hero-image-right">
+                    <div class="organic-image-mask">
+                        <img src="{{ asset('img/home/copa_arboles.png') }}" alt="Arboles urbanos">
+                    </div>
+                </div>
             </div>
         </section>
+        <!-- Seccion sobre nosotros -->
         <section id="sobre-nosotros" class="about-section">
             <div class="about-container">
                 <div class="about-text reveal">
@@ -64,31 +72,63 @@
                 <h2 class="section-title text-center">Escríbenos</h2>
                 <p class="section-subtitle">¿Tienes alguna duda o sugerencia sobre el proyecto? Ponte en contacto con nosotros.</p>
                 
-                <!-- Si esta logueado muestra el formulario, si no muestra el mensaje de que inicie sesion -->
-                @auth
-                    <form class="contact-form" action="/contacto" method="POST">
-                        @csrf
-                        <div class="form-group">
-                            <label for="message">Tu Mensaje</label>
-                            <textarea id="message" name="mensaje" placeholder="Escribe tu mensaje aquí..." required rows="5"></textarea>
-                        </div>
-                        <button type="submit" class="btn-main-cta">Enviar Mensaje</button>
-                    </form>
-                @else
-                    <div class="contact-login-card">
-                        <span class="lock-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        </span>
-                        <p>Para enviarnos un mensaje directo, por favor inicia sesión en tu cuenta.</p>
-                        <a href="/login" class="btn-main-cta">Iniciar Sesión</a>
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
                     </div>
-                @endauth
+                @endif
+                <form class="contact-form" action="{{ route('contacto.store') }}" method="POST">
+                    @csrf
+                    @guest
+                        <div class="form-group">
+                            <label for="name">Nombre Completo</label>
+                            <input type="text" id="name" name="nombre" placeholder="Ingresa tu nombre..." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Correo Electrónico</label>
+                            <input type="email" id="email" name="email" placeholder="Ingresa tu correo electrónico..." required>
+                        </div>
+                    @endguest
+                    <div class="form-group">
+                        <label for="message">Tu Mensaje</label>
+                        <textarea id="message" name="mensaje" placeholder="Escribe tu mensaje aquí..." required rows="5"></textarea>
+                    </div>
+                    <button type="submit" class="btn-main-cta">Enviar Mensaje</button>
+                </form>
             </div>
         </section>
+        <!-- Modal de Detalles de Especie -->
+        <div id="species-modal" class="care-modal-overlay">
+            <!-- Botones de navegación del modal -->
+            <button class="modal-nav-btn prev" id="species-prev-btn" aria-label="Anterior">&lsaquo;</button>
+            <button class="modal-nav-btn next" id="species-next-btn" aria-label="Siguiente">&rsaquo;</button>
+
+            <div class="care-modal-container">
+                <button class="care-modal-close" id="species-close-btn">&times;</button>
+                <div class="care-modal-layout">
+                    <div class="care-modal-content">
+                        <span class="care-modal-badge" id="species-modal-badge">CATEGORÍA</span>
+                        <h2 class="care-modal-title" id="species-modal-title">Título de la Especie</h2>
+                        <p class="care-modal-body" id="species-modal-body">
+                            Aquí va el texto detallado...
+                        </p>
+                        <div class="care-modal-action-box">
+                            <h4>Características Principales:</h4>
+                            <ul class="care-modal-tips-list" id="species-modal-tips-list">
+                                <!-- Lista de tips/características -->
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="care-modal-image-panel">
+                        <img id="species-modal-image" src="" alt="Especie de árbol">
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 @endsection
 
 @section('scripts')
-    <script src="{{ asset('js/hero-canvas.js') }}"></script>
+    <script src="{{ asset('js/home/hero-canvas.js') }}"></script>
+    <script src="{{ asset('js/home/welcome.js') }}"></script>
 @endsection
-

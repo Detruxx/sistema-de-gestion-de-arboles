@@ -5,17 +5,44 @@ namespace App\Http\Controllers;
 use App\Models\RequestType; 
 use App\Models\RequestStatus;
 use App\Models\Street;
+use App\Models\Priority;
+use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class RequestController extends Controller
 {
     /**
-     * Muestra un listado de los reclamos.
+     * Muestra un listado de los reclamos (Para el Dashboard de Admin).
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $requests = \App\Models\Request::with(['user', 'street', 'requestType', 'tree', 'histories.status', 'status', 'workOrders.company', 'priority'])->orderBy('created_at', 'desc')->get();
+
+        $mapped = $requests->map(function ($req) {
+            return [
+                'id' => $req->tracking_code,
+                'vecino' => $req->user ? $req->user->name : 'Vecino Anónimo',
+                'categoria' => $req->requestType ? $req->requestType->task_description : 'General',
+                'fecha' => $req->created_at->format('Y-m-d'),
+                'estado' => $req->status ? $req->status->slug : 'open',
+                'descripcion' => $req->description,
+                'direccion' => $req->street ? $req->street->street_name . ' ' . $req->street->street_number : 'Sin dirección',
+                'especie' => $req->tree ? $req->tree->species_name : 'No vinculada',
+                'email' => $req->user ? $req->user->email : 'sin-email@treeba.gob.ar',
+                'linked_to' => $req->linked_to,
+                'suggested_duplicate_id' => $req->suggested_duplicate_id
+            ];
+        });
+
+        if ($request->wantsJson() || $request->is('api/*') || $request->is('requests')) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $mapped
+            ], 200);
+        }
+
+        return view('requests.index', compact('mapped'));
     }
 
     /**
@@ -36,28 +63,46 @@ class RequestController extends Controller
     /**
      * Guarda un reclamo recién creado en la base de datos.
      */
-    public function store(Request $request)
+    public function store(Request $request, \App\Services\StreetService $streetService)
     {
-        // Aquí llegará el reclamo cuando el usuario haga clic en "Enviar"
+        // 1. Validamos los datos de entrada
         $request->validate([
             'request_type_id' => 'required|exists:request_types,id',
-            'street_id'       => 'required|exists:streets,id',
+            'address'         => 'required|string', 
             'description'     => 'required|string|min:10',
             'tree_id'         => 'nullable|exists:trees,id',
-            'path'            => 'nullable|string',
+            'foto'            => 'nullable|image|mimes:jpeg,png,jpg|max:5120', // Opcional, pero debe ser imagen si se envía
         ]);
 
-        $userId = auth()->id() ?? $request->input('user_id', 1);
+        $userId = auth()->id() ?? 1;
 
-        // Guardar en la base de datos
+        // 2. Delegamos la lógica de la calle al StreetService (SRP - Responsabilidad Única)
+        $street = $streetService->resolveFromAddress($request->address);
+
+        // 3. Manejo de la subida de foto
+        $photoPath = 'fotos/reclamos/default.jpg';
+        if ($request->hasFile('foto')) {
+            // Guarda el archivo en storage/app/public/fotos/reclamos y devuelve el path
+            $photoPath = $request->file('foto')->store('fotos/reclamos', 'public');
+        }
+
+        // Algoritmo de Detección de Duplicados (Híbrido)
+        $estadosTerminalesIds = \App\Models\RequestStatus::where('is_terminal', true)->pluck('id')->toArray();
+        $posibleDuplicado = \App\Models\Request::where('street_id', $street->id)
+                                ->where('request_type_id', $request->request_type_id)
+                                ->whereNotIn('request_status_id', $estadosTerminalesIds)
+                                ->first();
+
+        // 4. Crear el reclamo en la base de datos
         $incident = \App\Models\Request::create([
             'user_id'           => $userId,
             'tree_id'           => $request->tree_id,
             'request_type_id'   => $request->request_type_id,
-            'street_id'         => $request->street_id,
+            'street_id'         => $street->id,
             'description'       => $request->description,
-            'path'              => $request->input('path', 'fotos/default.jpg'),
-            'request_status_id' => 1, // El ID 1 corresponde a 'open' (Pendiente)
+            'path'              => $photoPath,
+            'request_status_id' => 1,
+            'suggested_duplicate_id' => $posibleDuplicado ? $posibleDuplicado->id : null,
         ]);
 
         // Registrar en la bitácora
@@ -67,7 +112,8 @@ class RequestController extends Controller
             'justification'     => 'Registro inicial del reclamo.',
         ]);
 
-        if ($request->wantsJson()) {
+        // Responder en JSON para el frontend
+        if ($request->wantsJson() || $request->is('api/*') || $request->is('requests')) {
             return response()->json([
                 'status'    => 'success',
                 'message'   => 'Solicitud registrada con éxito',
@@ -79,11 +125,47 @@ class RequestController extends Controller
     }
 
     /**
-     * Muestra el reclamo especificado.
+     * Muestra el reclamo especificado (Búsqueda de Seguimiento).
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        // 1. Extraer el ID numérico del código (Ej: de "REC-2026-018" extraer "18")
+        // Si el usuario ingresa solo "18", también funcionará.
+        $parts = explode('-', $id);
+        $numericId = (int) end($parts);
+
+        // 2. Buscar el reclamo en la base de datos
+        // Usamos with() para traer los datos relacionados y no hacer múltiples consultas
+        $incident = \App\Models\Request::with(['street', 'requestType', 'histories.status', 'status', 'workOrders.company', 'priority'])->find($numericId);
+
+        if (!$incident) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Reclamo no encontrado'
+            ], 404);
+        }
+
+        $estadoFrontend = $incident->status ? $incident->status->slug : 'open';
+
+        // 4. Obtener la respuesta del administrador (si hay) de la última bitácora
+        // Suponiendo que las justificaciones son las respuestas.
+        $ultimaBitacora = $incident->histories->last();
+        $respuestaAdmin = $ultimaBitacora && $incident->request_status_id > 1 
+                            ? $ultimaBitacora->justification 
+                            : null;
+
+        // 5. Devolver la estructura JSON exacta que espera reclamos.js
+        return response()->json([
+            'status' => 'success',
+            'data'   => [
+                'id'              => $incident->tracking_code,
+                'direccion'       => $incident->street ? $incident->street->street_name . ' ' . $incident->street->street_number : 'Ubicación no especificada',
+                'categoria'       => $incident->requestType ? $incident->requestType->name : 'General',
+                'fecha'           => $incident->created_at->format('d/m/Y'),
+                'estado'          => $estadoFrontend,
+                'respuesta_admin' => $respuestaAdmin
+            ]
+        ], 200);
     }
 
     /**
@@ -111,48 +193,83 @@ class RequestController extends Controller
     }
 
     /**
-     * Actualiza el estado del reclamo y registra el motivo en el historial.
+     * Actualiza el estado del reclamo y/o la justificación en la base de datos real.
      */
     public function updateStatus(Request $request, $id)
     {
-        $treeRequest = \App\Models\Request::findOrFail($id);
+        // 1. Extraer el ID numérico del código (Ej: de "REC-2026-018" extraer "18")
+        $parts = explode('-', $id);
+        $numericId = (int) end($parts);
 
-        if ($request->has('request_status_id')) {
-            $request->validate([
-                'request_status_id' => 'required|exists:request_statuses,id',
-                'justification'     => 'required|string|min:5|max:1000', 
-            ]);
-            $statusId = $request->request_status_id;
-        } else {
-            $request->validate([
-                'status'        => 'required|string|exists:request_statuses,slug',
-                'justification' => 'nullable|string|min:5|max:1000',
-            ]);
-            $status = RequestStatus::where('slug', $request->status)->firstOrFail();
-            $statusId = $status->id;
+        $userRequest = \App\Models\Request::findOrFail($numericId);
+
+        $request->validate([
+            'estado'    => 'nullable|string',
+            'respuesta' => 'nullable|string|max:1000',
+            'linked_to' => 'nullable|integer',
+            'ignore_suggestion' => 'nullable|boolean'
+        ]);
+
+        $statusId = $userRequest->request_status_id;
+        $linkedTo = $userRequest->linked_to;
+        $suggestedDuplicateId = $userRequest->suggested_duplicate_id;
+        
+        // Si mandan un estado nuevo desde el JS (el slug real)
+        if ($request->has('estado')) {
+            $dbSlug = $request->estado;
+            
+            $statusObj = RequestStatus::where('slug', $dbSlug)->first();
+            if ($statusObj) {
+                $statusId = $statusObj->id;
+            }
+
+            // Lógica de duplicado manual o automático
+            if ($dbSlug === 'vinculated' && $request->has('linked_to')) {
+                $linkedTo = $request->linked_to;
+                $suggestedDuplicateId = null;
+            } elseif ($dbSlug !== 'vinculated') {
+                // Si cambiamos de estado "vinculado" a cualquier otro (ej. por error),
+                // desvinculamos el reclamo limpiando la columna.
+                $linkedTo = null;
+            }
         }
 
-        $justification = $request->input('justification', 'Actualización de estado realizada por el inspector.');
-        $userId = auth()->id() ?? $request->input('user_id', 2);
+        // Ignorar sugerencia
+        if ($request->has('ignore_suggestion') && $request->ignore_suggestion == true) {
+            $suggestedDuplicateId = null;
+        }
 
-        DB::transaction(function () use ($treeRequest, $statusId, $userId, $justification) {
-            $treeRequest->update([
-                'request_status_id' => $statusId
-            ]);
+        $justification = $request->input('respuesta');
+        if (!$justification && $request->has('estado')) {
+            $justification = 'Cambio de estado a: ' . $request->estado;
+        }
 
-            $treeRequest->histories()->create([
+        // Aca se define el usuario que va a hacer el cambio de status. Por defecto es 1
+        
+        $userId = auth()->id() ?? 1;
+
+        DB::transaction(function () use ($userRequest, $statusId, $userId, $justification, $linkedTo, $suggestedDuplicateId) {
+            $userRequest->update([
                 'request_status_id' => $statusId,
-                'user_id'           => $userId,
-                'justification'     => $justification,
+                'linked_to' => $linkedTo,
+                'suggested_duplicate_id' => $suggestedDuplicateId
             ]);
+
+            // Solo creamos historial si hay un cambio de estado o una respuesta nueva
+            if ($justification) {
+                $userRequest->histories()->create([
+                    'request_status_id' => $statusId,
+                    'user_id'           => $userId,
+                    'justification'     => $justification,
+                ]);
+            }
         });
 
-        if ($request->wantsJson()) {
-            $treeRequest->load(['status', 'user']);
+        if ($request->wantsJson() || $request->is('api/*') || $request->is('requests/*')) {
             return response()->json([
                 'status'    => 'success',
                 'message'   => 'Solicitud actualizada con éxito',
-                'data'      => $treeRequest,
+                'data'      => $userRequest,
             ], 200);
         }
 
@@ -242,6 +359,20 @@ class RequestController extends Controller
             'status' => 'success',
             'count'  => $requests->count(),
             'data'   => $requests,
+        ], 200);
+    }
+    /**
+     * Devuelve todos los estados disponibles con su configuración visual.
+     */
+    public function getStatuses()
+    {
+        $statuses = RequestStatus::orderBy('sequence', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+            
+        return response()->json([
+            'status' => 'success',
+            'data' => $statuses
         ], 200);
     }
 }

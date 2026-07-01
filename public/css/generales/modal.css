@@ -1,0 +1,545 @@
+/* ================= Modal de Detalles de Cuidado ================= */
+.care-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(10, 26, 13, 0.65);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.care-modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.care-modal-container {
+    background-color: #ffffff;
+    border-radius: 20px;
+    border: 2px solid var(--deep-canopy);
+    max-width: 850px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(10, 26, 13, 0.3);
+    transform: scale(0.92);
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.care-modal-overlay.active .care-modal-container {
+    transform: scale(1);
+}
+
+.care-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--forest-night);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 100;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.care-modal-close:hover {
+    background-color: #ffffff;
+    color: #d32f2f;
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(211, 47, 47, 0.2);
+}
+
+.care-modal-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    min-height: 480px;
+}
+
+.care-modal-content {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow-y: auto;
+    max-height: 90vh;
+    text-align: left;
+}
+
+.care-modal-badge {
+    align-self: flex-start;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 50px;
+    background-color: rgba(45, 122, 79, 0.1);
+    color: var(--deep-canopy);
+    border: 1px solid rgba(45, 122, 79, 0.25);
+}
+
+.care-modal-badge.warning {
+    background-color: rgba(211, 47, 47, 0.1);
+    color: #d32f2f;
+    border: 1px solid rgba(211, 47, 47, 0.25);
+}
+
+.care-modal-title {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: var(--deep-canopy);
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+.modal-scientific-name {
+    display: block;
+    font-size: 1.1rem;
+    font-style: italic;
+    font-weight: 500;
+    color: var(--living-moss);
+    margin-top: 5px;
+}
+
+.care-modal-body {
+    font-size: 1rem;
+    color: var(--forest-night);
+    line-height: 1.6;
+}
+
+.care-modal-action-box {
+    background-color: var(--paper-white);
+    border-radius: 12px;
+    padding: 22px;
+    border: 1px solid rgba(45, 122, 79, 0.15);
+    margin-top: 10px;
+}
+
+.care-modal-action-box h4 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    color: var(--deep-canopy);
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+
+.care-modal-tips-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0;
+    margin: 0;
+}
+
+.care-modal-tips-list li {
+    font-size: 0.95rem;
+    color: var(--forest-night);
+    line-height: 1.5;
+    position: relative;
+    padding-left: 22px;
+}
+
+.care-modal-tips-list li::before {
+    content: '✓';
+    color: var(--living-moss);
+    font-weight: bold;
+    font-size: 1rem;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.care-modal-image-panel {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    background-color: var(--deep-canopy);
+}
+
+.care-modal-image-panel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .care-modal-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .care-modal-image-panel {
+        order: -1;
+        min-height: 200px;
+        height: 200px;
+    }
+    
+    .care-modal-container {
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+    
+    .care-modal-content {
+        max-height: none;
+        padding: 30px 20px;
+    }
+}
+
+/* ================= Botones de Navegación del Modal y Enlaces ================= */
+.modal-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(10, 26, 13, 0.45);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 3010;
+    padding-bottom: 4px;
+}
+
+.modal-nav-btn:hover {
+    background-color: var(--spring-leaf);
+    color: var(--forest-night);
+    border-color: var(--spring-leaf);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.modal-nav-btn.prev {
+    left: 20px;
+}
+
+.modal-nav-btn.next {
+    right: 20px;
+}
+
+.modal-inline-link {
+    color: var(--living-moss);
+    text-decoration: underline;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.modal-inline-link:hover {
+    color: var(--spring-leaf);
+}
+
+@media (max-width: 950px) {
+    .modal-nav-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+    }
+    .modal-nav-btn.prev {
+        left: 10px;
+    }
+    .modal-nav-btn.next {
+        right: 10px;
+    }
+}
+
+/* ================= Modal de Mapa para Dirección (Estilo Uber) ================= */
+.address-map-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(10, 26, 13, 0.65);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.address-map-modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.address-map-modal-container {
+    background-color: #ffffff;
+    border-radius: 20px;
+    border: 2px solid var(--deep-canopy);
+    max-width: 600px;
+    width: 90%;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(10, 26, 13, 0.3);
+    transform: scale(0.92);
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.address-map-modal-overlay.active .address-map-modal-container {
+    transform: scale(1);
+}
+
+.address-map-modal-header {
+    padding: 20px;
+    border-bottom: 1px solid rgba(45, 122, 79, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.address-map-modal-header h3 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--deep-canopy);
+    font-weight: 700;
+}
+
+.address-map-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    line-height: 1;
+    color: var(--forest-night);
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.address-map-modal-close:hover {
+    color: #d32f2f;
+    transform: scale(1.1);
+}
+
+/* El mapa y su pin central flotante */
+.address-map-body {
+    position: relative;
+    width: 100%;
+    height: 380px;
+    background-color: #e5e3df;
+}
+
+#address-map-canvas, 
+#address-map-canvas-plantacion {
+    width: 100%;
+    height: 100%;
+}
+
+/* El Pin flotante central (estilo Uber) */
+.map-center-pin {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -100%);
+    z-index: 1000;
+    pointer-events: none; /* Dejar que los clics pasen al mapa */
+    margin-top: -15px; /* Ajuste para que la punta toque el centro exacto */
+    transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Efecto saltito cuando el mapa se mueve */
+.address-map-body.map-moving .map-center-pin {
+    transform: translate(-50%, -120%);
+}
+
+.map-center-pin svg {
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.35));
+}
+
+/* Sombra debajo del pin central */
+.map-center-pin-shadow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 5px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    z-index: 999;
+    pointer-events: none;
+    margin-top: -1px; /* Alineado al punto de contacto */
+    transition: transform 0.25s ease, width 0.25s ease, height 0.25s ease, opacity 0.25s ease;
+}
+
+.address-map-body.map-moving .map-center-pin-shadow {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0.4;
+}
+
+.address-map-modal-footer {
+    padding: 20px;
+    background-color: var(--paper-white);
+    border-top: 1px solid rgba(45, 122, 79, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.address-preview-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: #ffffff;
+    border: 1px solid rgba(45, 122, 79, 0.25);
+    border-radius: 10px;
+    padding: 12px 16px;
+}
+
+.address-preview-box svg {
+    color: var(--living-moss);
+    flex-shrink: 0;
+}
+
+.address-preview-text {
+    font-size: 0.95rem;
+    color: var(--forest-night);
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.btn-confirm-address {
+    width: 100%;
+    text-align: center;
+    padding: 14px;
+    font-size: 1rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(45, 122, 79, 0.15);
+}
+
+.btn-confirm-address:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ================= Base Alert Modal ================= */
+.alert-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(10, 26, 13, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.alert-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.alert-modal-box {
+    background-color: var(--paper-white);
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.alert-modal-overlay.active .alert-modal-box {
+    transform: translateY(0);
+}
+
+.alert-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--forest-night);
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.alert-modal-close:hover {
+    opacity: 1;
+}
+
+.alert-modal-image {
+    margin: 0 auto 20px;
+    max-width: 150px;
+}
+
+.alert-modal-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.alert-modal-title {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: var(--deep-canopy);
+    margin-bottom: 10px;
+}
+
+.alert-modal-message {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--forest-night);
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.alert-modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.alert-modal-btn {
+    padding: 12px 30px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    width: 100%;
+}
