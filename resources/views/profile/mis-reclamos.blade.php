@@ -13,7 +13,14 @@
             <p class="section-subtitle">Consulta el estado y avance de las incidencias que has reportado en la vía pública.</p>
         </section>
 
-        <div class="reclamos-container reveal delay-1">
+        <div class="tabs-container reveal delay-1">
+            <div class="tramites-tabs">
+                <button type="button" class="tab-btn active" data-target="tab-reclamos" onclick="switchProfileTab('tab-reclamos', this)">Ver Reclamos</button>
+                <button type="button" class="tab-btn" data-target="tab-plantaciones" onclick="switchProfileTab('tab-plantaciones', this)">Ver Solicitudes de Plantación</button>
+            </div>
+            
+            <div id="tab-reclamos" class="tab-content active">
+                <div class="reclamos-container">
             @if(count($reclamos) === 0)
                 <div class="no-records-card">
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -28,9 +35,17 @@
                     <a href="/tramites/reclamos" class="btn-main-cta" style="margin-top: 15px;">Crear Reclamo</a>
                 </div>
             @else
-                <p class="listing-count">Mostrando {{ count($reclamos) }} reclamos (Ordenados del más reciente al más antiguo)</p>
+                <div class="list-header-bar">
+                    <p class="listing-count">Mostrando <span class="count-val">{{ count($reclamos) }}</span> reclamos</p>
+                    <div class="filter-dropdown">
+                        <select id="sort-reclamos" class="form-control sort-select" onchange="sortList('reclamos-list-container', this.value)">
+                            <option value="desc">Más nuevo a más antiguo</option>
+                            <option value="asc">Más antiguo a más nuevo</option>
+                        </select>
+                    </div>
+                </div>
                 
-                <div class="reclamos-list">
+                <div class="reclamos-list" id="reclamos-list-container">
                     @foreach($reclamos as $rec)
                         @php
                             // Ajustes para soportar tanto objetos Eloquent como arrays de la simulacion
@@ -54,9 +69,10 @@
                                 $statusClass = 'discarded';
                                 $statusText = 'Descartado';
                             }
+                            $timestamp = strtotime($createdAt);
                         @endphp
 
-                        <details class="reclamo-card {{ $statusClass }}">
+                        <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}">
                             <summary class="reclamo-card-summary">
                                 <div class="card-summary-left">
                                     <span class="reclamo-id">#{{ $id }}</span>
@@ -151,6 +167,94 @@
                     @endforeach
                 </div>
             @endif
+            </div>
+        </div>
+
+        <div id="tab-plantaciones" class="tab-content">
+            <div class="reclamos-container">
+                @if(count($plantaciones) === 0)
+                    <div class="no-records-card">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        <h3>Aún no has registrado solicitudes de plantación</h3>
+                        <p>Si deseas plantar un árbol en tu vereda, puedes enviar una solicitud.</p>
+                        <a href="/tramites/plantacion" class="btn-main-cta" style="margin-top: 15px;">Solicitar Plantación</a>
+                    </div>
+                @else
+                    <div class="list-header-bar">
+                        <p class="listing-count">Mostrando <span class="count-val">{{ count($plantaciones) }}</span> solicitudes</p>
+                        <div class="filter-dropdown">
+                            <select id="sort-plantaciones" class="form-control sort-select" onchange="sortList('plantaciones-list-container', this.value)">
+                                <option value="desc">Más nuevo a más antiguo</option>
+                                <option value="asc">Más antiguo a más nuevo</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="reclamos-list" id="plantaciones-list-container">
+                        @foreach($plantaciones as $rec)
+                            @php
+                                $id = is_array($rec) ? $rec['id'] : $rec->id;
+                                $status = is_array($rec) ? $rec['status'] : $rec->status;
+                                $typeName = 'Solicitud de Plantación';
+                                $streetName = is_array($rec) ? $rec['street_name'] : ($rec->street ? $rec->street->street_name . ' ' . $rec->street->street_number : 'Ubicación no especificada');
+                                $description = is_array($rec) ? $rec['description'] : $rec->description;
+                                $createdAt = is_array($rec) ? $rec['created_at'] : $rec->created_at->format('Y-m-d H:i:s');
+                                $dateFormatted = date('d/m/Y', strtotime($createdAt));
+                                $timestamp = strtotime($createdAt);
+
+                                $statusClass = 'open';
+                                $statusText = 'En revisión';
+                                if ($status === 'resolved') {
+                                    $statusClass = 'resolved';
+                                    $statusText = 'Aprobada';
+                                } elseif ($status === 'discarded') {
+                                    $statusClass = 'discarded';
+                                    $statusText = 'Rechazada';
+                                }
+                            @endphp
+
+                            <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}">
+                                <summary class="reclamo-card-summary">
+                                    <div class="card-summary-left">
+                                        <span class="reclamo-id">#{{ $id }}</span>
+                                        <div>
+                                            <h3>{{ $typeName }}</h3>
+                                            <p class="summary-meta">{{ $streetName }} • {{ $dateFormatted }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="card-summary-right">
+                                        <span class="status-badge {{ $statusClass }}">{{ $statusText }}</span>
+                                        <span class="chevron-arrow">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                        </span>
+                                    </div>
+                                </summary>
+                                
+                                <div class="reclamo-card-details">
+                                    <div class="details-section">
+                                        <h4>Detalle de Solicitud</h4>
+                                        <p>{{ $description }}</p>
+                                    </div>
+
+                                    <div class="details-meta-grid">
+                                        <div class="meta-box">
+                                            <strong>Ubicación Solicitada</strong>
+                                            <span>{{ $streetName }}</span>
+                                        </div>
+                                        <div class="meta-box">
+                                            <strong>Fecha de Solicitud</strong>
+                                            <span>{{ date('d/m/Y H:i', strtotime($createdAt)) }} hs</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </div>
         </div>
     </main>
 @endsection
@@ -220,5 +324,36 @@
         document.addEventListener('DOMContentLoaded', () => {
             applyLocalCancellations();
         });
+
+        function switchProfileTab(tabId, btnElement) {
+            document.querySelectorAll('.tabs-container .tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tramites-tabs .tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
+        }
+
+        function sortList(containerId, order) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const items = Array.from(container.querySelectorAll('.reclamo-card'));
+            
+            items.sort((a, b) => {
+                const timeA = parseInt(a.getAttribute('data-timestamp'));
+                const timeB = parseInt(b.getAttribute('data-timestamp'));
+                if (order === 'desc') {
+                    return timeB - timeA;
+                } else {
+                    return timeA - timeB;
+                }
+            });
+            
+            // Re-append in new order
+            items.forEach(item => container.appendChild(item));
+        }
     </script>
 @endsection

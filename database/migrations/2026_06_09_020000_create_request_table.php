@@ -32,7 +32,6 @@ return new class extends Migration
             $table->unsignedBigInteger('suggested_duplicate_id')->nullable();
             $table->foreign('linked_to')->references('id')->on('requests')->onDelete('set null');
             $table->foreign('suggested_duplicate_id')->references('id')->on('requests')->onDelete('set null');
-            
             $table->timestamps();
         });
     }

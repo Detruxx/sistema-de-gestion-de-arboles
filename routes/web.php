@@ -2,15 +2,17 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController; // Ya lo tenías importado acá impecable
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\TreeController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\RequestTypeController;
 use App\Http\Controllers\WorkOrderController;
+use App\Http\Controllers\UserController; 
+use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\CompanyPanelController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest; //Necesario para el link del mail
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
 Route::get('/', function () {
@@ -83,7 +85,6 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['verified'])->group(function () {
         
         Route::get('/configuracion', [ProfileController::class, 'configuracion'])->name('profile.configuracion');
-        // El resto de tus rutas internas...
         Route::post('/configuracion/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
         Route::get('/mis-reclamos', [ProfileController::class, 'misReclamos'])->name('profile.mis-reclamos');
         Route::post('/reclamos/{id}/status', [ProfileController::class, 'updateReclamoStatus'])->name('profile.reclamo.status');
@@ -111,6 +112,44 @@ Route::middleware(['auth'])->group(function () {
 // ENDPOINTS PUBLICOS DE API
 Route::get('/api/arboles/pines', [TreeController::class, 'getMapPins']);
 Route::get('/api/arboles/{id}', [TreeController::class, 'getTreeDetails']);
+
+// Endpoint para traer todos los tipos de reclamo
 Route::get('/api/request-types',[RequestTypeController::class, 'index']);
+// Endpoint para traer todos los estados de reclamo con su metadata UI
 Route::get('/api/request-statuses', [RequestController::class, 'getStatuses']);
 
+
+// 🛡️ Grupo de Administración Protegido (Rutas post-Register)
+Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    // 1. CONTROLADOR DE USUARIOS (UserController)
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+   
+    // 2. CONTROLADOR DE TRABAJOS (WorkOrderController)
+    Route::get('/work-orders', [WorkOrderController::class, 'index'])->name('work_orders.index');
+    Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work_orders.store');
+
+    // 3. CONTROLADOR DE PRIORIDADES (PriorityController)
+    Route::get('/priorities', [PriorityController::class, 'index'])->name('priorities.index');
+    Route::post('/priorities', [PriorityController::class, 'store'])->name('priorities.store');
+    Route::put('/priorities/{id}', [PriorityController::class, 'update'])->name('priorities.update');
+    Route::delete('/priorities/{id}', [PriorityController::class, 'destroy'])->name('priorities.destroy');    
+});
+
+// Grupo compartido: Accesible por Admin e Inspector
+Route::middleware(['auth', 'check.role:admin,inspector'])->group(function () {
+    // Traer todos los árboles formateados para el AJAX del front
+    Route::get('/api/admin/arboles', [TreeController::class, 'getAdminTrees'])->name('api.admin.trees');
+});
+
+// Grupo nuevo exclusivo: Solo el Administrador puede entrar
+Route::middleware(['auth', 'check.role:admin'])->group(function () {
+    // Listado global de usuarios en formato JSON
+    Route::get('/api/admin/users', [UserController::class, 'index'])->name('api.admin.users.index');
+    
+    // Modificar el rol de un usuario específico (PATCH)
+    Route::patch('/api/admin/users/{user}/role', [UserController::class, 'updateRole'])->name('api.admin.users.updateRole');
+});

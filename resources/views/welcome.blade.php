@@ -110,8 +110,9 @@
                 </div>
             </div>
         </section>
-        
-        <section class="about-section">
+
+    </main>
+@endsection
             <div class="about-container">
                 <div class="about-text reveal">
                     <h2 class="section-title">Nuestra Misión</h2>
@@ -181,7 +182,6 @@
                 </form>
             </div>
         </section>
-        
         <!-- Modal de Detalles de Especie -->
         <div id="species-modal" class="care-modal-overlay">
             <!-- Botones de navegación del modal -->
@@ -214,6 +214,12 @@
 @endsection
 
 @section('scripts')
+<<<<<<< HEAD
+    <script src="{{ asset('js/hero-canvas.js') }}"></script>
+@endsection
+
+=======
     <script src="{{ asset('js/home/hero-canvas.js') }}"></script>
     <script src="{{ asset('js/home/welcome.js') }}"></script>
 @endsection
+>>>>>>> 7df9417fa65fa2849e01939f57c5d7913c14c79a

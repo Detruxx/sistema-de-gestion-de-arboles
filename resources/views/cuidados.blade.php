@@ -193,5 +193,9 @@
 
 @section('scripts')
     
+<<<<<<< HEAD
+    <script src="{{ asset('js/modal.js') }}"></script>
+=======
     <script src="{{ asset('js/generales/modal.js') }}"></script>
+>>>>>>> 7df9417fa65fa2849e01939f57c5d7913c14c79a
 @endsection

@@ -155,5 +155,10 @@
 
 @section('scripts')
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<<<<<<< HEAD
+    <script src="{{ asset('js/map.js') }}"></script>
+@endsection
+=======
     <script src="{{ asset('js/home/map.js') }}"></script>
 @endsection
+>>>>>>> 7df9417fa65fa2849e01939f57c5d7913c14c79a

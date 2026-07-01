@@ -6,7 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Request;
 use App\Models\RequestStatusHistory;
-use App\Models\User; // 📍 IMPORTANTE: No te olvides de importar el modelo User
+use App\Models\User; 
 
 class RequestSeeder extends Seeder
 {
@@ -15,7 +15,7 @@ class RequestSeeder extends Seeder
      */
     public function run(): void
     {
-        // 📍 RECOMENDACIÓN: Creamos un usuario vecino temporal para asociar al historial inicial
+        // 📍 Creamos un usuario vecino temporal para asociar al historial inicial
         $vecinoTemporal = User::factory()->create([
             'name' => 'Vecino',
             'last_name' => 'Digital',
@@ -24,7 +24,7 @@ class RequestSeeder extends Seeder
             'password' => bcrypt('password')
         ]);
 
-        // 📍 RECOMENDACIÓN: Creamos un inspector temporal para asociar a los movimientos avanzados
+        // 📍 Creamos un inspector temporal para asociar a los movimientos avanzados
         $inspectorTemporal = User::factory()->create([
             'name' => 'Inspector',
             'last_name' => 'Turno',

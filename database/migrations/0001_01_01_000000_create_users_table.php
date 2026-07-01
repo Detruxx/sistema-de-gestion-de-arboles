@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('profile_photo')->nullable(); //guarda la ruta de la foto de perfil
             $table->rememberToken();
             $table->timestamps();
-        });
+        }); 
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

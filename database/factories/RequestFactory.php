@@ -33,10 +33,15 @@ class RequestFactory extends Factory
             // Descripción del reclamo que escribe el vecino
             'description' => $this->faker->paragraph(2),
             
+<<<<<<< HEAD
+            // Tus enums de estado exactos
+            'status' => $this->faker->randomElement(['open', 'in_progress', 'resolved']),
+=======
             // Tus estados del reclamo
             'request_status_id' => $this->faker->numberBetween(1, 7),
 
             'path' => $this->faker->boolean(70) ? 'fotos/reclamo_prueba.jpg' : null,
+>>>>>>> 7df9417fa65fa2849e01939f57c5d7913c14c79a
         ];
     }
 }
