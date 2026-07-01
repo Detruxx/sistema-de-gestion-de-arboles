@@ -80,6 +80,8 @@
                         @if(Auth::user()->role === 'vecino')
                             <a href="/mis-reclamos">Mis Reclamos</a>
                             <a href="/bandeja-entrada">Bandeja de Entrada</a>
+                        @elseif(Auth::user()->role === 'empresa')
+                            <a href="/company/dashboard">Panel de Empresa</a>
                         @else
                             <a href="/admin/dashboard">Panel de Control</a>
                         @endif
@@ -134,6 +136,8 @@
                         <li><a href="/configuracion">Configuración</a></li>
                         @if(Auth::user()->role === 'vecino')
                             <li><a href="/mis-reclamos">Mis Reclamos</a></li>
+                        @elseif(Auth::user()->role === 'empresa')
+                            <li><a href="/company/dashboard">Panel de Empresa</a></li>
                         @else
                             <li><a href="/admin/dashboard">Panel de Control</a></li>
                         @endif
@@ -148,6 +152,7 @@
                     <li><a href="/tramites/reclamos">Reclamos y Solicitudes</a></li>
                     <li><a href="/tramites/plantacion">Solicitar Plantación</a></li>
                     <li><a href="/tramites/permisos">Permisos de Poda</a></li>
+                    <li><a href="/postulacion-empresa" style="font-weight: 600; color: var(--spring-leaf);">¡Postúlate como Empresa!</a></li>
                 </ul>
             </div>
             

@@ -1,0 +1,91 @@
+/* Estilos para la página de Postulación de Empresa */
+.plantacion-form-container {
+    max-width: 700px;
+    margin: 40px auto 80px;
+    background: var(--paper-white);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border: 1px solid rgba(45, 122, 79, 0.1);
+    position: relative;
+    z-index: 10;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--forest-night);
+}
+
+.form-control {
+    background-color: var(--paper-white);
+    border: 1px solid rgba(45, 122, 79, 0.3);
+    border-radius: 8px;
+    padding: 12px 15px;
+    color: var(--forest-night);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--spring-leaf);
+    box-shadow: 0 0 0 3px rgba(45, 122, 79, 0.15);
+}
+
+.form-control:disabled {
+    background-color: #f3f4f6;
+    border-color: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.input-with-button {
+    display: flex;
+    gap: 10px;
+}
+
+.input-with-button .form-control {
+    flex-grow: 1;
+}
+
+.btn-main-cta {
+    background-color: var(--spring-leaf);
+    border: 1px solid var(--spring-leaf);
+    color: #fff;
+    font-weight: 600;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+}
+
+.btn-main-cta:hover {
+    background-color: var(--deep-canopy);
+    border-color: var(--deep-canopy);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(45, 122, 79, 0.2);
+}
+
+.btn-main-cta:disabled {
+    background-color: #e5e7eb;
+    border-color: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}

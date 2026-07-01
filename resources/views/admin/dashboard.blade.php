@@ -31,30 +31,51 @@
                 </svg>
                 Resumen
             </button>
-            <button class="sidebar-btn" onclick="showModule('reclamos')" id="menu-reclamos">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
-                Mensajes de Reclamos
-                <span id="unread-count-badge" class="badge-unread">3</span>
-            </button>
-            <button class="sidebar-btn" onclick="showModule('inventario')" id="menu-inventario">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-                </svg>
-                Inventario de Arbolado
-            </button>
-            
+
             @if(auth()->user()->role === 'admin')
-            <button class="sidebar-btn" onclick="showModule('roles')" id="menu-roles">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
-                Gestión de Roles
-            </button>
+                <!-- Opciones exclusivas de Administrador -->
+                <button class="sidebar-btn" onclick="showModule('vecinos')" id="menu-vecinos">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                    </svg>
+                    Gestión de Vecinos
+                </button>
+                <button class="sidebar-btn" onclick="showModule('inspectores')" id="menu-inspectores">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    Inspectores
+                </button>
+                <button class="sidebar-btn" onclick="showModule('empresas')" id="menu-empresas">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    </svg>
+                    Empresas Contratistas
+                </button>
+            @else
+                <!-- Opciones de Inspector -->
+                <button class="sidebar-btn" onclick="showModule('reclamos')" id="menu-reclamos">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Mensajes de Reclamos
+                    <span id="unread-count-badge" class="badge-unread">0</span>
+                </button>
+                <button class="sidebar-btn" onclick="showModule('inventario')" id="menu-inventario">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                    </svg>
+                    Inventario de Arbolado
+                </button>
+                <button class="sidebar-btn" onclick="showModule('pagos')" id="menu-pagos">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                        <line x1="12" y1="18" x2="12" y2="18.01"></line>
+                    </svg>
+                    Pagos y Gastos
+                </button>
             @endif
             
             <h3 class="sidebar-menu-title mt-25">Herramientas</h3>
@@ -69,7 +90,7 @@
         </div>
         
         <div class="sidebar-footer">
-            <a href="/login" class="sidebar-btn sidebar-btn-link sidebar-btn-full">
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="sidebar-btn sidebar-btn-link sidebar-btn-full">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                     <polyline points="16 17 21 12 16 7"></polyline>
@@ -83,246 +104,360 @@
     <!-- Main Content Area -->
     <main class="admin-main-panel">
         
-        <!-- MODULE: RESUMEN -->
+        <!-- MODULE: RESUMEN (Admin o Inspector) -->
         <section id="module-resumen" class="dashboard-module active">
-            <div class="admin-header-section">
-                <div>
-                    <h2>Panel de Control General</h2>
-                    <p>Monitoreo y estadísticas de arbolado y solicitudes - Comuna 13</p>
+            @if(auth()->user()->role === 'admin')
+                <div class="admin-header-section">
+                    <div>
+                        <h2>Panel de Control General (Admin)</h2>
+                        <p>Monitoreo y estadísticas globales de la Comuna 13</p>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <!-- Stats Grid para Admin -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Vecinos Registrados</h4>
+                            <p id="stat-total-neighbors">...</p>
+                        </div>
                     </div>
-                    <div class="stat-info">
-                        <h4>Reclamos Totales</h4>
-                        <p id="stat-total-claims">4</p>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon-primary">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Inspectores Activos</h4>
+                            <p id="stat-total-inspectors">...</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon-success">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Empresas Socias</h4>
+                            <p id="stat-total-companies">...</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon-warning">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12" y2="18.01"></line></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Gastos Totales</h4>
+                            <p id="stat-total-expenses">$...</p>
+                        </div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon stat-icon-warning">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                    </div>
-                    <div class="stat-info">
-                        <h4>En Curso</h4>
-                        <p id="stat-pending-claims">3</p>
+            @else
+                <div class="admin-header-section">
+                    <div>
+                        <h2>Panel de Control General (Inspector)</h2>
+                        <p>Monitoreo y estadísticas de arbolado y solicitudes - Comuna 13</p>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon stat-icon-success">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+
+                <!-- Stats Grid para Inspector -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Reclamos Totales</h4>
+                            <p id="stat-total-claims">...</p>
+                        </div>
                     </div>
-                    <div class="stat-info">
-                        <h4>Resueltos</h4>
-                        <p id="stat-resolved-claims">1</p>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon-warning">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h4>En Curso</h4>
+                            <p id="stat-pending-claims">...</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon-success">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Resueltos</h4>
+                            <p id="stat-resolved-claims">...</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon-primary">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Árboles Registrados</h4>
+                            <p id="stat-total-trees">...</p>
+                        </div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon stat-icon-primary">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
-                    </div>
-                    <div class="stat-info">
-                        <h4>Árboles Registrados</h4>
-                        <p id="stat-total-trees">...</p>
-                    </div>
-                </div>
-            </div>
+            @endif
 
             <!-- Recent Activity Panel -->
             <div class="detail-panel">
                 <h3 class="sidebar-menu-title mt-25" style="font-family: var(--font-display); margin-bottom: 20px; color: var(--admin-accent);">Resumen Operativo Reciente</h3>
-                <div class="activity-list">
+                <div class="activity-list" id="recent-activity-container">
+                    <!-- Dinámico -->
                     <div class="activity-item">
                         <span class="activity-dot activity-dot-info"></span>
                         <div>
-                            <p class="activity-title">Nuevo reclamo recibido de Vuelta de Obligado 2200</p>
-                            <p class="activity-desc">Hace 2 horas - Categoría: Cazuela Obstruida</p>
+                            <p class="activity-title">Inspección de Jacarandá programada para el lunes</p>
+                            <p class="activity-desc">Hace 2 horas - Comuna 13</p>
                         </div>
                     </div>
                     <div class="activity-item">
                         <span class="activity-dot activity-dot-success"></span>
                         <div>
-                            <p class="activity-title">Reclamo REC-2026-004 marcado como RESUELTO</p>
-                            <p class="activity-desc">Ayer - Extracción completada con éxito</p>
+                            <p class="activity-title">Orden de Trabajo concluida por Mantenimiento Verde S.A.</p>
+                            <p class="activity-desc">Ayer - Dirección: Av. Cabildo 2800</p>
                         </div>
-                    </div>
-                    <div class="activity-item">
-                        <span class="activity-dot activity-dot-warning"></span>
-                        <div>
-                            <p class="activity-title">Inspección programada para el Jacarandá de Av. Cabildo 2800</p>
-                            <p class="activity-desc">Hace 2 días - Inspector asignado Comuna 13</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="module-reclamos" class="dashboard-module">
-            <div class="admin-header-section">
-                <div>
-                    <h2>Mensajes y Reclamos de Vecinos</h2>
-                    <p>Gestiona las consultas, cambia los estados del proceso y responde directamente</p>
-                </div>
-            </div>
-
-            <!-- Filters Bar (horizontal) — Valores cargados dinámicamente desde la API -->
-            <div class="inventory-filter-bar">
-                <div class="inventory-filter-group" style="flex: 1 1 250px;">
-                    <label for="search-claims">Buscar por vecino, dirección o ID</label>
-                    <input type="text" id="search-claims" placeholder="Ej. Laura Gómez, REC-2026-001..." oninput="filterClaims()">
-                </div>
-                <div class="inventory-filter-group" style="flex: 1 1 180px;">
-                    <label for="filter-claim-status">Estado</label>
-                    <select id="filter-claim-status" onchange="filterClaims()">
-                        <option value="">Todos los estados</option>
-                        <!-- Opciones pobladas dinámicamente por claims.js -->
-                    </select>
-                </div>
-                <div class="inventory-filter-group" style="flex: 1 1 200px;">
-                    <label for="filter-claim-category">Categoría</label>
-                    <select id="filter-claim-category" onchange="filterClaims()">
-                        <option value="">Todas las categorías</option>
-                        <!-- Opciones pobladas dinámicamente por claims.js -->
-                    </select>
-                </div>
-            </div>
-
-            <div class="split-layout">
-                <!-- Left Panel: List of claims -->
-                <div class="list-panel">
-                    <div class="items-list" id="claims-list-container">
-                        <!-- Loaded via JS -->
-                    </div>
-                </div>
-
-                <!-- Right Panel: Claim details and response -->
-                <div class="detail-panel" id="claim-detail-panel">
-                    <div class="empty-state-panel">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-state-icon">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        </svg>
-                        <p>Selecciona un reclamo de la lista para ver el progreso, inspeccionar los detalles y enviar una respuesta.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- MODULE: TREE INVENTORY -->
-        <section id="module-inventario" class="dashboard-module">
-            <div class="admin-header-section">
-                <div>
-                    <h2>Inventario de Arbolado Urbano</h2>
-                    <p>Directorio de especies plantadas, alturas, estados y búsqueda rápida por ID</p>
-                </div>
-                <button class="btn-primary btn-icon" onclick="openCreateTreeModal()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                    Registrar Nuevo Árbol
-                </button>
-            </div>
-
-            <!-- Filters -->
-            <div class="inventory-filter-bar">
-                <div class="inventory-filter-group">
-                    <label for="filter-tree-id">Buscar por ID</label>
-                    <input type="text" id="filter-tree-id" placeholder="Ej. 10045" oninput="filterTrees()">
-                </div>
-                <div class="inventory-filter-group">
-                    <label for="filter-tree-species">Especie</label>
-                    <select id="filter-tree-species" onchange="filterTrees()">
-                        <option value="">Todas las especies</option>
-                        <option value="Jacarandá">Jacarandá</option>
-                        <option value="Ceibo">Ceibo</option>
-                        <option value="Fresno">Fresno</option>
-                        <option value="Palo Borracho">Palo Borracho</option>
-                        <option value="Tilo">Tilo</option>
-                        <option value="Liquidámbar">Liquidámbar</option>
-                    </select>
-                </div>
-                <div class="inventory-filter-group">
-                    <label for="filter-tree-state">Estado</label>
-                    <select id="filter-tree-state" onchange="filterTrees()">
-                        <option value="">Cualquier estado</option>
-                        <option value="Saludable">Saludable</option>
-                        <option value="Enfermo">Enfermo</option>
-                        <option value="Dañado">Dañado</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="split-layout">
-                <!-- Left Panel: Trees list -->
-                <div class="list-panel">
-                    <div class="items-list trees-list" id="trees-list-container">
-                        <!-- Loaded via JS -->
-                    </div>
-                </div>
-
-                <!-- Right Panel: Tree detailed card -->
-                <div class="detail-panel" id="tree-detail-panel">
-                    <div class="empty-state-panel">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-state-icon">
-                            <path d="M12 19v3M12 3L9 8h1.5L7.5 13h1.5L5 19h14l-4-6h1.5l-3-5h1.5Z"/>
-                        </svg>
-                        <p>Selecciona un árbol del inventario para visualizar sus detalles técnicos y estado fitosanitario.</p>
                     </div>
                 </div>
             </div>
         </section>
 
         @if(auth()->user()->role === 'admin')
-        <!-- MODULE: GESTION DE ROLES -->
-        <section id="module-roles" class="dashboard-module">
-            <div class="admin-header-section">
-                <div>
-                    <h2>Gestión de Roles de Usuarios</h2>
-                    <p>Visualiza los usuarios registrados y modifica sus roles de acceso (Vecino, Inspector, Administrador)</p>
-                </div>
-            </div>
-
-            <!-- Filters -->
-            <div class="inventory-filter-bar">
-                <div class="inventory-filter-group" style="flex: 1 1 300px;">
-                    <label for="search-users">Buscar por nombre o email</label>
-                    <input type="text" id="search-users" placeholder="Ej. Carlos, vecino@example.com..." oninput="filterUsers()">
-                </div>
-                <div class="inventory-filter-group" style="flex: 1 1 200px;">
-                    <label for="filter-user-role">Filtrar por Rol</label>
-                    <select id="filter-user-role" onchange="filterUsers()">
-                        <option value="">Todos los roles</option>
-                        <option value="vecino">Vecino</option>
-                        <option value="inspector">Inspector</option>
-                        <option value="admin">Administrador</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="split-layout">
-                <!-- Left Panel: Users list -->
-                <div class="list-panel">
-                    <div class="items-list" id="users-list-container">
-                        <!-- Loaded via JS -->
+            <!-- MODULE: VECINOS (Exclusivo Admin) -->
+            <section id="module-vecinos" class="dashboard-module">
+                <div class="admin-header-section">
+                    <div>
+                        <h2>Gestión de Vecinos</h2>
+                        <p>Lista de ciudadanos registrados. Puedes generar baneos/suspensiones temporales o promoverlos a inspectores.</p>
                     </div>
                 </div>
 
-                <!-- Right Panel: User detailed card -->
-                <div class="detail-panel" id="user-detail-panel">
-                    <div class="empty-state-panel">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-state-icon">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
+                <div class="inventory-filter-bar">
+                    <div class="inventory-filter-group" style="flex: 1 1 300px;">
+                        <label for="search-neighbors">Buscar vecino por nombre o email</label>
+                        <input type="text" id="search-neighbors" placeholder="Ej. Gómez, vecino@gmail.com..." oninput="filterNeighbors()">
+                    </div>
+                </div>
+
+                <div class="split-layout">
+                    <div class="list-panel">
+                        <div class="items-list" id="neighbors-list-container">
+                            <!-- Loaded via JS -->
+                        </div>
+                    </div>
+                    <div class="detail-panel" id="neighbor-detail-panel">
+                        <div class="empty-state-panel">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-state-icon">
+                                <circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path>
+                            </svg>
+                            <p>Selecciona un vecino de la lista para gestionar su estado de cuenta o ascenderlo.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODULE: INSPECTORES (Exclusivo Admin) -->
+            <section id="module-inspectores" class="dashboard-module">
+                <div class="admin-header-section">
+                    <div>
+                        <h2>Plantel de Inspectores</h2>
+                        <p>Control y gestión del personal técnico comunal asignado.</p>
+                    </div>
+                </div>
+
+                <div class="inventory-filter-bar">
+                    <div class="inventory-filter-group" style="flex: 1 1 300px;">
+                        <label for="search-inspectors">Buscar inspector</label>
+                        <input type="text" id="search-inspectors" placeholder="Buscar por nombre o correo..." oninput="filterInspectors()">
+                    </div>
+                </div>
+
+                <div class="split-layout">
+                    <div class="list-panel">
+                        <div class="items-list" id="inspectors-list-container">
+                            <!-- Loaded via JS -->
+                        </div>
+                    </div>
+                    <div class="detail-panel" id="inspector-detail-panel">
+                        <div class="empty-state-panel">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-state-icon">
+                                <circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path>
+                            </svg>
+                            <p>Selecciona un inspector para ver su ficha técnica o removerle el rol.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODULE: EMPRESAS (Exclusivo Admin) -->
+            <section id="module-empresas" class="dashboard-module">
+                <div class="admin-header-section">
+                    <div>
+                        <h2>Empresas Contratistas</h2>
+                        <p>Listado general de empresas asociadas, sus datos y costos generados.</p>
+                    </div>
+                </div>
+
+                <div class="split-layout">
+                    <div class="list-panel">
+                        <div class="items-list" id="companies-list-container">
+                            <!-- Loaded via JS -->
+                        </div>
+                    </div>
+                    <div class="detail-panel" id="company-detail-panel">
+                        <div class="empty-state-panel">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-state-icon">
+                                <circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path>
+                            </svg>
+                            <p>Selecciona una empresa contratista para ver su desempeño operativo y gastos acumulados.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        @else
+            <!-- MODULE: RECLAMOS (Exclusivo Inspector) -->
+            <section id="module-reclamos" class="dashboard-module">
+                <div class="admin-header-section">
+                    <div>
+                        <h2>Mensajes y Reclamos de Vecinos</h2>
+                        <p>Gestiona las consultas, cambia los estados del proceso y responde directamente</p>
+                    </div>
+                </div>
+
+                <!-- Filters Bar -->
+                <div class="inventory-filter-bar">
+                    <div class="inventory-filter-group" style="flex: 1 1 250px;">
+                        <label for="search-claims">Buscar por vecino, dirección o ID</label>
+                        <input type="text" id="search-claims" placeholder="Ej. Laura Gómez, REC-2026-001..." oninput="filterClaims()">
+                    </div>
+                    <div class="inventory-filter-group" style="flex: 1 1 180px;">
+                        <label for="filter-claim-status">Estado</label>
+                        <select id="filter-claim-status" onchange="filterClaims()">
+                            <option value="">Todos los estados</option>
+                        </select>
+                    </div>
+                    <div class="inventory-filter-group" style="flex: 1 1 200px;">
+                        <label for="filter-claim-category">Categoría</label>
+                        <select id="filter-claim-category" onchange="filterClaims()">
+                            <option value="">Todas las categorías</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="split-layout">
+                    <!-- Left Panel -->
+                    <div class="list-panel">
+                        <div class="items-list" id="claims-list-container">
+                            <!-- Loaded via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Right Panel -->
+                    <div class="detail-panel" id="claim-detail-panel">
+                        <div class="empty-state-panel">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-state-icon">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            <p>Selecciona un reclamo de la lista para ver el progreso, inspeccionar los detalles y enviar una respuesta.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODULE: TREE INVENTORY (Exclusivo Inspector) -->
+            <section id="module-inventario" class="dashboard-module">
+                <div class="admin-header-section">
+                    <div>
+                        <h2>Inventario de Arbolado Urbano</h2>
+                        <p>Directorio de especies plantadas, alturas, estados y búsqueda rápida por ID</p>
+                    </div>
+                    <button class="btn-primary btn-icon" onclick="openCreateTreeModal()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
-                        <p>Selecciona un usuario de la lista para visualizar sus detalles y modificar su rol.</p>
+                        Registrar Nuevo Árbol
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <div class="inventory-filter-bar">
+                    <div class="inventory-filter-group">
+                        <label for="filter-tree-id">Buscar por ID</label>
+                        <input type="text" id="filter-tree-id" placeholder="Ej. 10045" oninput="filterTrees()">
+                    </div>
+                    <div class="inventory-filter-group">
+                        <label for="filter-tree-species">Especie</label>
+                        <select id="filter-tree-species" onchange="filterTrees()">
+                            <option value="">Todas las especies</option>
+                            <option value="Jacarandá">Jacarandá</option>
+                            <option value="Ceibo">Ceibo</option>
+                            <option value="Fresno">Fresno</option>
+                            <option value="Palo Borracho">Palo Borracho</option>
+                            <option value="Tilo">Tilo</option>
+                            <option value="Liquidámbar">Liquidámbar</option>
+                        </select>
+                    </div>
+                    <div class="inventory-filter-group">
+                        <label for="filter-tree-state">Estado</label>
+                        <select id="filter-tree-state" onchange="filterTrees()">
+                            <option value="">Cualquier estado</option>
+                            <option value="Saludable">Saludable</option>
+                            <option value="Enfermo">Enfermo</option>
+                            <option value="Dañado">Dañado</option>
+                        </select>
                     </div>
                 </div>
-            </div>
-        </section>
+
+                <div class="split-layout">
+                    <!-- Left Panel -->
+                    <div class="list-panel">
+                        <div class="items-list trees-list" id="trees-list-container">
+                            <!-- Loaded via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Right Panel -->
+                    <div class="detail-panel" id="tree-detail-panel">
+                        <div class="empty-state-panel">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-state-icon">
+                                <path d="M12 19v3M12 3L9 8h1.5L7.5 13h1.5L5 19h14l-4-6h1.5l-3-5h1.5Z"/>
+                            </svg>
+                            <p>Selecciona un árbol del inventario para visualizar sus detalles técnicos y estado fitosanitario.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODULE: PAGOS (Exclusivo Inspector) -->
+            <section id="module-pagos" class="dashboard-module">
+                <div class="admin-header-section">
+                    <div>
+                        <h2>Órdenes de Trabajo y Estado de Pagos</h2>
+                        <p>Monitoreo de tareas realizadas por empresas comunales, verificación de costos y confirmación de pagos.</p>
+                    </div>
+                </div>
+
+                <div class="split-layout">
+                    <div class="list-panel">
+                        <div class="items-list" id="payments-list-container">
+                            <!-- Loaded via JS -->
+                        </div>
+                    </div>
+                    <div class="detail-panel" id="payment-detail-panel">
+                        <div class="empty-state-panel">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-state-icon">
+                                <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                                <line x1="12" y1="18" x2="12" y2="18.01"></line>
+                            </svg>
+                            <p>Selecciona una orden de trabajo realizada para ver su desglose de costos y certificar su estado de pago.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
         @endif
 
     </main>
@@ -431,10 +566,13 @@
 </script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="{{ asset('js/inspector/modules/core.js') }}"></script>
-<script src="{{ asset('js/inspector/modules/claims.js') }}"></script>
-<script src="{{ asset('js/inspector/modules/trees.js') }}"></script>
-<script src="{{ asset('js/inspector/modules/map.js') }}"></script>
 @if(auth()->user()->role === 'admin')
-<script src="{{ asset('js/inspector/modules/roles.js') }}"></script>
+    <script src="{{ asset('js/inspector/modules/roles.js') }}"></script>
+@else
+    <script src="{{ asset('js/inspector/modules/claims.js') }}"></script>
+    <script src="{{ asset('js/inspector/modules/trees.js') }}"></script>
+    <script src="{{ asset('js/inspector/modules/map.js') }}"></script>
+    <script src="{{ asset('js/inspector/modules/payments.js') }}"></script>
 @endif
 @endsection
+
