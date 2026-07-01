@@ -9,6 +9,8 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\RequestTypeController;
 use App\Http\Controllers\WorkOrderController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\UserController; 
+use App\Http\Controllers\PriorityController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -94,3 +96,44 @@ Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-o
 // Rutas para el Registro 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
+
+// 🛡️ Grupo de Administración Protegido (Rutas post-Register)
+Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    // 1. CONTROLADOR DE USUARIOS (UserController)
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+
+   
+    // 2. CONTROLADOR DE TRABAJOS (WorkOrderController)
+    Route::get('/work-orders', [WorkOrderController::class, 'index'])->name('work_orders.index');
+    Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work_orders.store');
+
+
+    // 3. CONTROLADOR DE PRIORIDADES (PriorityController)
+    Route::get('/priorities', [PriorityController::class, 'index'])->name('priorities.index');
+    Route::post('/priorities', [PriorityController::class, 'store'])->name('priorities.store');
+    Route::put('/priorities/{id}', [PriorityController::class, 'update'])->name('priorities.update');
+    Route::delete('/priorities/{id}', [PriorityController::class, 'destroy'])->name('priorities.destroy');    
+});
+
+// Grupo compartido: Accesible por Admin e Inspector
+    Route::middleware(['auth', 'check.role:admin,inspector'])->group(function () {
+    
+    // Traer todos los árboles formateados para el AJAX del front
+    Route::get('/api/admin/arboles', [TreeController::class, 'getAdminTrees'])->name('api.admin.trees');
+
+});
+
+// Grupo nuevo exclusivo: Solo el Administrador puede entrar
+    Route::middleware(['auth', 'check.role:admin'])->group(function () {
+    
+    // Listado global de usuarios en formato JSON
+    Route::get('/api/admin/users', [UserController::class, 'index'])->name('api.admin.users.index');
+    
+    // Modificar el rol de un usuario específico (PATCH)
+    Route::patch('/api/admin/users/{user}/role', [UserController::class, 'updateRole'])->name('api.admin.users.updateRole');
+
+});

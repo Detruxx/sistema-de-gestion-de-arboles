@@ -5,21 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Photo_Tree extends Model
+class Request_Type extends Model
 {
-    protected $table = 'photo_trees';
+    protected $table = 'request_types';
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'tree_id',
-        'photo_path',
+        'task_description',
     ];
 
     // RELACIONES
-    // Relacion con Tree
-    public function tree()
+    // Relacion con Request
+    public function requests()
     {
-        return $this->belongsTo(Tree::class, 'tree_id');
+        return $this->hasMany(Request::class, 'request_type_id');
     }
+    
     use HasFactory;
 }
