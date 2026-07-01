@@ -92,6 +92,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/configuracion/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
         Route::get('/mis-reclamos', [ProfileController::class, 'misReclamos'])->name('profile.mis-reclamos');
         Route::post('/reclamos/{id}/status', [ProfileController::class, 'updateReclamoStatus'])->name('profile.reclamo.status');
+        Route::get('/bandeja-entrada', [ProfileController::class, 'misMensajes'])->name('profile.bandeja-entrada');
         Route::get('/mensajes', [ContactController::class, 'index'])->name('contact.index');
         Route::post('/mensajes/{id}/read', [ContactController::class, 'markRead'])->name('contact.read');
 

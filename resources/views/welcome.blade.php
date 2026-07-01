@@ -110,8 +110,9 @@
                 </div>
             </div>
         </section>
-        
-        <section class="about-section">
+
+        <!-- Seccion sobre nosotros -->
+        <section id="sobre-nosotros" class="about-section">
             <div class="about-container">
                 <div class="about-text reveal">
                     <h2 class="section-title">Nuestra Misión</h2>
@@ -181,7 +182,6 @@
                 </form>
             </div>
         </section>
-        
         <!-- Modal de Detalles de Especie -->
         <div id="species-modal" class="care-modal-overlay">
             <!-- Botones de navegación del modal -->

@@ -24,9 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.size = Math.random() * 3 + 1; // Tamaño de la "hoja/polen"
                 this.speedX = Math.random() * 1 - 0.5; // Movimiento horizontal
                 this.speedY = Math.random() * -1 - 0.5; // Movimiento vertical (hacia arriba)
+                this.opacity = Math.random() * 0.4 + 0.1;
+            }
 
-                // Color verde translúcido
-                this.color = `rgba(91, 191, 140, ${Math.random() * 0.5 + 0.1})`;
+            update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
 

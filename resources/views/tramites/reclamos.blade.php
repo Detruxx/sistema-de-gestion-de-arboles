@@ -33,6 +33,12 @@
 
         <!-- TAB: CREATE COMPLAINT -->
         <div id="section-create" class="tab-content">
+            <x-alert-modal 
+                type="success" 
+                title="¡Trámite Enviado!" 
+                message="Tu sugerencia/reclamo ha sido registrado correctamente."
+                image="{{ asset('img/components/success-tree.webp') }}"
+            />
             <section class="reveal delay-1">
                 <!-- Banner de información de árbol preseleccionado -->
                 <div id="selected-tree-banner" style="display: none;">
@@ -200,4 +206,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script src="{{ asset('js/tramites/reclamos-mapa.js') }}"></script>
     <script src="{{ asset('js/tramites/reclamos.js') }}"></script>
+
+    
 @endsection
