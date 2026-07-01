@@ -42,16 +42,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             StreetSeeder::class,      
             ParkSeeder::class,        
-<<<<<<< HEAD
-            SpecieSeeder::class,     
-            RequestTypeSeeder::class,
-=======
             SpecieSeeder::class,
             PrioritySeeder::class,
             CompanySeeder::class,
             RequestTypeSeeder::class,
             RequestStatusSeeder::class,
->>>>>>> 7df9417fa65fa2849e01939f57c5d7913c14c79a
             PlanterSeeder::class,
             TreeSeeder::class,
             RequestSeeder::class,
