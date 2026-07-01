@@ -19,21 +19,21 @@ document.addEventListener('DOMContentLoaded', () => {
             attribution: '&copy; OpenStreetMap'
         }).addTo(map);
 
-        // Mover controles de zoom al extremo inferior derecho (evita solaparse con sidebar izquierda y filtros arriba a la derecha)
-        L.control.zoom({ position: 'bottomright' }).addTo(map);
+        // Mover controles de zoom a la derecha (para que no los tape el panel)
+        L.control.zoom({ position: 'topright' }).addTo(map);
 
-        // Elementos del DOM
+        // Elementos del DOM del Panel Lateral
         const sidebar = document.getElementById('tree-sidebar');
         const toggleBtn = document.getElementById('toggle-sidebar');
-        const panelDetails = document.getElementById('sidebar-panel-details');
-        const btnTreeBack = document.getElementById('btn-tree-back');
 
-        // Nuevos elementos de Filtros Flotantes
+        // Función para abrir/cerrar panel con el botón
+        if(toggleBtn && sidebar) {
         const btnToggleFilters = document.getElementById('btn-toggle-filters');
         const filterDropdownMenu = document.getElementById('filter-dropdown-menu');
 
         // Función para abrir/cerrar panel de detalles
         if (toggleBtn) {
+
             toggleBtn.addEventListener('click', () => {
                 sidebar.classList.toggle('sidebar-closed');
             });
