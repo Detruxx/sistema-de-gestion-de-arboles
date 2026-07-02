@@ -122,9 +122,13 @@
                                 <h4 class="data-title">DATOS DEL ARBOL</h4>
                                 <ul class="data-list">
                                     <li><strong>Especie:</strong> <span id="t-especie">-</span></li>
-                                    <li><strong>Edad:</strong> <span id="t-edad">-</span></li>
                                     <li><strong>Altura:</strong> <span id="t-altura">-</span></li>
-                                    <li><strong>Dirección:</strong> <span id="t-direccion">-</span></li>
+                                    <li><strong>DAP:</strong> <span id="t-dap">-</span></li>
+                                    <li><strong>Fitosanitario:</strong> <span id="t-vitalidad">-</span></li>
+                                    <li><strong>Mantenimiento:</strong> <span id="t-mantenimiento">-</span></li>
+                                    <li><strong>Estructura:</strong> <span id="t-estructura">-</span></li>
+                                    <li><strong>Observaciones:</strong> <span id="t-observaciones">-</span></li>
+                                    <li><strong id="t-direccion-label">Dirección:</strong> <span id="t-direccion">-</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -150,7 +154,10 @@
         <!-- Template para el popup del mapa -->
         <template id="tree-popup-template">
             <div class="tree-popup">
-                <h4 class="tree-popup-title"></h4>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                    <h4 class="tree-popup-title" style="margin: 0;"></h4>
+                    <span class="tree-popup-id" style="font-size: 0.8rem; background: #e0e0e0; padding: 2px 6px; border-radius: 4px; color: #333;"></span>
+                </div>
                 <p class="tree-popup-address">
                     <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>

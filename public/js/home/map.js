@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let arboles = [];
 
         // Exponer la función globalmente para poder llamarla desde el HTML del popup
-        window.abrirDetalleArbol = function(arbolId, lat, lng) {
+        window.abrirDetalleArbol = function (arbolId, lat, lng) {
             mostrarDatosArbol(arbolId);
             if (lat && lng) {
                 map.flyTo([lat, lng], 16, { duration: 0.5 });
@@ -96,8 +96,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // 1. Armar la dirección (vereda o plaza)
                 let direccionCompleta = 'Sin dirección';
+                let direccionLabel = 'Dirección:';
+                
                 if (arbol.park) {
                     direccionCompleta = arbol.park.park_name;
+                    direccionLabel = 'Parque:';
                 } else if (arbol.street) {
                     direccionCompleta = `${arbol.street.street_name} ${arbol.street.street_number}`;
                     if (arbol.reference) {
@@ -108,8 +111,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 2. Inyectar datos en el DOM (se removió t-estado)
                 document.getElementById('t-id').textContent = `#${arbol.id}`;
                 document.getElementById('t-especie').textContent = arbol.specie ? arbol.specie.common_name : 'Desconocida';
-                document.getElementById('t-edad').textContent = arbol.degree ? `${arbol.degree} años` : 'Desconocida'; // corregir
                 document.getElementById('t-altura').textContent = `${arbol.height} m`;
+                document.getElementById('t-dap').textContent = arbol.dap ? `${arbol.dap} cm` : '-';
+
+                // Caso especifico de la vitalidad ya que puede venir de varias formas
+                let vitalidadTexto = '-';
+                if (arbol.vitality) {
+                    if (Array.isArray(arbol.vitality) && arbol.vitality.length > 0) {
+                        vitalidadTexto = arbol.vitality.join(', ');
+                    } else if (typeof arbol.vitality === 'object' && Object.keys(arbol.vitality).length > 0) {
+                        vitalidadTexto = Object.values(arbol.vitality).join(', ');
+                    } else if (typeof arbol.vitality === 'string' && arbol.vitality.trim() !== '' && arbol.vitality !== '[]' && arbol.vitality !== '{}') {
+                        // Por si llega un JSON como string plano y falla el cast o es texto libre
+                        try {
+                            const parsed = JSON.parse(arbol.vitality);
+                            vitalidadTexto = Object.values(parsed).join(', ') || '-';
+                        } catch (e) {
+                            vitalidadTexto = arbol.vitality;
+                        }
+                    }
+                }
+                document.getElementById('t-vitalidad').textContent = vitalidadTexto;
+
+                document.getElementById('t-mantenimiento').textContent = arbol.maintenance_status || '-';
+                document.getElementById('t-estructura').textContent = arbol.structure || '-';
+                document.getElementById('t-observaciones').textContent = arbol.observations || '-';
+                
+                const labelElem = document.getElementById('t-direccion-label');
+                if (labelElem) labelElem.textContent = direccionLabel;
+                
                 document.getElementById('t-direccion').textContent = direccionCompleta;
 
                 // Aca puede ir la foto si tenemos una, sino una de prueba:
@@ -221,10 +251,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const template = document.getElementById('tree-popup-template');
                 let popupNode = document.createElement('div');
-                
+
                 if (template) {
                     const clone = template.content.cloneNode(true);
                     clone.querySelector('.tree-popup-title').textContent = nombreEspeciePopup;
+                    clone.querySelector('.tree-popup-id').textContent = '#' + arbol.id;
                     clone.querySelector('.address-text').textContent = direccionBasica;
                     const btn = clone.querySelector('.tree-popup-btn');
                     // Asignamos el evento de esta manera manteniendo separada la lógica
