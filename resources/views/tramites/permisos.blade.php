@@ -6,19 +6,24 @@
 @section('active-permisos', 'active')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/permisos.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/tramites/permisos.css') }}?v=2">
 @endsection
 
 @section('content')
-    <main class="tramites-page-container">
-        <section class="cuidados-header reveal">
-            <h1 class="hero-title">Permisos y Normativas</h1>
-            <p class="section-subtitle">
-                De acuerdo con la Ley N° 3263, toda intervención sobre el arbolado público requiere de una autorización formal de la comuna.
-            </p>
-        </section>
+    <main class="tramites-page-container permisos-full-bg">
+        <!-- Fondo general que cubre toda la pantalla -->
+        <div class="bg-blurred-image permisos-bg"></div>
 
-        <section class="permisos-container reveal delay-1">
+        <!-- Contenedor alineado a la izquierda -->
+        <div class="permisos-content-wrapper">
+            <section class="cuidados-header reveal">
+                <h1 class="hero-title">Permisos y Normativas</h1>
+                <p class="section-subtitle">
+                    De acuerdo con la Ley N° 3263, toda intervención sobre el arbolado público requiere de una autorización formal de la comuna.
+                </p>
+            </section>
+
+            <section class="permisos-container reveal delay-1">
             
             <div class="permisos-card">
                 <h3 class="permisos-card-title">
@@ -65,6 +70,7 @@
                 </div>
             </div>
 
-        </section>
+            </section>
+        </div>
     </main>
 @endsection

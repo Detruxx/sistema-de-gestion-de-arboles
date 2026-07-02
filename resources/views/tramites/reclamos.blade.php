@@ -32,8 +32,8 @@
         </div>
 
         <!-- TAB: CREATE COMPLAINT -->
-        <div id="section-create" class="tab-content">
-            <x-alert-modal 
+        <div id="section-create" class="tab-content" style="display: block;">
+            <x-layouts.alert-modal 
                 type="success" 
                 title="¡Trámite Enviado!" 
                 message="Tu sugerencia/reclamo ha sido registrado correctamente."

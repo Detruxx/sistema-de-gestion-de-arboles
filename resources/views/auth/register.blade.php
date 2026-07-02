@@ -9,8 +9,7 @@
 @endsection
 
 @section('content')
-    <main class="tramites-page-container" style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
-        <div class="bg-blurred-image" style="background-image: url('{{ asset('images/home/hero-bg.jpg') }}'); opacity: 0.15; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;"></div>
+    <main class="tramites-page-container" style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background-color: #FAF8F5; position: relative; overflow: hidden;">
         
         <section class="register-wrapper reveal" style="max-width: 650px; width: 100%; position: relative; z-index: 10;">
             <div class="contact-form">

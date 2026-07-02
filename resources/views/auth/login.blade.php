@@ -6,7 +6,8 @@
 
 @section('content')
     <main class="tramites-page-container" style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
-        <div class="bg-blurred-image" style="background-image: url('{{ asset('images/home/hero-bg.jpg') }}'); opacity: 0.15; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;"></div>
+        <div class="login-bg-branches-left" style="background-image: url('{{ asset('img/login_background_new.png') }}'); position: absolute; top: 0; left: 0; width: 37.5%; height: 100%; background-size: 200% auto; background-position: left center; background-repeat: no-repeat; z-index: 0;"></div>
+        <div class="login-bg-branches-right" style="background-image: url('{{ asset('img/login_background_new.png') }}'); position: absolute; top: 0; right: 0; width: 37.5%; height: 100%; background-size: 200% auto; background-position: right center; background-repeat: no-repeat; z-index: 0;"></div>
         
         <section class="login-wrapper reveal" style="max-width: 500px; width: 100%; position: relative; z-index: 10;">
             <div class="contact-form">
