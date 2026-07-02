@@ -38,6 +38,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'vecino@example.com',
             'role' => 'vecino',
             'password' => bcrypt('vecino123'),
+            'email_verified_at' => now(),
         ]);
 
         //El Inspector (Trabajador de Arbolado)
@@ -47,6 +48,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'inspector@example.com',
             'role' => 'inspector',
             'password' => bcrypt('inspector123'),
+            'email_verified_at' => now(),
         ]);
 
         //El Usuario de Empresa Tercerizada
@@ -57,6 +59,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'empresa',
             'password' => bcrypt('empresa123'),
             'company_id' => 1, //Vinculado a la primera empresa creada en el CompanySeeder
+            'email_verified_at' => now(),
         ]);
 
         //El Administrador (Personal de IT / Soporte)
@@ -66,6 +69,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@example.com',
             'role' => 'admin', 
             'password' => bcrypt('admin123'),
+            'email_verified_at' => now(),
         ]);
     }
 }

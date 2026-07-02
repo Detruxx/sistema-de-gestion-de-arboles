@@ -15,22 +15,24 @@ class RequestSeeder extends Seeder
      */
     public function run(): void
     {
-        // 📍 RECOMENDACIÓN: Creamos un usuario vecino temporal para asociar al historial inicial
+        //RECOMENDACIÓN: Creamos un usuario vecino temporal para asociar al historial inicial
         $vecinoTemporal = User::factory()->create([
             'name' => 'Vecino',
             'last_name' => 'Digital',
             'role' => 'vecino',
             'email' => 'vecino.temporal@example.com',
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
+            'email_verified_at' => now(),
         ]);
 
-        // 📍 RECOMENDACIÓN: Creamos un inspector temporal para asociar a los movimientos avanzados
+        //RECOMENDACIÓN: Creamos un inspector temporal para asociar a los movimientos avanzados
         $inspectorTemporal = User::factory()->create([
             'name' => 'Inspector',
             'last_name' => 'Turno',
             'role' => 'inspector',
             'email' => 'inspector.temporal@example.com',
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
+            'email_verified_at' => now(),
         ]);
 
         // 1. Creamos 10 reclamos aleatorios
