@@ -7,6 +7,14 @@
     <!-- Estilos adicionales locales para complementar -->
     <link rel="stylesheet" href="{{ asset('css/admin/dynamic-status.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <style>
+        /* Garantizar matemáticamente la misma altura para inputs y botón */
+        .inventory-filter-group select,
+        .inventory-filter-group input {
+            height: 40px !important;
+            box-sizing: border-box !important;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -254,6 +262,7 @@
                         <option value="Dañado">Dañado</option>
                     </select>
                 </div>
+                
             </div>
 
             <div class="split-layout">

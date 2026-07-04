@@ -10,10 +10,17 @@
     pointer-events: none;
 }
 
-.cuidados-page-container,
+.cuidados-page-container {
+    padding: 140px 8% 120px 8%;
+    background-color: #efe8d8; /* Tono beige/arena más intenso SOLO para cuidados */
+    min-height: 100vh;
+    position: relative;
+    z-index: auto;
+}
+
 .tramites-page-container {
     padding: 140px 8% 120px 8%;
-    background-color: var(--paper-white);
+    background-color: var(--paper-white); /* Blanco hueso para el resto */
     min-height: 100vh;
     position: relative;
     z-index: auto;

@@ -41,6 +41,7 @@
                         <select id="sort-reclamos" class="form-control sort-select" onchange="sortList('reclamos-list-container', this.value)">
                             <option value="desc">Más nuevo a más antiguo</option>
                             <option value="asc">Más antiguo a más nuevo</option>
+                            <option value="new">Nuevos/Sin Leer</option>
                         </select>
                     </div>
                 </div>
@@ -70,9 +71,16 @@
                                 $statusText = 'Descartado';
                             }
                             $timestamp = strtotime($createdAt);
+                            // SKELETON PARA EL BACKEND: Reemplazar false por la lógica real de "no leído" de la base de datos
+                            $isNew = is_array($rec) ? ($rec['is_new'] ?? false) : false; 
                         @endphp
 
-                        <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}">
+                        <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}" data-is-new="{{ $isNew ? 'true' : 'false' }}" data-type="reclamo" data-id="{{ $id }}" style="position: relative;">
+                            @if($isNew)
+                                <div class="new-dot-indicator" style="position: absolute; left: -14px; top: 15px;">
+                                    <x-layouts.notification-badge isDot="true" />
+                                </div>
+                            @endif
                             <summary class="reclamo-card-summary">
                                 <div class="card-summary-left">
                                     <span class="reclamo-id">#{{ $id }}</span>
@@ -188,6 +196,7 @@
                             <select id="sort-plantaciones" class="form-control sort-select" onchange="sortList('plantaciones-list-container', this.value)">
                                 <option value="desc">Más nuevo a más antiguo</option>
                                 <option value="asc">Más antiguo a más nuevo</option>
+                                <option value="new">Nuevos/Sin Leer</option>
                             </select>
                         </div>
                     </div>
@@ -213,9 +222,16 @@
                                     $statusClass = 'discarded';
                                     $statusText = 'Rechazada';
                                 }
+                                // SKELETON PARA EL BACKEND: Reemplazar false por la lógica real
+                                $isNew = is_array($rec) ? ($rec['is_new'] ?? false) : false;
                             @endphp
 
-                            <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}">
+                            <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}" data-is-new="{{ $isNew ? 'true' : 'false' }}" data-type="plantacion" data-id="{{ $id }}" style="position: relative;">
+                                @if($isNew)
+                                    <div class="new-dot-indicator" style="position: absolute; left: -14px; top: 15px;">
+                                        <x-layouts.notification-badge isDot="true" />
+                                    </div>
+                                @endif
                                 <summary class="reclamo-card-summary">
                                     <div class="card-summary-left">
                                         <span class="reclamo-id">#{{ $id }}</span>
@@ -342,18 +358,80 @@
             if (!container) return;
             const items = Array.from(container.querySelectorAll('.reclamo-card'));
             
-            items.sort((a, b) => {
-                const timeA = parseInt(a.getAttribute('data-timestamp'));
-                const timeB = parseInt(b.getAttribute('data-timestamp'));
-                if (order === 'desc') {
-                    return timeB - timeA;
+            items.forEach(item => {
+                if (order === 'new') {
+                    // Ocultar los que no son nuevos
+                    if (item.getAttribute('data-is-new') === 'true') {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
                 } else {
-                    return timeA - timeB;
+                    item.style.display = 'block';
                 }
             });
-            
-            // Re-append in new order
-            items.forEach(item => container.appendChild(item));
+
+            if (order !== 'new') {
+                items.sort((a, b) => {
+                    const timeA = parseInt(a.getAttribute('data-timestamp'));
+                    const timeB = parseInt(b.getAttribute('data-timestamp'));
+                    if (order === 'desc') {
+                        return timeB - timeA;
+                    } else {
+                        return timeA - timeB;
+                    }
+                });
+                // Re-append in new order
+                items.forEach(item => container.appendChild(item));
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            applyLocalCancellations();
+
+            // Logica para marcar como leido al abrir un <details>
+            const detailCards = document.querySelectorAll('.reclamo-card');
+            detailCards.forEach(card => {
+                card.addEventListener('toggle', function() {
+                    if (this.open && this.getAttribute('data-is-new') === 'true') {
+                        // Marcarlo como leido localmente
+                        this.setAttribute('data-is-new', 'false');
+                        
+                        // Remover el puntito rojo flotante
+                        const dot = this.querySelector('.new-dot-indicator');
+                        if (dot) dot.remove();
+
+                        // Restar del menu superior (Mis Reclamos)
+                        const claimsBadge = document.getElementById('badge-unread-claims');
+                        if (claimsBadge) {
+                            let count = parseInt(claimsBadge.innerText) || 0;
+                            count--;
+                            if (count <= 0) {
+                                claimsBadge.remove(); // Si llega a 0, borrar la burbuja entera
+                            } else {
+                                claimsBadge.innerText = count;
+                            }
+                        }
+
+                        // Revisar si ya no hay más notificaciones de NADA para borrar el global dot
+                        checkGlobalDot();
+
+                        // SKELETON PARA EL BACKEND: Llamada para guardar en la BD
+                        // const type = this.getAttribute('data-type');
+                        // const id = this.getAttribute('data-id');
+                        // fetch(`/api/mark-read/${type}/${id}`, { method: 'POST' });
+                    }
+                });
+            });
+        });
+
+        function checkGlobalDot() {
+            const claimsBadge = document.getElementById('badge-unread-claims');
+            const msgsBadge = document.getElementById('badge-unread-messages');
+            if (!claimsBadge && !msgsBadge) {
+                const globalDot = document.getElementById('badge-global-dot');
+                if (globalDot) globalDot.remove();
+            }
         }
     </script>
 @endsection

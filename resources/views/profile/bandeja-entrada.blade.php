@@ -84,6 +84,7 @@
                         <select id="sort-mensajes" class="form-control sort-select" onchange="sortList('mensajes-list-container', this.value)">
                             <option value="desc">Más nuevo a más antiguo</option>
                             <option value="asc">Más antiguo a más nuevo</option>
+                            <option value="new">Nuevos/Sin Leer</option>
                         </select>
                     </div>
                 </div>
@@ -105,9 +106,16 @@
                                 $statusClass = 'resolved';
                                 $statusText = 'Respondido';
                             }
+                            // SKELETON PARA EL BACKEND: Reemplazar false por la lógica real
+                            $isNew = is_array($msg) ? ($msg['is_new'] ?? false) : false;
                         @endphp
 
-                        <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}">
+                        <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}" data-is-new="{{ $isNew ? 'true' : 'false' }}" data-type="mensaje" data-id="{{ $id }}" style="position: relative;">
+                            @if($isNew)
+                                <div class="new-dot-indicator" style="position: absolute; left: -14px; top: 15px;">
+                                    <x-layouts.notification-badge isDot="true" />
+                                </div>
+                            @endif
                             <summary class="reclamo-card-summary">
                                 <div class="card-summary-left">
                                     <span class="reclamo-id" style="background-color: transparent; border: 1px solid var(--living-moss); padding: 8px; border-radius: 12px;">
@@ -177,17 +185,75 @@
             if (!container) return;
             const items = Array.from(container.querySelectorAll('.reclamo-card'));
             
-            items.sort((a, b) => {
-                const timeA = parseInt(a.getAttribute('data-timestamp'));
-                const timeB = parseInt(b.getAttribute('data-timestamp'));
-                if (order === 'desc') {
-                    return timeB - timeA;
+            items.forEach(item => {
+                if (order === 'new') {
+                    if (item.getAttribute('data-is-new') === 'true') {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
                 } else {
-                    return timeA - timeB;
+                    item.style.display = 'block';
                 }
             });
-            
-            items.forEach(item => container.appendChild(item));
+
+            if (order !== 'new') {
+                items.sort((a, b) => {
+                    const timeA = parseInt(a.getAttribute('data-timestamp'));
+                    const timeB = parseInt(b.getAttribute('data-timestamp'));
+                    if (order === 'desc') {
+                        return timeB - timeA;
+                    } else {
+                        return timeA - timeB;
+                    }
+                });
+                
+                items.forEach(item => container.appendChild(item));
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const detailCards = document.querySelectorAll('.reclamo-card');
+            detailCards.forEach(card => {
+                card.addEventListener('toggle', function() {
+                    if (this.open && this.getAttribute('data-is-new') === 'true') {
+                        // Marcarlo como leido localmente
+                        this.setAttribute('data-is-new', 'false');
+                        
+                        // Remover el puntito rojo flotante
+                        const dot = this.querySelector('.new-dot-indicator');
+                        if (dot) dot.remove();
+
+                        // Restar del menu superior (Bandeja de Entrada)
+                        const msgsBadge = document.getElementById('badge-unread-messages');
+                        if (msgsBadge) {
+                            let count = parseInt(msgsBadge.innerText) || 0;
+                            count--;
+                            if (count <= 0) {
+                                msgsBadge.remove();
+                            } else {
+                                msgsBadge.innerText = count;
+                            }
+                        }
+
+                        // Revisar si ya no hay más notificaciones
+                        checkGlobalDot();
+
+                        // SKELETON PARA EL BACKEND
+                        // const id = this.getAttribute('data-id');
+                        // fetch(`/api/mark-read/mensaje/${id}`, { method: 'POST' });
+                    }
+                });
+            });
+        });
+
+        function checkGlobalDot() {
+            const claimsBadge = document.getElementById('badge-unread-claims');
+            const msgsBadge = document.getElementById('badge-unread-messages');
+            if (!claimsBadge && !msgsBadge) {
+                const globalDot = document.getElementById('badge-global-dot');
+                if (globalDot) globalDot.remove();
+            }
         }
     </script>
 @endsection

@@ -3,12 +3,31 @@
 @section('title', 'Iniciar Sesión | TreeBA')
 @section('navbar-class', 'scrolled')
 @section('active-login', 'active')
+@section('styles')
+    <style>
+        @media (max-width: 768px) {
+            .login-bg-branches-left, .login-bg-branches-right {
+                width: 100% !important;
+                opacity: 0.08 !important; /* Marca de agua sutil en mobile */
+            }
+            .login-bg-branches-left {
+                background-position: top center !important;
+                background-size: cover !important;
+            }
+            .login-bg-branches-right {
+                background-position: bottom center !important;
+                background-size: cover !important;
+            }
+        }
+    </style>
+@endsection
 
 @section('content')
-    <main class="tramites-page-container" style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
-        <div class="bg-blurred-image" style="background-image: url('{{ asset('images/home/hero-bg.jpg') }}'); opacity: 0.15; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;"></div>
+    <main class="tramites-page-container" style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background-color: #ffffff;">
+        <div class="login-bg-branches-left" style="background-image: url('{{ asset('img/login_background_new.png') }}'); position: absolute; top: 0; left: 0; width: 37.5%; height: 100%; background-size: 200% auto; background-position: left center; background-repeat: no-repeat; z-index: 0;"></div>
+        <div class="login-bg-branches-right" style="background-image: url('{{ asset('img/login_background_new.png') }}'); position: absolute; top: 0; right: 0; width: 37.5%; height: 100%; background-size: 200% auto; background-position: right center; background-repeat: no-repeat; z-index: 0;"></div>
         
-        <section class="login-wrapper reveal" style="max-width: 500px; width: 100%; position: relative; z-index: 10;">
+        <section class="login-wrapper reveal" style="max-width: 450px; width: 100%; position: relative; z-index: 10;">
             <div class="contact-form">
                 <div style="text-align: center; margin-bottom: 30px;">
                     <h2 style="font-family: var(--font-display); color: var(--deep-canopy); font-size: 2.2rem; margin-bottom: 8px; line-height: 1.3; padding-bottom: 5px;">Ingresar</h2>

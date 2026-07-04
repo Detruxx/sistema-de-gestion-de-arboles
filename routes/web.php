@@ -66,6 +66,7 @@ Route::post('/contacto', [ContactController::class, 'store'])->name('contacto.st
 // Rutas protegidas por autenticación
 Route::middleware(['auth'])->group(function () {
 
+
     // --- VERIFICACIÓN DE EMAIL ---
 
     // 1. La pantalla que le avisa al usuario: "Te mandamos un mail, verificalo"
@@ -104,6 +105,7 @@ Route::middleware(['auth'])->group(function () {
 
             // Ruta para crear órdenes de trabajo/tareas de empresas contratistas
             Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
+
         });
 
         //Panel Exclusivo para Empresas Tercerizadas
