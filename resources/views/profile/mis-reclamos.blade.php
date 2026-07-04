@@ -3,7 +3,175 @@
 @section('title', 'Mis Reclamos | TreeBA')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/profile/profile.css') }}">
+    <style>
+        /* Stepper del Reclamo (Solo Lectura) */
+        .claim-progress-container {
+            margin: 25px 0;
+            padding: 24px;
+            background: #ffffff;
+            border: 1px solid rgba(45, 122, 79, 0.15);
+            border-radius: 12px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .claim-progress-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--deep-canopy);
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .claim-steps-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .claim-progress-line {
+            position: absolute;
+            top: 18px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #e5e7eb;
+            z-index: 1;
+        }
+
+        .claim-progress-line-fill {
+            height: 100%;
+            transition: width 0.4s ease;
+        }
+
+        .claim-step-node {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+            user-select: none;
+        }
+
+        .claim-step-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            color: #9ca3af;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .claim-step-label {
+            margin-top: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #9ca3af;
+            max-width: 100px;
+            line-height: 1.3;
+        }
+
+        .claim-step-node.passed .claim-step-circle {
+            background: #15803d;
+            border-color: #15803d;
+            color: #ffffff;
+        }
+
+        .claim-step-node.passed .claim-step-label {
+            color: #15803d;
+        }
+
+        .claim-step-node.active .claim-step-circle {
+            color: #ffffff;
+            transform: scale(1.15);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .claim-step-node.active .claim-step-label {
+            font-weight: 700;
+        }
+
+        .claim-step-circle.is-denied {
+            background: #ef4444 !important;
+            border-color: #ef4444 !important;
+            color: #ffffff !important;
+        }
+
+        /* Historial y Mensajes */
+        .claim-history-container {
+            margin-top: 25px;
+            border-top: 1px dashed rgba(45, 122, 79, 0.2);
+            padding-top: 20px;
+        }
+
+        .claim-history-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--deep-canopy);
+            margin-bottom: 16px;
+        }
+
+        .claim-history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .claim-history-item {
+            display: flex;
+            gap: 15px;
+            background: #fdfdfd;
+            border: 1px solid rgba(45, 122, 79, 0.12);
+            padding: 16px;
+            border-radius: 10px;
+            align-items: flex-start;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+        }
+
+        .history-meta {
+            min-width: 110px;
+            font-size: 0.78rem;
+            color: #6b7280;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .history-content {
+            flex-grow: 1;
+        }
+
+        .history-status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            color: #ffffff;
+            letter-spacing: 0.3px;
+        }
+
+        .history-justification {
+            font-size: 0.88rem;
+            color: var(--forest-night);
+            line-height: 1.45;
+            margin: 0;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -50,7 +218,14 @@
                         @php
                             // Ajustes para soportar tanto objetos Eloquent como arrays de la simulacion
                             $id = is_array($rec) ? $rec['id'] : $rec->id;
-                            $status = is_array($rec) ? $rec['status'] : $rec->status;
+                            $statusObj = is_array($rec) ? null : $rec->status;
+                            $statusSlug = is_array($rec) ? $rec['status'] : ($statusObj ? $statusObj->slug : 'open');
+                            
+                            // Mapear descartado a denied para consistencia
+                            if ($statusSlug === 'discarded') {
+                                $statusSlug = 'denied';
+                            }
+                            
                             $typeName = is_array($rec) ? $rec['type_name'] : ($rec->Request_Type ? $rec->Request_Type->type_name : 'Reclamo General');
                             $streetName = is_array($rec) ? $rec['street_name'] : ($rec->street ? $rec->street->street_name . ' ' . $rec->street->street_number : 'Ubicación no especificada');
                             $description = is_array($rec) ? $rec['description'] : $rec->description;
@@ -59,17 +234,103 @@
                             $createdAt = is_array($rec) ? $rec['created_at'] : $rec->created_at->format('Y-m-d H:i:s');
                             $dateFormatted = date('d/m/Y', strtotime($createdAt));
 
-                            // Clasificar el color del estado
+                            // Clasificar el color y badge de la tarjeta
                             $statusClass = 'open';
                             $statusText = 'En revisión';
-                            if ($status === 'resolved' || $status === 'resolved') {
+                            if ($statusSlug === 'resolved' || $statusSlug === 'certified') {
                                 $statusClass = 'resolved';
                                 $statusText = 'Completado';
-                            } elseif ($status === 'discarded') {
+                            } elseif ($statusSlug === 'denied' || $statusSlug === 'vinculated') {
                                 $statusClass = 'discarded';
-                                $statusText = 'Descartado';
+                                $statusText = $statusSlug === 'denied' ? 'Rechazado' : 'Vinculado';
                             }
                             $timestamp = strtotime($createdAt);
+
+                            // Stepper de estados lineales (1 al 6)
+                            $linearSteps = [
+                                ['status_name' => 'Pendiente', 'slug' => 'open', 'sequence' => 1, 'color' => '#eab308'],
+                                ['status_name' => 'Relevado / Inspeccionado', 'slug' => 'relevated', 'sequence' => 2, 'color' => '#ea580c'],
+                                ['status_name' => 'Programado', 'slug' => 'scheduled', 'sequence' => 3, 'color' => '#6b21a8'],
+                                ['status_name' => 'En curso', 'slug' => 'in_progress', 'sequence' => 4, 'color' => '#2563eb'],
+                                ['status_name' => 'Completado', 'slug' => 'resolved', 'sequence' => 5, 'color' => '#22c55e'],
+                                ['status_name' => 'Certificado', 'slug' => 'certified', 'sequence' => 6, 'color' => '#15803d'],
+                            ];
+
+                            // Buscar si el estado es de excepción terminal
+                            $terminalStatus = null;
+                            if ($statusSlug === 'denied') {
+                                $terminalStatus = ['status_name' => 'Denegado', 'slug' => 'denied', 'color' => '#ef4444'];
+                            } elseif ($statusSlug === 'vinculated') {
+                                $terminalStatus = ['status_name' => 'Vinculado (Duplicado)', 'slug' => 'vinculated', 'color' => '#d946ef'];
+                            }
+
+                            $isTerminalException = ($terminalStatus !== null);
+
+                            // Obtener la secuencia actual
+                            $currentSeq = 0;
+                            $currentStatusColor = '#eab308';
+                            $currentStatusName = 'Pendiente';
+                            if (!$isTerminalException) {
+                                foreach ($linearSteps as $ls) {
+                                    if ($ls['slug'] === $statusSlug) {
+                                        $currentSeq = $ls['sequence'];
+                                        $currentStatusColor = $ls['color'];
+                                        $currentStatusName = $ls['status_name'];
+                                        break;
+                                    }
+                                }
+                            } else {
+                                $currentStatusColor = $terminalStatus['color'];
+                                $currentStatusName = $terminalStatus['status_name'];
+                            }
+
+                            // Calcular porcentaje de relleno
+                            $progressPercent = 0;
+                            if (!$isTerminalException && $currentSeq > 1) {
+                                $progressPercent = (($currentSeq - 1) / (count($linearSteps) - 1)) * 100;
+                            }
+                            $lineBg = $isTerminalException ? $currentStatusColor : '#15803d';
+
+                            // Historial de cambios
+                            if (is_array($rec)) {
+                                $histories = [];
+                                $createdAtTime = strtotime($createdAt);
+                                $histories[] = (object)[
+                                    'created_at' => date('Y-m-d H:i:s', $createdAtTime),
+                                    'status' => (object)['status_name' => 'Pendiente', 'color' => '#eab308', 'slug' => 'open'],
+                                    'justification' => 'Registro inicial del reclamo.'
+                                ];
+                                if ($statusSlug === 'resolved') {
+                                    $histories[] = (object)[
+                                        'created_at' => date('Y-m-d H:i:s', $createdAtTime + 86400),
+                                        'status' => (object)['status_name' => 'Relevado / Inspeccionado', 'color' => '#ea580c', 'slug' => 'relevated'],
+                                        'justification' => 'El inspector visitó el lugar y constató la situación de la plantera y del ejemplar.'
+                                    ];
+                                    $histories[] = (object)[
+                                        'created_at' => date('Y-m-d H:i:s', $createdAtTime + 172800),
+                                        'status' => (object)['status_name' => 'Programado', 'color' => '#6b21a8', 'slug' => 'scheduled'],
+                                        'justification' => 'Se programó la cuadrilla de poda/remoción correspondiente.'
+                                    ];
+                                    $histories[] = (object)[
+                                        'created_at' => date('Y-m-d H:i:s', $createdAtTime + 259200),
+                                        'status' => (object)['status_name' => 'En curso', 'color' => '#2563eb', 'slug' => 'in_progress'],
+                                        'justification' => 'La cuadrilla contratista comunal se encuentra operando en la zona.'
+                                    ];
+                                    $histories[] = (object)[
+                                        'created_at' => date('Y-m-d H:i:s', $createdAtTime + 345600),
+                                        'status' => (object)['status_name' => 'Completado', 'color' => '#22c55e', 'slug' => 'resolved'],
+                                        'justification' => 'Los trabajos concluyeron de manera satisfactoria. La incidencia queda cerrada.'
+                                    ];
+                                } elseif ($statusSlug === 'denied') {
+                                    $histories[] = (object)[
+                                        'created_at' => date('Y-m-d H:i:s', $createdAtTime + 86400),
+                                        'status' => (object)['status_name' => 'Denegado', 'color' => '#ef4444', 'slug' => 'denied'],
+                                        'justification' => 'El reclamo fue denegado debido a que los datos de ubicación no corresponden o la intervención ya fue resuelta.'
+                                    ];
+                                }
+                            } else {
+                                $histories = $rec->histories;
+                            }
                         @endphp
 
                         <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}">
@@ -112,20 +373,94 @@
                                     @endif
                                 </div>
 
-                                @if($statusClass === 'resolved')
-                                    <div class="inspector-response-box">
-                                        <div class="response-header">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                            </svg>
-                                            <strong>Resolución del Inspector</strong>
+                                <!-- Stepper de Progreso (Lectura) -->
+                                <div class="claim-progress-container">
+                                    <div class="claim-progress-title">Progreso del Reclamo</div>
+                                    <div class="claim-steps-wrapper">
+                                        <div class="claim-progress-line">
+                                            <div class="claim-progress-line-fill" style="width: {{ $progressPercent }}%; background: {{ $lineBg }};"></div>
                                         </div>
-                                        <p>
-                                            El área operativa de la Comuna ha verificado y resuelto la incidencia reportada de forma satisfactoria. Las tareas de mantenimiento han finalizado.
-                                        </p>
+                                        @foreach($linearSteps as $step)
+                                            @php
+                                                $isActive = !$isTerminalException && $step['sequence'] === $currentSeq;
+                                                $isPassed = !$isTerminalException && $step['sequence'] < $currentSeq;
+
+                                                $bgNum = '#ffffff';
+                                                $borderNum = '#e5e7eb';
+                                                $colorNum = '#9ca3af';
+                                                $colorLbl = '#9ca3af';
+                                                $fontLbl = '500';
+
+                                                $labelText = $step['status_name'];
+                                                $numText = $step['sequence'];
+                                                $nodeClass = '';
+
+                                                if ($isTerminalException && $step['sequence'] === 1) {
+                                                    $bgNum = $currentStatusColor;
+                                                    $borderNum = $currentStatusColor;
+                                                    $colorNum = '#ffffff';
+                                                    $colorLbl = $currentStatusColor;
+                                                    $labelText = $currentStatusName;
+                                                    $numText = $statusSlug === 'denied' ? '✖' : '●';
+                                                    $nodeClass = 'active';
+                                                } elseif ($isActive) {
+                                                    $bgNum = $currentStatusColor;
+                                                    $borderNum = $currentStatusColor;
+                                                    $colorNum = '#ffffff';
+                                                    $colorLbl = $currentStatusColor;
+                                                    $fontLbl = '700';
+                                                    $nodeClass = 'active';
+                                                } elseif ($isPassed) {
+                                                    $bgNum = '#15803d';
+                                                    $borderNum = '#15803d';
+                                                    $colorNum = '#ffffff';
+                                                    $colorLbl = '#15803d';
+                                                    $nodeClass = 'passed';
+                                                }
+                                            @endphp
+                                            <div class="claim-step-node {{ $nodeClass }}">
+                                                <div class="claim-step-circle {{ $isTerminalException && $step['sequence'] === 1 && $statusSlug === 'denied' ? 'is-denied' : '' }}" style="background: {{ $bgNum }}; border-color: {{ $borderNum }}; color: {{ $colorNum }};">
+                                                    {{ $numText }}
+                                                </div>
+                                                <span class="claim-step-label" style="color: {{ $colorLbl }}; font-weight: {{ $fontLbl }};">
+                                                    {{ $labelText }}
+                                                </span>
+                                            </div>
+                                        @endforeach
                                     </div>
-                                @endif
+                                </div>
+
+                                <!-- Historial de Cambios / Mensajes del Inspector -->
+                                <div class="claim-history-container">
+                                    <div class="claim-history-title">Historial de Actualizaciones</div>
+                                    <div class="claim-history-list">
+                                        @if(count($histories) === 0)
+                                            <p style="color: #6b7280; font-style: italic; font-size: 0.9rem;">No hay actualizaciones registradas para este reclamo.</p>
+                                        @else
+                                            @foreach($histories as $history)
+                                                @php
+                                                    $hStatusName = $history->status ? $history->status->status_name : 'Actualización';
+                                                    $hColor = $history->status ? $history->status->color : '#6b7280';
+                                                    $hDate = date('d/m/Y H:i', strtotime($history->created_at));
+                                                @endphp
+                                                <div class="claim-history-item">
+                                                    <div class="history-meta">
+                                                        <span style="font-weight: 600;">{{ $hDate }} hs</span>
+                                                        <span style="font-size: 0.75rem; color: #9ca3af;">Por Inspector</span>
+                                                    </div>
+                                                    <div class="history-content">
+                                                        <span class="history-status-badge" style="background-color: {{ $hColor }};">
+                                                            {{ $hStatusName }}
+                                                        </span>
+                                                        <p class="history-justification">
+                                                            {{ $history->justification ?: 'Estado de la solicitud actualizado por el área técnica.' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </div>
 
                                 <!-- Sección de Cancelación del Reclamo (para Vecinos) -->
                                 @if($statusClass !== 'resolved' && $statusClass !== 'discarded')

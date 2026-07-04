@@ -78,21 +78,6 @@ window.selectClaim = function (id) {
             <p class="detail-value">${claim.direccion} — Especie involucrada: ${claim.especie}</p>
         </div>
 
-        <div class="detail-section" style="margin-top: 15px; margin-bottom: 15px;">
-            <p class="detail-label">Empresa Contratista Destinada</p>
-            <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
-                <select id="assign-company-select" style="max-width: 250px; background: #fff; border: 1px solid var(--admin-border); border-radius: 6px; padding: 8px; color: var(--admin-text-primary);">
-                    <option value="">-- Sin asignar --</option>
-                    ${(window.activeCompanies || []).map(c => `
-                        <option value="${c.id}" ${claim.company_id === c.id ? 'selected' : ''}>${c.company_name}</option>
-                    `).join('')}
-                </select>
-                <button class="btn-primary" onclick="window.assignCompanyToClaim(${claim.id})" style="padding: 8px 16px; font-size: 0.9rem;">
-                    Asignar Empresa
-                </button>
-            </div>
-        </div>
-
         <div class="detail-box">
             <p class="detail-label">Mensaje / Descripción del problema</p>
             <p class="detail-box-desc">${claim.descripcion}</p>
@@ -135,9 +120,22 @@ window.selectClaim = function (id) {
                 <button class="template-btn" onclick="window.applyTemplate('denied')">Rechazar</button>
             </div>
             <textarea id="response-text" class="response-textarea" placeholder="Escribe un mensaje personalizado para enviar al correo del vecino..."></textarea>
-            <div class="action-row">
-                <button class="btn-secondary" onclick="window.clearResponse()">Limpiar</button>
-                <button class="btn-primary" onclick="window.sendResponse()">Enviar Respuesta y Actualizar</button>
+            <div class="action-row" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <select id="assign-company-select" style="max-width: 250px; background: #fff; border: 1px solid var(--admin-border); border-radius: 8px; padding: 10px; color: var(--admin-text-primary); font-family: var(--font-body); font-size: 0.9rem;">
+                        <option value="">-- Sin asignar empresa --</option>
+                        ${(window.activeCompanies || []).map(c => `
+                            <option value="${c.id}" ${claim.company_id === c.id ? 'selected' : ''}>${c.company_name}</option>
+                        `).join('')}
+                    </select>
+                    <button class="btn-primary" onclick="window.assignCompanyToClaim(${claim.id})" style="padding: 10px 20px; font-size: 0.95rem;">
+                        Asignar Empresa
+                    </button>
+                </div>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <button class="btn-secondary" onclick="window.clearResponse()">Limpiar</button>
+                    <button class="btn-primary" onclick="window.sendResponse()">Enviar Respuesta y Actualizar</button>
+                </div>
             </div>
         </div>
     `;
