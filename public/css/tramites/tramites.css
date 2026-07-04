@@ -190,7 +190,7 @@ textarea.form-control {
 }
 
 .permisos-docs-card {
-    background-color: rgba(91, 191, 140, 0.08);
+    background-color: rgba(91, 191, 140, 0.35);
     border: 2px dashed var(--spring-leaf);
     border-radius: 16px;
     padding: 35px;
@@ -200,7 +200,7 @@ textarea.form-control {
 .permisos-docs-title {
     font-family: var(--font-display);
     font-size: 1.25rem;
-    color: var(--deep-canopy);
+    color: #ffffff;
     margin-bottom: 15px;
     font-weight: 700;
 }

@@ -119,7 +119,7 @@
     @yield('content') <!-- Aca va el contenido de la pagina el cual es propio de cada pagina-->
 
     @section('footer') <!-- Aca va el footer de la pagina -->
-    <footer class="main-footer">
+    <footer class="main-footer" style="position: relative; z-index: 20; background-color: var(--forest-night, #203528);">
         <div class="footer-container">
             <div class="footer-brand">
                 <div class="footer-logo">

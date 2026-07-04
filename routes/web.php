@@ -105,6 +105,7 @@ Route::middleware(['auth'])->group(function () {
 
             // Ruta para crear órdenes de trabajo/tareas de empresas contratistas
             Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
+
         });
 
         //Panel Exclusivo para Empresas Tercerizadas

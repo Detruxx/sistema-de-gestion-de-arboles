@@ -138,11 +138,11 @@
 
 /* Background Image styling */
 .bg-blurred-image {
-    position: absolute;
+    position: fixed;
     top: -5%;
     left: -5%;
-    width: 110%;
-    height: 110%;
+    width: 110vw;
+    height: 110vh;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
