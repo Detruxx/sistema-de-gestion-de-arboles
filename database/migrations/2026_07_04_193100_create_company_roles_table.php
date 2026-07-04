@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('companies', function (Blueprint $table) {
+        Schema::create('company_roles', function (Blueprint $table) {
             $table->id();
-            $table->string('name');          // Nombre fantasía
-            $table->string('business_name'); // Razón social
-            $table->string('cuit')->unique();
-            $table->string('email')->unique();
-            $table->string('location');      // Dirección o zona de cobertura
+            // Si se borra la empresa, se borran sus roles automáticamente
+            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
+            
+            $table->string('job_role'); // Ej: 'Poda', 'Extracción', 'Fitosanitario'
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('companies');
+        Schema::dropIfExists('company_roles');
     }
 };

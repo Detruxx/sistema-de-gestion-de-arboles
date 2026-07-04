@@ -3,9 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class WorkOrder extends Model
 {
+    use HasFactory; 
+
+    protected $table = 'work_orders';
+
     protected $fillable = [
         'request_id', 
         'company_id', 

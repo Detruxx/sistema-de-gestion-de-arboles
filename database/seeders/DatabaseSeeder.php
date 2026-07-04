@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             PlanterSeeder::class,
             TreeSeeder::class,
             RequestSeeder::class,
+            WorkOrderSeeder::class,  //Al final de todo, cuando ya existen reclamos y empresas
         ]);
 
         // 2. Ahora que las tablas base existen, creamos los usuarios de prueba con nombre, apellido y rol
