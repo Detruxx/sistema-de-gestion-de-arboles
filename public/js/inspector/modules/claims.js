@@ -78,6 +78,21 @@ window.selectClaim = function (id) {
             <p class="detail-value">${claim.direccion} — Especie involucrada: ${claim.especie}</p>
         </div>
 
+        <div class="detail-section" style="margin-top: 15px; margin-bottom: 15px;">
+            <p class="detail-label">Empresa Contratista Destinada</p>
+            <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+                <select id="assign-company-select" style="max-width: 250px; background: #fff; border: 1px solid var(--admin-border); border-radius: 6px; padding: 8px; color: var(--admin-text-primary);">
+                    <option value="">-- Sin asignar --</option>
+                    ${(window.activeCompanies || []).map(c => `
+                        <option value="${c.id}" ${claim.company_id === c.id ? 'selected' : ''}>${c.company_name}</option>
+                    `).join('')}
+                </select>
+                <button class="btn-primary" onclick="window.assignCompanyToClaim(${claim.id})" style="padding: 8px 16px; font-size: 0.9rem;">
+                    Asignar Empresa
+                </button>
+            </div>
+        </div>
+
         <div class="detail-box">
             <p class="detail-label">Mensaje / Descripción del problema</p>
             <p class="detail-box-desc">${claim.descripcion}</p>
@@ -331,6 +346,7 @@ window.loadStatusesFromServer = async function () {
 };
 
 window.loadClaimsFromServer = async function () {
+    await window.loadActiveCompanies();
     if (window.requestStatuses.length === 0) {
         await window.loadStatusesFromServer();
     }
@@ -376,5 +392,59 @@ window.loadClaimsFromServer = async function () {
         }
     } catch (err) {
         console.error("Error al cargar reclamos del servidor:", err);
+    }
+};
+
+window.activeCompanies = [];
+
+window.loadActiveCompanies = async function () {
+    try {
+        const response = await fetch('/api/admin/companies');
+        if (response.ok) {
+            const data = await response.json();
+            window.activeCompanies = (data.data || []).filter(c => c.status === 'Activo');
+        }
+    } catch (err) {
+        console.error("Error al cargar empresas activas:", err);
+    }
+};
+
+window.assignCompanyToClaim = async function (claimId) {
+    const companyId = document.getElementById('assign-company-select').value;
+    const claim = window.claims.find(c => c.id === claimId);
+    if (!claim) return;
+
+    try {
+        const response = await fetch(`/api/admin/claims/${claimId}/assign-company`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': window.getCsrfToken()
+            },
+            body: JSON.stringify({ company_id: companyId ? parseInt(companyId) : null })
+        });
+
+        if (response.ok) {
+            claim.company_id = companyId ? parseInt(companyId) : null;
+            window.showNotification(`Empresa asignada correctamente al reclamo #${claimId}`);
+            window.selectClaim(claimId);
+        } else {
+            alert('Error al asignar la empresa en el servidor.');
+        }
+    } catch (err) {
+        console.error("Error al asignar empresa:", err);
+        alert('Error al conectar con el servidor.');
+    }
+};
+
+window.showNotification = function (text) {
+    const banner = document.getElementById('notification-banner');
+    const label = document.getElementById('notification-text');
+    if (banner && label) {
+        label.innerText = text;
+        banner.style.display = 'flex';
+        setTimeout(() => {
+            banner.style.display = 'none';
+        }, 4000);
     }
 };

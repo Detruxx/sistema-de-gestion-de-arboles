@@ -41,13 +41,6 @@
                 </svg>
                 Postulación a Trabajos
             </button>
-            <button class="sidebar-btn" onclick="showModule('pagos')" id="menu-pagos">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
-                    <line x1="12" y1="18" x2="12" y2="18.01"></line>
-                </svg>
-                Estado de Pagos
-            </button>
         </div>
         
         <div class="sidebar-footer">
@@ -96,11 +89,11 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon stat-icon-warning">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12" y2="18.01"></line></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                     </div>
                     <div class="stat-info">
-                        <h4>Pagos Pendientes</h4>
-                        <p id="company-stat-unpaid">...</p>
+                        <h4>Licitaciones Disponibles</h4>
+                        <p id="company-stat-tenders">...</p>
                     </div>
                 </div>
             </div>
@@ -182,32 +175,7 @@
             </div>
         </section>
 
-        <!-- MODULE: PAGOS (Empresa) -->
-        <section id="module-pagos" class="dashboard-module">
-            <div class="admin-header-section">
-                <div>
-                    <h2>Estado de Facturación y Pagos</h2>
-                    <p>Verifica si tus servicios ya completados han sido homologados y pagados por el cuerpo de inspectores.</p>
-                </div>
-            </div>
 
-            <div class="split-layout">
-                <div class="list-panel">
-                    <div class="items-list" id="company-payments-list-container">
-                        <!-- Loaded via JS -->
-                    </div>
-                </div>
-                <div class="detail-panel" id="company-payment-detail-panel">
-                    <div class="empty-state-panel">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-state-icon">
-                            <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
-                            <line x1="12" y1="18" x2="12" y2="18.01"></line>
-                        </svg>
-                        <p>Selecciona un servicio para ver el estado de verificación de pago de la Comuna 13.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
 
     </main>
 </div>

@@ -4,21 +4,20 @@ window.companyJobs = [];
 window.tenders = [];
 window.selectedJobId = null;
 window.selectedTenderId = null;
-window.selectedPaymentId = null;
 
 // --- Actualizar Estadísticas del Resumen ---
 window.updateCompanyStats = function () {
     const completedCount = window.companyJobs.filter(j => j.work_status === 'Finalizado').length;
     const pendingCount = window.companyJobs.filter(j => j.work_status !== 'Finalizado').length;
-    const unpaidCount = window.companyJobs.filter(j => j.work_status === 'Finalizado' && j.payment_status !== 'Pagado').length;
+    const availableTendersCount = window.tenders.filter(t => !t.applied).length;
 
     const elCompleted = document.getElementById('company-stat-completed');
     const elPending = document.getElementById('company-stat-pending');
-    const elUnpaid = document.getElementById('company-stat-unpaid');
+    const elTenders = document.getElementById('company-stat-tenders');
 
     if (elCompleted) elCompleted.innerText = completedCount;
     if (elPending) elPending.innerText = pendingCount;
-    if (elUnpaid) elUnpaid.innerText = unpaidCount;
+    if (elTenders) elTenders.innerText = availableTendersCount;
 };
 
 // --- Renderizar Trabajos Asignados ---
@@ -131,7 +130,8 @@ window.updateJobStatus = async function (id, newStatus) {
             body: JSON.stringify({ work_status: newStatus })
         });
 
-        // Simulación frontend
+        if (!response.ok) throw new Error('Error al actualizar estado del trabajo');
+
         j.work_status = newStatus;
         if (newStatus === 'Finalizado') {
             window.showNotification(`Trabajo #${id} finalizado. Control devuelto al Inspector.`);
@@ -140,19 +140,12 @@ window.updateJobStatus = async function (id, newStatus) {
         }
         window.selectCompanyJob(id);
         window.loadCompanyJobsList();
-        window.loadCompanyPaymentsList();
         window.updateCompanyStats();
 
     } catch (err) {
         console.error("Error al actualizar estado del trabajo:", err);
-        j.work_status = newStatus;
-        window.selectCompanyJob(id);
-        window.loadCompanyJobsList();
-        window.loadCompanyPaymentsList();
-        window.updateCompanyStats();
     }
 };
-
 
 // --- Renderizar Licitaciones y Postulaciones ---
 window.loadTendersList = function () {
@@ -180,7 +173,7 @@ window.loadTendersList = function () {
                 <span class="badge-status" style="background-color: ${badgeColor}20; color: ${badgeColor}; border: 1px solid ${badgeColor};">${badgeLabel}</span>
             </div>
             <div class="list-item-title">${t.task_description}</div>
-            <div class="list-item-subtitle">Presupuesto Estimado: $${t.budget.toLocaleString()}</div>
+            <div class="list-item-subtitle">Ubicación: ${t.location || 'Av. Cabildo 1500, CABA'}</div>
         `;
         container.appendChild(card);
     });
@@ -203,11 +196,6 @@ window.selectTender = function (id) {
         </div>
 
         <div class="detail-section">
-            <p class="detail-label">Presupuesto Comunal Estimado</p>
-            <p class="detail-value" style="font-size: 1.2rem; color: var(--admin-accent); font-weight: bold;">$${t.budget.toLocaleString()}</p>
-        </div>
-
-        <div class="detail-section">
             <p class="detail-label">Ubicación de Obra</p>
             <p class="detail-value">${t.location || 'Av. Cabildo 1500, CABA'}</p>
         </div>
@@ -215,13 +203,12 @@ window.selectTender = function (id) {
         <div class="detail-box" style="margin-top: 30px; background: rgba(0,0,0,0.02); border: 1px solid var(--admin-border); border-radius: 8px; padding: 20px;">
             ${t.applied ? `
                 <div style="color: #22c55e; font-weight: bold; display: flex; align-items: center; gap: 8px;">
-                    <span>✔ Ya te has postulado a este trabajo. Tu presupuesto cargado es de: <strong>$${t.applied_bid.toLocaleString()}</strong>. Esperando resolución de adjudicación.</span>
+                    <span>✔ Ya te has postulado a este trabajo. Esperando resolución de adjudicación.</span>
                 </div>
             ` : `
-                <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--admin-accent); font-family: var(--font-display);">Enviar Propuesta de Licitación</h4>
+                <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--admin-accent); font-family: var(--font-display);">Postularse a Licitación</h4>
                 <div style="display: flex; gap: 10px; flex-direction: column;">
-                    <label for="bid-amount" style="font-size: 0.85rem; color: var(--admin-text-secondary);">Monto Ofertado ($)</label>
-                    <input type="number" id="bid-amount" placeholder="Ej. ${t.budget - 5000}" style="padding: 10px; width: 100%; max-width: 250px; background: #fff; border: 1px solid var(--admin-border); border-radius: 6px; margin-bottom: 10px;">
+                    <p style="font-size: 0.9rem; color: var(--admin-text-secondary); margin-bottom: 10px;">Postúlate para realizar este servicio de mantenimiento y saneamiento.</p>
                     <button class="btn-primary" onclick="window.submitTenderBid(${t.id})" style="max-width: 200px;">
                         Enviar Postulación
                     </button>
@@ -235,110 +222,27 @@ window.submitTenderBid = async function (id) {
     const t = window.tenders.find(item => item.id === id);
     if (!t) return;
 
-    const bid = document.getElementById('bid-amount').value;
-    if (!bid || bid <= 0) {
-        alert('Por favor, ingresa un monto válido.');
-        return;
-    }
-
     try {
         const response = await fetch(`/api/work-orders/${id}/apply`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': window.getCsrfToken()
-            },
-            body: JSON.stringify({ bid_amount: bid })
+            }
         });
 
+        if (!response.ok) throw new Error('Error al enviar propuesta');
+
         t.applied = true;
-        t.applied_bid = parseInt(bid);
         window.showNotification(`Postulación enviada exitosamente para la licitación #${id}`);
         window.selectTender(id);
         window.loadTendersList();
+        window.updateCompanyStats();
 
     } catch (err) {
         console.error("Error al enviar postulación:", err);
-        t.applied = true;
-        t.applied_bid = parseInt(bid);
-        window.showNotification(`Postulación enviada exitosamente para la licitación #${id}`);
-        window.selectTender(id);
-        window.loadTendersList();
     }
 };
-
-
-// --- Renderizar Pagos (Facturación de la Empresa) ---
-window.loadCompanyPaymentsList = function () {
-    const container = document.getElementById('company-payments-list-container');
-    if (!container) return;
-    container.innerHTML = '';
-
-    const completed = window.companyJobs.filter(j => j.work_status === 'Finalizado');
-
-    if (completed.length === 0) {
-        container.innerHTML = '<div class="empty-state-panel" style="padding: 20px;"><p>No tienes cobros registrados.</p></div>';
-        return;
-    }
-
-    completed.forEach(j => {
-        const card = document.createElement('div');
-        card.className = `list-item-card ${window.selectedPaymentId === j.id ? 'active' : ''}`;
-        card.onclick = () => window.selectCompanyPayment(j.id);
-
-        const isPaid = j.payment_status === 'Pagado';
-        const badgeColor = isPaid ? '#22c55e' : '#ef4444';
-        const badgeLabel = isPaid ? 'VERIFICADO PAGADO' : 'PENDIENTE DE CERTIFICACIÓN';
-
-        card.innerHTML = `
-            <div class="list-item-header">
-                <span class="list-item-id">Cobro #${j.id}</span>
-                <span class="badge-status" style="background-color: ${badgeColor}20; color: ${badgeColor}; border: 1px solid ${badgeColor};">${badgeLabel}</span>
-            </div>
-            <div class="list-item-title">${j.task_description}</div>
-            <div class="list-item-subtitle" style="color: var(--admin-accent); font-weight: bold;">$${j.cost || '45,000'}</div>
-        `;
-        container.appendChild(card);
-    });
-};
-
-window.selectCompanyPayment = function (id) {
-    window.selectedPaymentId = id;
-    window.loadCompanyPaymentsList();
-
-    const j = window.companyJobs.find(item => item.id === id);
-    const panel = document.getElementById('company-payment-detail-panel');
-    if (!j || !panel) return;
-
-    const isPaid = j.payment_status === 'Pagado';
-
-    panel.innerHTML = `
-        <div class="detail-header-panel">
-            <div>
-                <h3 class="detail-title">Estado de Pago Comunal</h3>
-                <p class="detail-subtitle">Servicio de Contratación #${j.id}</p>
-            </div>
-            <span class="badge-status" style="background-color: ${isPaid ? '#22c55e' : '#ef4444'}20; color: ${isPaid ? '#22c55e' : '#ef4444'}; border: 1px solid ${isPaid ? '#22c55e' : '#ef4444'}; font-size: 1rem; padding: 6px 12px;">${isPaid ? 'PAGADO' : 'PENDIENTE DE REGISTRO'}</span>
-        </div>
-
-        <div class="detail-section">
-            <p class="detail-label">Monto Liquidado</p>
-            <p class="detail-value" style="font-size: 1.4rem; color: var(--admin-accent); font-weight: bold;">$${j.cost || '45,000'}</p>
-        </div>
-
-        <div class="detail-section">
-            <p class="detail-label">Servicio Ejecutado</p>
-            <p class="detail-value">${j.task_description}</p>
-        </div>
-
-        <div class="detail-box" style="margin-top: 25px; border-left: 4px solid ${isPaid ? '#22c55e' : '#ef4444'}; padding: 15px; background: rgba(0,0,0,0.02);">
-            <p style="margin: 0; font-size: 0.95rem; color: var(--admin-text-primary);">
-                ${isPaid ? 'El pago ha sido verificado e ingresado a la cuenta bancaria de tu empresa por la Tesorería de la Comuna 13.' : 'La Comuna está procesando la certificación técnica de la obra. El inspector verificará el pago a la brevedad.'}
-            </p>
-        </div>
-    `;
-};
-
 
 // --- Utilidades ---
 window.showNotification = function (text) {
@@ -353,121 +257,26 @@ window.showNotification = function (text) {
     }
 };
 
-
-// --- Cargar Datos del Servidor o Fallback ---
+// --- Cargar Datos del Servidor ---
 window.loadCompanyData = async function () {
     try {
         const response = await fetch('/api/company/dashboard-data');
         if (response.ok) {
             const data = await response.json();
-            window.companyJobs = data.jobs;
-            window.tenders = data.tenders;
+            window.companyJobs = data.jobs || [];
+            window.tenders = data.tenders || [];
         } else {
-            window.companyJobs = [
-                {
-                    id: 101,
-                    task_description: 'Extracción de Jacarandá seco con raíces expuestas',
-                    work_status: 'Finalizado',
-                    payment_status: 'Pendiente',
-                    cost: 85000,
-                    execution_order: 1,
-                    scheduled_date: '2026-06-28',
-                    created_at: '2026-06-20'
-                },
-                {
-                    id: 104,
-                    task_description: 'Poda correctiva preventiva',
-                    work_status: 'Finalizado',
-                    payment_status: 'Pagado',
-                    cost: 120000,
-                    execution_order: 1,
-                    scheduled_date: '2026-06-25',
-                    created_at: '2026-06-18'
-                },
-                {
-                    id: 108,
-                    task_description: 'Mantenimiento preventivo en cazuela y riego',
-                    work_status: 'En Proceso',
-                    payment_status: 'Pendiente',
-                    cost: 45000,
-                    execution_order: 2,
-                    scheduled_date: '2026-07-02',
-                    created_at: '2026-06-28'
-                }
-            ];
-            
-            window.tenders = [
-                {
-                    id: 201,
-                    task_description: 'Licitación: Reforestación comunal de 50 ejemplares de ceibo',
-                    budget: 450000,
-                    location: 'Av. Libertador 4000',
-                    applied: false
-                },
-                {
-                    id: 202,
-                    task_description: 'Licitación: Desmonte de cazuelas rotas en calle Ciudad de la Paz',
-                    budget: 180000,
-                    location: 'Ciudad de la Paz 2500',
-                    applied: false
-                }
-            ];
+            window.companyJobs = [];
+            window.tenders = [];
         }
     } catch (err) {
-        window.companyJobs = [
-            {
-                id: 101,
-                task_description: 'Extracción de Jacarandá seco con raíces expuestas',
-                work_status: 'Finalizado',
-                payment_status: 'Pendiente',
-                cost: 85000,
-                execution_order: 1,
-                scheduled_date: '2026-06-28',
-                created_at: '2026-06-20'
-            },
-            {
-                id: 104,
-                task_description: 'Poda correctiva preventiva',
-                work_status: 'Finalizado',
-                payment_status: 'Pagado',
-                cost: 120000,
-                execution_order: 1,
-                scheduled_date: '2026-06-25',
-                created_at: '2026-06-18'
-            },
-            {
-                id: 108,
-                task_description: 'Mantenimiento preventivo en cazuela y riego',
-                work_status: 'En Proceso',
-                payment_status: 'Pendiente',
-                cost: 45000,
-                execution_order: 2,
-                scheduled_date: '2026-07-02',
-                created_at: '2026-06-28'
-            }
-        ];
-        
-        window.tenders = [
-            {
-                id: 201,
-                task_description: 'Licitación: Reforestación comunal de 50 ejemplares de ceibo',
-                budget: 450000,
-                location: 'Av. Libertador 4000',
-                applied: false
-            },
-            {
-                id: 202,
-                task_description: 'Licitación: Desmonte de cazuelas rotas en calle Ciudad de la Paz',
-                budget: 180000,
-                location: 'Ciudad de la Paz 2500',
-                applied: false
-            }
-        ];
+        console.error("Error al cargar datos de empresa:", err);
+        window.companyJobs = [];
+        window.tenders = [];
     }
 
     window.loadCompanyJobsList();
     window.loadTendersList();
-    window.loadCompanyPaymentsList();
     window.updateCompanyStats();
 };
 

@@ -77,29 +77,7 @@
                     <input type="text" id="company-address" class="form-control" placeholder="Ej: Av. del Libertador 4500, CABA" required>
                 </div>
 
-                <!-- Especialidades -->
-                <div class="form-group" style="margin-top: 25px;">
-                    <label style="display: block; margin-bottom: 10px; font-weight: bold;">Especialidad / Servicios Disponibles</label>
-                    
-                    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
-                        <label style="display: flex; align-items: center; gap: 10px; font-weight: normal; cursor: pointer;">
-                            <input type="checkbox" name="services" value="Poda y Balanceo" style="width: 18px; height: 18px;">
-                            <span>Poda Correctiva y Balanceo de Copa</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px; font-weight: normal; cursor: pointer;">
-                            <input type="checkbox" name="services" value="Extracción" style="width: 18px; height: 18px;">
-                            <span>Extracción de Árboles Secos / Destoconado</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px; font-weight: normal; cursor: pointer;">
-                            <input type="checkbox" name="services" value="Cazuelas" style="width: 18px; height: 18px;">
-                            <span>Saneamiento, Ensanche y Reparación de Cazuelas</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px; font-weight: normal; cursor: pointer;">
-                            <input type="checkbox" name="services" value="Tratamientos" style="width: 18px; height: 18px;">
-                            <span>Tratamientos Fitosanitarios contra Plagas</span>
-                        </label>
-                    </div>
-                </div>
+
 
                 <!-- Acciones del Formulario -->
                 <div class="form-actions" style="margin-top: 35px; border-top: 1px solid rgba(0,0,0,0.08); padding-top: 25px; display: flex; justify-content: flex-end;">
@@ -111,116 +89,8 @@
             </form>
         </section>
     </main>
+@endsection
 
-    <style>
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    </style>
-
-    <script>
-        let cuitVerified = false;
-
-        async function verifyCuit() {
-            const cuitInput = document.getElementById('company-cuit');
-            const cuitVal = cuitInput.value.trim();
-            const msgEl = document.getElementById('cuit-validation-msg');
-            const nameInput = document.getElementById('company-name');
-            const submitBtn = document.getElementById('btn-submit-postulation');
-            const btnText = document.getElementById('btn-verify-text');
-            const btnSpinner = document.getElementById('btn-verify-spinner');
-
-            if (!cuitVal) {
-                msgEl.style.display = 'block';
-                msgEl.style.color = '#ef4444';
-                msgEl.innerHTML = 'Por favor, ingrese un CUIT.';
-                return;
-            }
-
-            // Simple CUIT format validation
-            const cleanCuit = cuitVal.replace(/[^0-9]/g, '');
-            if (cleanCuit.length !== 11) {
-                msgEl.style.display = 'block';
-                msgEl.style.color = '#ef4444';
-                msgEl.innerHTML = 'CUIT inválido. Debe contener 11 dígitos.';
-                return;
-            }
-
-            // UI feedback
-            btnText.style.display = 'none';
-            btnSpinner.style.display = 'inline-block';
-            msgEl.style.display = 'none';
-
-            // Simulate API call to AFIP
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            btnSpinner.style.display = 'none';
-            btnText.style.display = 'inline-block';
-
-            // Mock check results
-            cuitVerified = true;
-            msgEl.style.display = 'block';
-            msgEl.style.color = '#22c55e';
-            msgEl.innerHTML = '✓ CUIT verificado en AFIP y Registro Comunal. Estado: Activo.';
-            
-            // Auto fill reason / company name based on cuit ending or defaults
-            nameInput.disabled = false;
-            if (cleanCuit.endsWith('3')) {
-                nameInput.value = 'Mantenimiento y Espacios Verdes del Norte';
-            } else if (cleanCuit.endsWith('7')) {
-                nameInput.value = 'Arbolado Urbano Rioplatense S.A.';
-            } else {
-                nameInput.value = 'Servicios Forestales ' + cleanCuit.substring(2, 6) + ' S.R.L.';
-            }
-            
-            cuitInput.disabled = true;
-            document.getElementById('btn-verify-cuit').disabled = true;
-            document.getElementById('btn-verify-cuit').style.opacity = '0.7';
-            document.getElementById('btn-verify-cuit').style.cursor = 'default';
-            submitBtn.disabled = false;
-            submitBtn.style.cursor = 'pointer';
-            submitBtn.style.opacity = '1';
-        }
-
-        function handlePostulationSubmit(event) {
-            event.preventDefault();
-            if (!cuitVerified) return;
-
-            const name = document.getElementById('company-name').value;
-            const cuit = document.getElementById('company-cuit').value;
-            const email = document.getElementById('company-email').value;
-            const phone = document.getElementById('company-phone').value;
-            const address = document.getElementById('company-address').value;
-
-            // Get selected services
-            const checkedServices = [];
-            const checkboxes = document.querySelectorAll('input[name="services"]:checked');
-            checkboxes.forEach(cb => checkedServices.push(cb.value));
-
-            // Create new company application object
-            const newApp = {
-                id: Date.now(),
-                company_name: name,
-                cuit: cuit,
-                contact_email: email,
-                phone: phone,
-                address: address,
-                services: checkedServices,
-                status: 'Pendiente',
-                total_expenses: 0,
-                work_orders: []
-            };
-
-            // Save to localStorage
-            let currentApps = JSON.parse(localStorage.getItem('company_applications') || '[]');
-            currentApps.push(newApp);
-            localStorage.setItem('company_applications', JSON.stringify(currentApps));
-
-            // Show success card
-            document.getElementById('company-postulation-form').style.display = 'none';
-            document.getElementById('postulacion-success-card').style.display = 'block';
-            document.getElementById('success-company-name').innerText = name;
-            document.getElementById('success-ref-id').innerText = 'REF-' + newApp.id;
-        }
-    </script>
+@section('scripts')
+    <script src="{{ asset('js/empresa/postulacion.js') }}"></script>
 @endsection

@@ -35,7 +35,6 @@ window.loadPaymentsList = function () {
             <div class="list-item-title">${w.task_description}</div>
             <div class="list-item-subtitle" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <span>Empresa: ${w.company ? w.company.company_name : 'No Asignada'}</span>
-                <strong style="color: var(--admin-accent); font-family: var(--font-display);">$${w.cost || '45,000'}</strong>
             </div>
         `;
         container.appendChild(card);
@@ -81,8 +80,8 @@ window.selectWorkOrderPayment = function (id) {
         <div class="detail-box" style="margin-top: 25px; border-left: 4px solid var(--admin-accent); padding: 15px; background: rgba(45, 122, 79, 0.03);">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <span style="font-size: 0.85rem; color: var(--admin-text-secondary); display: block; text-transform: uppercase;">Costo Total Homologado</span>
-                    <strong style="font-size: 1.8rem; color: var(--admin-text-primary); font-family: var(--font-display);">$${w.cost || '45,000'}</strong>
+                    <span style="font-size: 0.85rem; color: var(--admin-text-secondary); display: block; text-transform: uppercase;">Estado de Certificación de Pago</span>
+                    <strong style="font-size: 1.2rem; color: var(--admin-text-primary); font-family: var(--font-display);">${isPaid ? 'Pago Certificado' : 'Pendiente de Certificar'}</strong>
                 </div>
                 <div>
                     <button class="btn-primary" onclick="window.togglePaymentStatus(${w.id})" style="background-color: ${isPaid ? '#ef4444' : '#22c55e'}; border-color: ${isPaid ? '#ef4444' : '#22c55e'}; display: flex; align-items: center; gap: 8px;">
@@ -145,72 +144,11 @@ window.loadWorkOrdersFromServer = async function () {
             const result = await response.json();
             window.workOrders = result.data;
         } else {
-            window.workOrders = [
-                {
-                    id: 101,
-                    task_description: 'Extracción de Jacarandá seco con raíces expuestas',
-                    scheduled_date: '2026-06-28',
-                    work_status: 'Finalizado',
-                    payment_status: 'Pendiente',
-                    cost: '85000',
-                    company: { company_name: 'Mantenimiento Verde S.A.' },
-                    request: { tracking_code: 'REC-2026-004' }
-                },
-                {
-                    id: 102,
-                    task_description: 'Poda de despeje y balanceo de copa',
-                    scheduled_date: '2026-06-29',
-                    work_status: 'Finalizado',
-                    payment_status: 'Pagado',
-                    cost: '42000',
-                    company: { company_name: 'Logística Urbana Porteña' },
-                    request: { tracking_code: 'REC-2026-015' }
-                },
-                {
-                    id: 103,
-                    task_description: 'Saneamiento y fertilización foliar',
-                    scheduled_date: '2026-06-30',
-                    work_status: 'Finalizado',
-                    payment_status: 'Pendiente',
-                    cost: '31000',
-                    company: { company_name: 'Veredas del Plata' },
-                    request: { tracking_code: 'REC-2026-022' }
-                }
-            ];
+            window.workOrders = [];
         }
     } catch (err) {
-        window.workOrders = [
-            {
-                id: 101,
-                task_description: 'Extracción de Jacarandá seco con raíces expuestas',
-                scheduled_date: '2026-06-28',
-                work_status: 'Finalizado',
-                payment_status: 'Pendiente',
-                cost: '85000',
-                company: { company_name: 'Mantenimiento Verde S.A.' },
-                request: { tracking_code: 'REC-2026-004' }
-            },
-            {
-                id: 102,
-                task_description: 'Poda de despeje y balanceo de copa',
-                scheduled_date: '2026-06-29',
-                work_status: 'Finalizado',
-                payment_status: 'Pagado',
-                cost: '42000',
-                company: { company_name: 'Logística Urbana Porteña' },
-                request: { tracking_code: 'REC-2026-015' }
-            },
-            {
-                id: 103,
-                task_description: 'Saneamiento y fertilización foliar',
-                scheduled_date: '2026-06-30',
-                work_status: 'Finalizado',
-                payment_status: 'Pendiente',
-                cost: '31000',
-                company: { company_name: 'Veredas del Plata' },
-                request: { tracking_code: 'REC-2026-022' }
-            }
-        ];
+        console.error("Error al cargar ordenes de trabajo:", err);
+        window.workOrders = [];
     }
     window.loadPaymentsList();
 };

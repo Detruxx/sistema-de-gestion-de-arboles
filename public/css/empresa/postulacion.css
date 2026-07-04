@@ -89,3 +89,16 @@
     transform: none;
     box-shadow: none;
 }
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.tramites-page-container .cuidados-header .hero-title {
+    color: var(--deep-canopy) !important;
+}
+
+.tramites-page-container .cuidados-header .section-subtitle {
+    color: var(--deep-canopy) !important;
+    opacity: 0.9;
+}
