@@ -150,26 +150,6 @@
             <div id="tree-map"></div>
             
         </div>
-
-        <!-- Template para el popup del mapa -->
-        <template id="tree-popup-template">
-            <div class="tree-popup">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                    <h4 class="tree-popup-title" style="margin: 0;"></h4>
-                    <span class="tree-popup-id" style="font-size: 0.8rem; background: #e0e0e0; padding: 2px 6px; border-radius: 4px; color: #333;"></span>
-                </div>
-                <p class="tree-popup-address">
-                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                        <circle cx="12" cy="10" r="3"></circle>
-                    </svg>
-                    <span class="address-text"></span>
-                </p>
-                <button class="btn-main-cta tree-popup-btn">
-                    Ver más datos
-                </button>
-            </div>
-        </template>
     </main>
 @endsection
 

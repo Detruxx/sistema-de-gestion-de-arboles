@@ -37,6 +37,10 @@ Route::get('/tramites/permisos', function () {
     return view('tramites.permisos');
 });
 
+Route::get('/postulacion-empresa', function () {
+    return view('empresa.postulacion');
+});
+
 // Rutas de Autenticación
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);

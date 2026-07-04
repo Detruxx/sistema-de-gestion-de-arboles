@@ -251,7 +251,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const template = document.getElementById('tree-popup-template');
                 let popupNode = document.createElement('div');
-
                 if (template) {
                     const clone = template.content.cloneNode(true);
                     clone.querySelector('.tree-popup-title').textContent = nombreEspeciePopup;
