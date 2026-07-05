@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Estilos del banner principal con carrusel de bienvenida (home.blade.php).
  */
 
@@ -74,7 +74,7 @@
     animation: fadeIn 1.8s ease-out forwards;
 }
 
-/* MÃ¡scara de recorte orgÃ¡nica en forma de hoja */
+/* Máscara de recorte orgánica en forma de hoja */
 .organic-image-mask {
     width: 100%;
     max-width: clamp(420px, 35vw, 550px);
@@ -101,7 +101,7 @@
     display: block;
 }
 
-/* AnimaciÃ³n sutil de cambio de forma orgÃ¡nica (con mayor dinamismo pero fluida) */
+/* Animación sutil de cambio de forma orgánica (con mayor dinamismo pero fluida) */
 @keyframes morphingShape {
     0% {
         border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
@@ -176,7 +176,7 @@
     }
     
     .hero-image-right {
-        order: -1; /* Muestra la imagen arriba en mÃ³viles */
+        order: -1; /* Muestra la imagen arriba en móviles */
     }
     
     .organic-image-mask {
