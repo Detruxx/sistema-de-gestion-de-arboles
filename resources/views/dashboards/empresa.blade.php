@@ -35,11 +35,12 @@
                 </svg>
                 Trabajos Asignados
             </button>
-            <button class="sidebar-btn" onclick="showModule('postulaciones')" id="menu-postulaciones">
+            <button class="sidebar-btn" onclick="showModule('pagos')" id="menu-pagos">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                    <line x1="12" y1="18" x2="12" y2="18.01"></line>
                 </svg>
-                Postulación a Trabajos
+                Validación de Pagos
             </button>
         </div>
         
@@ -89,11 +90,14 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon stat-icon-warning">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                            <line x1="12" y1="18" x2="12" y2="18.01"></line>
+                        </svg>
                     </div>
                     <div class="stat-info">
-                        <h4>Licitaciones Disponibles</h4>
-                        <p id="company-stat-tenders">...</p>
+                        <h4>Pagos Pendientes</h4>
+                        <p id="company-stat-unpaid">...</p>
                     </div>
                 </div>
             </div>
@@ -149,27 +153,28 @@
             </div>
         </section>
 
-        <!-- MODULE: POSTULACION A TRABAJOS (Licitaciones) -->
-        <section id="module-postulaciones" class="dashboard-module">
+        <!-- MODULE: VALIDACION DE PAGOS -->
+        <section id="module-pagos" class="dashboard-module">
             <div class="admin-header-section">
                 <div>
-                    <h2>Postulaciones y Licitaciones Abiertas</h2>
-                    <p>Postúlate para realizar intervenciones urbanas publicadas por la Comuna.</p>
+                    <h2>Validación y Estado de Pagos</h2>
+                    <p>Verifica el estado de facturación y cobros de tus servicios finalizados.</p>
                 </div>
             </div>
 
             <div class="split-layout">
                 <div class="list-panel">
-                    <div class="items-list" id="tenders-list-container">
+                    <div class="items-list" id="company-payments-list-container">
                         <!-- Loaded via JS -->
                     </div>
                 </div>
-                <div class="detail-panel" id="tender-detail-panel">
+                <div class="detail-panel" id="company-payment-detail-panel">
                     <div class="empty-state-panel">
                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-state-icon">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                            <line x1="12" y1="18" x2="12" y2="18.01"></line>
                         </svg>
-                        <p>Selecciona una licitación abierta para ver sus requerimientos técnicos e ingresar tu postulación.</p>
+                        <p>Selecciona un servicio finalizado para ver o validar su estado de pago.</p>
                     </div>
                 </div>
             </div>

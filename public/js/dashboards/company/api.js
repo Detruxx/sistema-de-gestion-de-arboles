@@ -21,14 +21,4 @@ export async function putJobStatus(id, newStatus) {
     return true;
 }
 
-export async function postTenderBid(id) {
-    const response = await fetch(`/api/work-orders/${id}/apply`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': window.getCsrfToken()
-        }
-    });
-    if (!response.ok) throw new Error('Error al enviar propuesta');
-    return true;
-}
+

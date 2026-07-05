@@ -47,13 +47,7 @@
                     </svg>
                     Inventario de Arbolado
                 </button>
-                <button class="sidebar-btn" onclick="showModule('pagos')" id="menu-pagos">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
-                        <line x1="12" y1="18" x2="12" y2="18.01"></line>
-                    </svg>
-                    Pagos y Gastos
-                </button>
+
             
             <h3 class="sidebar-menu-title mt-25">Herramientas</h3>
             <a href="/mapa" target="_blank" class="sidebar-btn sidebar-btn-link">
@@ -191,14 +185,9 @@
                         </div>
                     </div>
 
-                    <!-- Right Panel -->
-                    <div class="detail-panel" id="claim-detail-panel">
-                        <div class="empty-state-panel">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-state-icon">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                            </svg>
-                            <p>Selecciona un reclamo de la lista para ver el progreso, inspeccionar los detalles y enviar una respuesta.</p>
-                        </div>
+                    <!-- Right Panel (Mapa Interactivo) -->
+                    <div class="detail-panel" id="claim-map-panel" style="padding: 0; min-height: 520px; position: relative;">
+                        <div id="claims-map" style="width: 100%; height: 100%; min-height: 520px; border-radius: 12px; z-index: 1;"></div>
                     </div>
                 </div>
             </section>
@@ -268,32 +257,7 @@
                 </div>
             </section>
 
-            <!-- MODULE: PAGOS (Exclusivo Inspector) -->
-            <section id="module-pagos" class="dashboard-module">
-                <div class="admin-header-section">
-                    <div>
-                        <h2>Órdenes de Trabajo y Estado de Pagos</h2>
-                        <p>Monitoreo de tareas realizadas por empresas comunales, verificación de costos y confirmación de pagos.</p>
-                    </div>
-                </div>
 
-                <div class="split-layout">
-                    <div class="list-panel">
-                        <div class="items-list" id="payments-list-container">
-                            <!-- Loaded via JS -->
-                        </div>
-                    </div>
-                    <div class="detail-panel" id="payment-detail-panel">
-                        <div class="empty-state-panel">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-state-icon">
-                                <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
-                                <line x1="12" y1="18" x2="12" y2="18.01"></line>
-                            </svg>
-                            <p>Selecciona una orden de trabajo realizada para ver su desglose de costos y certificar su estado de pago.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
     </main>
 
@@ -379,7 +343,18 @@
         </form>
     </div>
 </div>
-
+<!-- Modal Detalle de Reclamo -->
+<div id="claim-detail-modal" class="admin-modal-overlay" style="display: none; z-index: 1050;">
+    <div class="admin-modal-container claim-modal-large" style="max-width: 90%; width: 1200px; height: 90vh; display: flex; flex-direction: column;">
+        <div class="admin-modal-header" style="padding: 15px 20px; border-bottom: 1px solid var(--admin-border);">
+            <h3 style="margin: 0; color: var(--admin-accent);">Detalle y Gestión de Reclamo</h3>
+            <button type="button" class="admin-modal-close" onclick="closeClaimDetailModal()" style="background: none; border: none; font-size: 1.8rem; line-height: 1; cursor: pointer; color: var(--admin-text-secondary);">&times;</button>
+        </div>
+        <div class="admin-modal-body" id="claim-modal-body-content" style="flex: 1; overflow-y: auto; padding: 20px;">
+            <!-- Cargado dinámicamente por JS -->
+        </div>
+    </div>
+</div>
 <!-- Notification Banner -->
 <div id="notification-banner" class="notification-banner" style="display: none;">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--admin-accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
