@@ -53,8 +53,8 @@
 @section('content')
     <main class="tramites-page-container">
         <!-- Top Vines & Leaves -->
-        <div class="login-bg-branches-left" style="background-image: url('{{ asset('img/vector_left.webp') }}'); position: absolute; top: 0; left: 0; width: 37.5%; height: 100%; background-size: cover; background-position: left center; background-repeat: no-repeat; z-index: 0; mix-blend-mode: multiply;"></div>
-        <div class="login-bg-branches-right" style="background-image: url('{{ asset('img/register_top_right.png') }}'); position: absolute; top: 0; right: 0; width: 37.5%; height: 100%; background-size: cover; background-position: right top; background-repeat: no-repeat; z-index: 0; mix-blend-mode: multiply;"></div>
+        <div class="login-bg-branches-left" style="background-image: url('{{ asset('img/user/vector_left.webp') }}'); position: absolute; top: 0; left: 0; width: 37.5%; height: 100%; background-size: cover; background-position: left center; background-repeat: no-repeat; z-index: 0; mix-blend-mode: multiply;"></div>
+        <div class="login-bg-branches-right" style="background-image: url('{{ asset('img/user/register_top_right.png') }}'); position: absolute; top: 0; right: 0; width: 37.5%; height: 100%; background-size: cover; background-position: right top; background-repeat: no-repeat; z-index: 0; mix-blend-mode: multiply;"></div>
         
         <section class="register-wrapper reveal" style="width: 100%; position: relative; z-index: 10;">
             <div class="contact-form">

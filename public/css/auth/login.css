@@ -1,4 +1,7 @@
-/* ================= Estilos de Login ================= */
+/**
+ * Estilos para la página de inicio de sesión (login.blade.php).
+ */
+
 .login-page-container {
     display: flex;
     align-items: center;

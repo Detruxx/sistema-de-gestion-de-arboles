@@ -193,6 +193,6 @@
 
 
 @section('scripts')
-    <script src="{{ asset('js/home/cuidados-canvas.js') }}"></script>
-    <script src="{{ asset('js/generales/modal.js') }}"></script>
+    <script src="{{ asset('js/pages/home/cuidados-canvas.js') }}"></script>
+    <script src="{{ asset('js/shared/modal.js') }}"></script>
 @endsection

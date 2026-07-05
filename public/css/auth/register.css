@@ -1,4 +1,7 @@
-/* ================= Estilos de Registro (Copiados de Mis Reclamos / Perfil) ================= */
+/**
+ * Estilos para la página de registro de nuevos usuarios (register.blade.php).
+ */
+
 .register-page-container {
     display: flex;
     align-items: center;

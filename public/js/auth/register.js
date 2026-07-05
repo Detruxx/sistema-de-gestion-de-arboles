@@ -1,3 +1,7 @@
+/**
+ * Contiene lógica de JavaScript para interactividad en la interfaz.
+ */
+
 // ================= LÓGICA DE REGISTRO =================
 
 document.addEventListener('DOMContentLoaded', () => {

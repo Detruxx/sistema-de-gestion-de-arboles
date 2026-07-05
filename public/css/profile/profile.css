@@ -1,4 +1,6 @@
-/* ================= Estilos para Secciones de Perfil y Mensajes ================= */
+/**
+ * Estilos de las páginas de perfil del usuario: mis reclamos, configuración, bandeja de entrada (profile/*.blade.php).
+ */
 
 .profile-page-container {
     padding: 140px 8% 80px 8%;

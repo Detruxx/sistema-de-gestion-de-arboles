@@ -1,3 +1,7 @@
+/**
+ * Contiene lógica de JavaScript para interactividad en la interfaz.
+ */
+
 // ================= LÓGICA DE LOGIN =================
 function switchRole(role) {
     const tabVecino = document.getElementById('tab-vecino');

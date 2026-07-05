@@ -14,7 +14,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
 
 Route::get('/mapa', function () {
@@ -26,19 +26,19 @@ Route::get('/cuidados', function () {
 });
 
 Route::get('/tramites/reclamos', function () {
-    return view('tramites.reclamos');
+    return view('forms.reclamos');
 });
 
 Route::get('/tramites/plantacion', function () {
-    return view('tramites.plantacion');
+    return view('forms.plantacion');
 });
 
 Route::get('/tramites/permisos', function () {
-    return view('tramites.permisos');
+    return view('forms.permisos');
 });
 
 Route::get('/postulacion-empresa', function () {
-    return view('empresa.postulacion');
+    return view('forms.postulacion');
 });
 
 // Rutas de Autenticación
@@ -101,20 +101,29 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/mensajes', [ContactController::class, 'index'])->name('contact.index');
         Route::post('/mensajes/{id}/read', [ContactController::class, 'markRead'])->name('contact.read');
 
-        // Dashboard de Admin/Inspector
-        Route::middleware(['role:admin,inspector'])->group(function () {
-            Route::get('/admin/dashboard', function () {
-                return view('admin.dashboard');
-            })->name('admin.dashboard');
-
-            // Ruta para crear órdenes de trabajo/tareas de empresas contratistas
-            Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
-
+        // Dashboard Exclusivo Admin
+        Route::middleware(['role:admin'])->group(function () {
+            Route::get('/dashboard/admin', function () {
+                return view('dashboards.admin');
+            })->name('dashboard.admin');
         });
 
-        //Panel Exclusivo para Empresas Tercerizadas
+        // Dashboard Exclusivo Inspector
+        Route::middleware(['role:inspector'])->group(function () {
+            Route::get('/dashboard/inspector', function () {
+                return view('dashboards.inspector');
+            })->name('dashboard.inspector');
+        });
+
+        // Acciones compartidas Admin/Inspector
+        Route::middleware(['role:admin,inspector'])->group(function () {
+            // Ruta para crear órdenes de trabajo/tareas de empresas contratistas
+            Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
+        });
+
+        // Dashboard Exclusivo Empresas Tercerizadas
         Route::middleware(['role:empresa'])->group(function () {
-            Route::get('/company/dashboard', [CompanyPanelController::class, 'index'])->name('company.dashboard');
+            Route::get('/dashboard/empresa', [CompanyPanelController::class, 'index'])->name('dashboard.empresa');
         });
     });
 });
@@ -136,3 +145,4 @@ Route::get('/api/request-statuses', [\App\Http\Controllers\RequestController::cl
 // Rutas para el Registro 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
+
