@@ -4,7 +4,7 @@
 
 import { getCsrfToken, showNotification } from '../shared/layout.js';
 import { state } from './state.js';
-import { fetchClaims, fetchRequestStatuses, fetchActiveCompanies, updateClaimStatus, assignCompanyToClaim } from './api.js';
+import { fetchClaims, fetchRequestStatuses, fetchActiveCompanies, updateClaimStatus } from './api.js';
 import { updateStats } from './ui.js';
 export function loadClaimsList () {
     const container = document.getElementById('claims-list-container');
@@ -401,6 +401,11 @@ export async function loadClaimsFromServer () {
 
 export async function loadActiveCompanies () {
     try {
+        // TODO: Backend Team - FALTA ENDPOINT '/api/admin/companies'
+        // Se requiere crear esta ruta en web.php o api.php y un método en CompanyController (ej. index)
+        // que devuelva el listado de todas las empresas. El JSON esperado es un array en la propiedad 'data'
+        // donde cada empresa tenga al menos los campos: { id, status } (y el resto de sus datos).
+        // Actualmente esto devuelve 404 porque la ruta no existe.
         const response = await fetch('/api/admin/companies');
         if (response.ok) {
             const data = await response.json();

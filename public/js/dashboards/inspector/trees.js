@@ -25,57 +25,81 @@ export function loadTreesList() {
     });
 };
 
-export function selectTree(id) {
+export async function selectTree(id) {
     state.selectedTreeId = id;
     loadTreesList();
 
-    const tree = state.trees.find(t => t.id === id);
     const panel = document.getElementById('tree-detail-panel');
+    if (!panel) return;
 
-    if (!tree || !panel) return;
+    panel.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--admin-text-secondary);">Cargando detalles técnicos del ejemplar...</div>';
 
-    panel.innerHTML = `
-        <div class="detail-header-panel">
-            <h3 class="detail-title">Ficha Técnica del Ejemplar</h3>
-            <p class="detail-subtitle">ID Árbol: <strong style="color:var(--admin-text-primary);">${tree.id}</strong></p>
-        </div>
+    try {
+        const response = await fetch(`/api/arboles/${id}`);
+        if (!response.ok) throw new Error('Error al cargar detalles');
+        const result = await response.json();
+        const tree = result.data;
+        
+        let estadoStr = 'Saludable';
+        if (Array.isArray(tree.vitality)) {
+            estadoStr = tree.vitality.join(', ');
+        } else if (tree.vitality) {
+            estadoStr = tree.vitality;
+        }
 
-        <div class="tree-detail-grid">
-            <div class="tree-detail-field">
-                <div class="tree-detail-field-label">Especie</div>
-                <div class="tree-detail-field-value">${tree.especie}</div>
-            </div>
-            <div class="tree-detail-field">
-                <div class="tree-detail-field-label">Ubicación / Calle</div>
-                <div class="tree-detail-field-value">${tree.calle}</div>
-            </div>
-            <div class="tree-detail-field">
-                <div class="tree-detail-field-label">Estado de Salud</div>
-                <div class="tree-detail-field-value" style="color: ${tree.estado.includes('Saludable') ? '#2ecc71' : '#f39c12'}">${tree.estado}</div>
-            </div>
-            <div class="tree-detail-field">
-                <div class="tree-detail-field-label">Altura Promedio</div>
-                <div class="tree-detail-field-value">${tree.altura}</div>
-            </div>
-            <div class="tree-detail-field">
-                <div class="tree-detail-field-label">Edad Estimada</div>
-                <div class="tree-detail-field-value">${tree.edad}</div>
-            </div>
-            <div class="tree-detail-field">
-                <div class="tree-detail-field-label">Circunferencia del Tronco</div>
-                <div class="tree-detail-field-value">${tree.circun}</div>
-            </div>
-        </div>
+        let especieStr = tree.specie ? tree.specie.common_name : 'Desconocida';
+        let calleStr = tree.street ? `${tree.street.street_name} ${tree.street.street_number}` : 'Sin ubicación';
+        
+        let colorEstado = '#2ecc71';
+        if (estadoStr.includes('Muerto') || estadoStr.includes('Urgente')) colorEstado = '#e74c3c';
+        else if (!estadoStr.includes('Saludable')) colorEstado = '#f39c12';
 
-        <div class="mt-25" style="display: flex; justify-content: flex-end;">
-            <a href="/mapa?id=${tree.id}" target="_blank" class="btn-primary sidebar-btn-link btn-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
-                </svg>
-                Localizar en el Mapa
-            </a>
-        </div>
-    `;
+        panel.innerHTML = `
+            <div class="detail-header-panel">
+                <h3 class="detail-title">Ficha Técnica del Ejemplar</h3>
+                <p class="detail-subtitle">ID Árbol: <strong style="color:var(--admin-text-primary);">${tree.id}</strong></p>
+            </div>
+
+            <div class="tree-detail-grid">
+                <div class="tree-detail-field">
+                    <div class="tree-detail-field-label">Especie</div>
+                    <div class="tree-detail-field-value">${especieStr}</div>
+                </div>
+                <div class="tree-detail-field">
+                    <div class="tree-detail-field-label">Ubicación / Calle</div>
+                    <div class="tree-detail-field-value">${calleStr}</div>
+                </div>
+                <div class="tree-detail-field">
+                    <div class="tree-detail-field-label">Estado de Salud</div>
+                    <div class="tree-detail-field-value" style="color: ${colorEstado}; font-weight: bold;">${estadoStr}</div>
+                </div>
+                <div class="tree-detail-field">
+                    <div class="tree-detail-field-label">Altura Promedio</div>
+                    <div class="tree-detail-field-value">${tree.height ? tree.height + ' m' : 'N/D'}</div>
+                </div>
+                <div class="tree-detail-field">
+                    <div class="tree-detail-field-label">Edad Estimada</div>
+                    <div class="tree-detail-field-value">${tree.years ? tree.years + ' años' : 'N/D'}</div>
+                </div>
+                <div class="tree-detail-field">
+                    <div class="tree-detail-field-label">Circunferencia del Tronco</div>
+                    <div class="tree-detail-field-value">${tree.dap ? tree.dap + ' cm' : 'N/D'}</div>
+                </div>
+            </div>
+
+            <div class="mt-25" style="display: flex; justify-content: flex-end;">
+                <a href="/mapa?id=${tree.id}" target="_blank" class="btn-primary sidebar-btn-link btn-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                    </svg>
+                    Localizar en el Mapa
+                </a>
+            </div>
+        `;
+    } catch (err) {
+        console.error(err);
+        panel.innerHTML = '<div style="padding: 20px; color: red;">Ocurrió un error al cargar los detalles del árbol.</div>';
+    }
 };
 
 export function filterTrees() {
@@ -117,11 +141,19 @@ export function filterTrees() {
 
 export async function loadTreesFromServer() {
     try {
-        const response = await fetch('/api/admin/arboles');
+        // Obtenemos los pines livianos para la lista (evita saturar memoria)
+        const response = await fetch('/api/arboles/pines');
         if (response.ok) {
             const result = await response.json();
             state.trees.length = 0;
-            result.data.forEach(t => state.trees.push(t));
+            result.data.forEach(t => {
+                state.trees.push({
+                    id: t.id,
+                    especie: t.specie ? t.specie.common_name : 'Desconocida',
+                    calle: t.street ? `${t.street.street_name} ${t.street.street_number}` : 'Sin calle',
+                    estado: 'Ver ficha' // Los pines no traen estado, se carga al hacer click
+                });
+            });
         }
     } catch (err) {
         console.error("Error al cargar árboles del servidor:", err);

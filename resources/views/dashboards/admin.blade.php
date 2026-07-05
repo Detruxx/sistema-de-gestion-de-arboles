@@ -15,7 +15,6 @@
             box-sizing: border-box !important;
         }
     </style>
-    <script type="module" src="{{ asset('js/dashboards/admin/main.js') }}"></script>
 
 @endsection
 @section('content')
@@ -256,105 +255,101 @@
 
     </main>
 
-<!-- Modal Registrar Nuevo Árbol -->
-<div id="create-tree-modal" class="admin-modal-overlay">
-    <div class="admin-modal-container">
-        <div class="admin-modal-header">
-            <h3>Registrar Nuevo Árbol</h3>
-            <button type="button" class="admin-modal-close" onclick="closeCreateTreeModal()">&times;</button>
+    <!-- Modal Registrar Nuevo Árbol -->
+    <div id="create-tree-modal" class="admin-modal-overlay">
+        <div class="admin-modal-container">
+            <div class="admin-modal-header">
+                <h3>Registrar Nuevo Árbol</h3>
+                <button type="button" class="admin-modal-close" onclick="closeCreateTreeModal()">&times;</button>
+            </div>
+            <form id="create-tree-form" onsubmit="submitCreateTree(event)">
+                <div class="admin-modal-body">
+                    <!-- Leaflet map to pick coordinates -->
+                    <div class="admin-form-group">
+                        <label>Selecciona la ubicación en el mapa (Arrastra o haz clic)</label>
+                        <div id="admin-tree-map-canvas" class="admin-tree-map"></div>
+                    </div>
+
+                    <div class="admin-form-row">
+                        <div class="admin-form-group">
+                            <label for="new-tree-lat">Latitud</label>
+                            <input type="number" step="any" id="new-tree-lat" required>
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="new-tree-lng">Longitud</label>
+                            <input type="number" step="any" id="new-tree-lng" required>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-row">
+                        <div class="admin-form-group">
+                            <label for="new-tree-calle">Calle</label>
+                            <input type="text" id="new-tree-calle" placeholder="Ej. Av. Cabildo" required>
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="new-tree-nro">Número</label>
+                            <input type="number" id="new-tree-nro" placeholder="Ej. 2950" required>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-row">
+                        <div class="admin-form-group">
+                            <label for="new-tree-especie">Especie</label>
+                            <select id="new-tree-especie" required>
+                                <option value="Jacarandá">Jacarandá</option>
+                                <option value="Ceibo">Ceibo</option>
+                                <option value="Fresno">Fresno</option>
+                                <option value="Palo Borracho">Palo Borracho</option>
+                                <option value="Tilo">Tilo</option>
+                                <option value="Liquidámbar">Liquidámbar</option>
+                            </select>
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="new-tree-estado">Estado de Salud</label>
+                            <select id="new-tree-estado" required>
+                                <option value="Saludable">Saludable</option>
+                                <option value="Enfermo">Enfermo</option>
+                                <option value="Dañado">Dañado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-row">
+                        <div class="admin-form-group">
+                            <label for="new-tree-altura">Altura (metros)</label>
+                            <input type="number" step="0.1" id="new-tree-altura" placeholder="Ej. 8.5" required>
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="new-tree-circunferencia">Circunferencia del Tronco (cm)</label>
+                            <input type="number" id="new-tree-circunferencia" placeholder="Ej. 95" required>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label for="new-tree-edad">Edad Estimada (años)</label>
+                        <input type="number" id="new-tree-edad" placeholder="Ej. 12" required>
+                    </div>
+                </div>
+                <div class="admin-modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeCreateTreeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Registrar Ejemplar</button>
+                </div>
+            </form>
         </div>
-        <form id="create-tree-form" onsubmit="submitCreateTree(event)">
-            <div class="admin-modal-body">
-                <!-- Leaflet map to pick coordinates -->
-                <div class="admin-form-group">
-                    <label>Selecciona la ubicación en el mapa (Arrastra o haz clic)</label>
-                    <div id="admin-tree-map-canvas" class="admin-tree-map"></div>
-                </div>
+    </div>
 
-                <div class="admin-form-row">
-                    <div class="admin-form-group">
-                        <label for="new-tree-lat">Latitud</label>
-                        <input type="number" step="any" id="new-tree-lat" required>
-                    </div>
-                    <div class="admin-form-group">
-                        <label for="new-tree-lng">Longitud</label>
-                        <input type="number" step="any" id="new-tree-lng" required>
-                    </div>
-                </div>
-
-                <div class="admin-form-row">
-                    <div class="admin-form-group">
-                        <label for="new-tree-calle">Calle</label>
-                        <input type="text" id="new-tree-calle" placeholder="Ej. Av. Cabildo" required>
-                    </div>
-                    <div class="admin-form-group">
-                        <label for="new-tree-nro">Número</label>
-                        <input type="number" id="new-tree-nro" placeholder="Ej. 2950" required>
-                    </div>
-                </div>
-
-                <div class="admin-form-row">
-                    <div class="admin-form-group">
-                        <label for="new-tree-especie">Especie</label>
-                        <select id="new-tree-especie" required>
-                            <option value="Jacarandá">Jacarandá</option>
-                            <option value="Ceibo">Ceibo</option>
-                            <option value="Fresno">Fresno</option>
-                            <option value="Palo Borracho">Palo Borracho</option>
-                            <option value="Tilo">Tilo</option>
-                            <option value="Liquidámbar">Liquidámbar</option>
-                        </select>
-                    </div>
-                    <div class="admin-form-group">
-                        <label for="new-tree-estado">Estado de Salud</label>
-                        <select id="new-tree-estado" required>
-                            <option value="Saludable">Saludable</option>
-                            <option value="Enfermo">Enfermo</option>
-                            <option value="Dañado">Dañado</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="admin-form-row">
-                    <div class="admin-form-group">
-                        <label for="new-tree-altura">Altura (metros)</label>
-                        <input type="number" step="0.1" id="new-tree-altura" placeholder="Ej. 8.5" required>
-                    </div>
-                    <div class="admin-form-group">
-                        <label for="new-tree-circunferencia">Circunferencia del Tronco (cm)</label>
-                        <input type="number" id="new-tree-circunferencia" placeholder="Ej. 95" required>
-                    </div>
-                </div>
-
-                <div class="admin-form-group">
-                    <label for="new-tree-edad">Edad Estimada (años)</label>
-                    <input type="number" id="new-tree-edad" placeholder="Ej. 12" required>
-                </div>
-            </div>
-            <div class="admin-modal-footer">
-                <button type="button" class="btn-secondary" onclick="closeCreateTreeModal()">Cancelar</button>
-                <button type="submit" class="btn-primary">Registrar Ejemplar</button>
-            </div>
-        </form>
+    <!-- Notification Banner -->
+    <div id="notification-banner" class="notification-banner" style="display: none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--admin-accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 8 12 12 16 14"></polyline>
+        </svg>
+        <span id="notification-text">Respuesta enviada con éxito.</span>
     </div>
 </div>
-
-<!-- Notification Banner -->
-<div id="notification-banner" class="notification-banner" style="display: none;">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--admin-accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <polyline points="12 8 12 12 16 14"></polyline>
-    </svg>
-    <span id="notification-text">Respuesta enviada con éxito.</span>
-</div>
-</div>
-    <script type="module" src="{{ asset('js/dashboards/admin/main.js') }}"></script>
-
 @endsection
 @section('footer')
     <!-- Se oculta el footer en el Panel de Administración para un estilo más limpio tipo dashboard -->
-    <script type="module" src="{{ asset('js/dashboards/admin/main.js') }}"></script>
-
 @endsection
 @section('scripts')
     <script>
@@ -362,7 +357,6 @@
     </script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script type="module" src="{{ asset('js/dashboards/admin/main.js') }}"></script>
-
 @endsection
 
 

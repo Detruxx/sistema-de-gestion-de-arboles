@@ -15,7 +15,6 @@
             box-sizing: border-box !important;
         }
     </style>
-    <script type="module" src="{{ asset('js/dashboards/inspector/main.js') }}"></script>
 
 @endsection
 @section('content')
@@ -397,20 +396,15 @@
     <span id="notification-text">Respuesta enviada con éxito.</span>
 </div>
 </div>
-    <script type="module" src="{{ asset('js/dashboards/inspector/main.js') }}"></script>
-
 @endsection
 @section('footer')
     <!-- Se oculta el footer en el Panel de Administración para un estilo más limpio tipo dashboard -->
-    <script type="module" src="{{ asset('js/dashboards/inspector/main.js') }}"></script>
-
 @endsection
 @section('scripts')
     <script>
         window.currentUserRole = "{{ auth()->user()->role }}";
     </script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-
     <script type="module" src="{{ asset('js/dashboards/inspector/main.js') }}"></script>
 
 @endsection
