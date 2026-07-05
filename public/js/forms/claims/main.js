@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapModal = document.getElementById('address-map-modal');
     const mapModalClose = document.getElementById('address-map-modal-close');
     const btnConfirmAddress = document.getElementById('btn-confirm-address');
-    
+
     const inputDireccion = document.getElementById('direccion');
     const inputArbolId = document.getElementById('arbol-id');
 
@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
             formData.append('address', inputDireccion ? inputDireccion.value.trim() : '');
             formData.append('description', document.getElementById('descripcion') ? document.getElementById('descripcion').value.trim() : '');
 
+            // Aca revisamos las imagenes que subio el usuario y revisamos si son validas
             const fileInput = document.getElementById('foto');
             if (fileInput && fileInput.files.length > 0) {
                 if (fileInput.files.length > 3) {
@@ -88,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 for (let i = 0; i < fileInput.files.length; i++) {
                     const file = fileInput.files[i];
-                    
+
                     // Validación de tamaño (Máx 10MB)
                     const maxSize = 10 * 1024 * 1024; // 10 MB
                     if (file.size > maxSize) {
@@ -100,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.heic'];
                     const fileName = file.name.toLowerCase();
                     const isValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
-                    
+
                     if (!isValidExtension) {
                         alert(`El archivo "${file.name}" no es válido. Sube únicamente imágenes (JPG, PNG, WEBP).`);
                         return;
@@ -144,7 +145,7 @@ window.trackComplaint = async function () {
     try {
         const result = await fetchClaimDetails(inputVal);
         const claim = result.data;
-        
+
         const statusResult = await fetchRequestStatuses();
         const requestStatuses = statusResult.data;
 
