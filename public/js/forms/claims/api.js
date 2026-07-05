@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * API (Formulario Reclamos): Funciones de conexión al servidor para el envío de reclamos.
  */
 
 export async function fetchRequestTypes() {

@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Vista (Página Inicio): Lógica general de interactividad, scroll y animaciones para la página de bienvenida.
  */
 
 document.addEventListener('DOMContentLoaded', () => {

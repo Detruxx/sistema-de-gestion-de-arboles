@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Componente (Dashboard Administrador): Lógica para la gestión de empresas (listado, aprobación, etc.).
  */
 
 import { getCsrfToken, showNotification } from '../shared/layout.js';

@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Principal (Dashboard Administrador): Punto de entrada y configuración general para el panel de administración.
  */
 
 import { showModule, toggleAdminSidebar, getCsrfToken } from '../shared/layout.js';

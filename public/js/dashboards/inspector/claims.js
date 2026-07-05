@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Componente (Dashboard Inspector): Lógica para la visualización, revisión y auditoría de reclamos.
  */
 
 import { getCsrfToken, showNotification } from '../shared/layout.js';

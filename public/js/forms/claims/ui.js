@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Interfaz (Formulario Reclamos): Lógica de validación y control visual del formulario paso a paso de reclamos.
  */
 
 export function populateRequestTypes(types) {

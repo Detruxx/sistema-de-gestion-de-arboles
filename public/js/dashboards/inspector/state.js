@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Estado (Dashboard Inspector): Lógica para el manejo del estado global (store) del panel del inspector.
  */
 
 export const state = {

@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * API (Dashboard Inspector): Funciones de conexión al servidor y llamadas AJAX para el panel del inspector.
  */
 
 import { getCsrfToken } from '../shared/layout.js';

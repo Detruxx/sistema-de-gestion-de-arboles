@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Interfaz (Dashboard Empresa): Lógica de manipulación del DOM y renderizado de la interfaz para la empresa.
  */
 
 import { getCompanyJobs, getTenders } from './main.js';

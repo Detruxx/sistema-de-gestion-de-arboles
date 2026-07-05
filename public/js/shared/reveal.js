@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Componente Compartido: Lógica para manejar animaciones de aparición de elementos al hacer scroll (Scroll Reveal).
  */
 
 document.addEventListener('DOMContentLoaded', () => {

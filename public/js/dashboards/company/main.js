@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Principal (Dashboard Empresa): Punto de entrada y configuración general para el panel de la empresa contratista.
  */
 
 import { fetchCompanyData } from './api.js';

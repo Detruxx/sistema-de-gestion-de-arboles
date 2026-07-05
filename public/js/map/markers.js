@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Componente (Mapa Público): Lógica encargada de la generación, clusterización y renderizado de marcadores.
  */
 
 import { getMap } from './core.js';

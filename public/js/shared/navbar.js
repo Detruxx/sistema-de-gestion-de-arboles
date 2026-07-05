@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Componente Compartido: Lógica para la barra de navegación (menú responsive, efectos al hacer scroll).
  */
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Interfaz (Mapa Público): Lógica de manipulación de paneles flotantes y controles visuales dentro del mapa.
  */
 
 export function setupUI() {

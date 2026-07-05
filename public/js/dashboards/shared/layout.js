@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Layout Compartido: Lógica global y estructura de base compartida entre distintos paneles.
  */
 
 export function getCsrfToken() {

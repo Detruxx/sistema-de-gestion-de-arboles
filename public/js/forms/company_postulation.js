@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Formulario: Lógica de validación e interacción para el formulario de postulación de empresas.
  */
 
 let cuitVerified = false;

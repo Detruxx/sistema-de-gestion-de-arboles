@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Núcleo (Mapa Público): Configuración inicial y lógica base de inicialización del mapa y la capa principal.
  */
 
 // ================= LÓGICA DEL MAPA - CORE =================

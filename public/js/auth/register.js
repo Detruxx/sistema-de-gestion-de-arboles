@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Vista de Autenticación: Lógica e interacciones para el registro de usuarios.
  */
 
 // ================= LÓGICA DE REGISTRO =================

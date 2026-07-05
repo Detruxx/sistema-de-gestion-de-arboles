@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Componente (Dashboard Empresa): Lógica para visualizar y postularse a licitaciones abiertas.
  */
 
 import { postTenderBid } from './api.js';

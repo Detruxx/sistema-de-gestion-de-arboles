@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Componente (Dashboard Inspector): Lógica para el seguimiento y gestión de pagos o certificaciones.
  */
 
 import { state } from './state.js';

@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Principal (Formulario Reclamos): Punto de entrada y orquestador del flujo del formulario de reclamos.
  */
 
 import { fetchRequestTypes, submitClaim, fetchClaimDetails, fetchRequestStatuses } from './api.js';

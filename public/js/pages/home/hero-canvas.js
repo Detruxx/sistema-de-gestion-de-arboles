@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Vista (Página Inicio): Lógica y animación con Canvas API para la sección principal (Hero/Header).
  */
 
 document.addEventListener('DOMContentLoaded', () => {

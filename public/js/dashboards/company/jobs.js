@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Componente (Dashboard Empresa): Lógica para la gestión y actualización de estado de trabajos asignados.
  */
 
 import { putJobStatus } from './api.js';

@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Componente (Dashboard Inspector): Lógica para la renderización del mapa y geolocalización en el panel.
  */
 
 import { state } from './state.js';

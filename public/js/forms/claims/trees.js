@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Componente (Formulario Reclamos): Lógica para la selección de especies y características de árboles.
  */
 
 // Base de datos de árboles simulada para validación

@@ -1,8 +1,6 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Interfaz (Dashboard Inspector): Lógica de manipulación del DOM y renderizado de la interfaz para el inspector.
  */
-
-
 
 export function updateStats(claims, requestStatuses) {
     const elTotal = document.getElementById('stat-total-claims');

@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * API (Mapa Público): Funciones de conexión para obtener datos geolocalizados del servidor.
  */
 
 import { openSidebar } from './ui.js';

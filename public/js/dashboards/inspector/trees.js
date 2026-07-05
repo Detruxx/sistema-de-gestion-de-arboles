@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Componente (Dashboard Inspector): Lógica para la inspección, registro y seguimiento de árboles.
  */
 
 import { state } from './state.js';

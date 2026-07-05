@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Componente (Formulario Reclamos): Lógica para seleccionar y marcar la ubicación en el mapa al hacer un reclamo.
  */
 
 let selectorMap = null;

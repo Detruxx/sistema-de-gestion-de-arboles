@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Componente Compartido: Lógica global para instanciar, mostrar y ocultar modales a lo largo de la aplicación.
  */
 
 document.addEventListener('DOMContentLoaded', () => {

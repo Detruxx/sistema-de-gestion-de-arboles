@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * Principal (Mapa Público): Punto de entrada y orquestador general del mapa público.
  */
 
 import { initMap, getMap } from './core.js';

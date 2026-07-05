@@ -1,5 +1,5 @@
 /**
- * Contiene lógica de JavaScript para interactividad en la interfaz.
+ * API (Dashboard Empresa): Funciones de conexión al servidor y llamadas AJAX para el panel de la empresa contratista.
  */
 
 export async function fetchCompanyData() {
