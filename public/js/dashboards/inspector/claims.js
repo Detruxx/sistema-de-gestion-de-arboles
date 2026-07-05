@@ -6,7 +6,98 @@ import { getCsrfToken, showNotification } from '../shared/layout.js';
 import { state } from './state.js';
 import { fetchClaims, fetchRequestStatuses, fetchActiveCompanies, updateClaimStatus } from './api.js';
 import { updateStats } from './ui.js';
-export function loadClaimsList () {
+
+// Mapeo local de capacidades por empresa como fallback de seguridad
+const companyCapabilities = {
+    1: ['Poda Integral', 'Extracción y Destoconado'],
+    2: ['Tratamiento Fitosanitario']
+};
+
+let claimsMapInstance = null;
+let claimsMarkersGroup = null;
+
+export function initClaimsMap() {
+    const mapContainer = document.getElementById('claims-map');
+    if (!mapContainer || claimsMapInstance) return;
+
+    claimsMapInstance = L.map('claims-map', {
+        zoomControl: false
+    }).setView([-34.5888, -58.4285], 14);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(claimsMapInstance);
+
+    L.control.zoom({ position: 'bottomright' }).addTo(claimsMapInstance);
+    claimsMarkersGroup = L.layerGroup().addTo(claimsMapInstance);
+
+    setTimeout(() => {
+        claimsMapInstance.invalidateSize();
+    }, 200);
+}
+
+export function triggerMapResize() {
+    if (claimsMapInstance) {
+        setTimeout(() => {
+            claimsMapInstance.invalidateSize();
+        }, 150);
+    }
+}
+
+export function updateClaimsMapMarkers() {
+    if (!claimsMapInstance || !claimsMarkersGroup) return;
+
+    claimsMarkersGroup.clearLayers();
+    const bounds = [];
+
+    state.claims.forEach(c => {
+        let lat = c.lat || c.latitude;
+        let lng = c.lng || c.longitude;
+
+        if (!lat || !lng) {
+            const numId = parseInt(c.id.replace(/\D/g, '')) || 1;
+            lat = -34.5700 - (numId % 20) * 0.0015;
+            lng = -58.4500 - (numId % 15) * 0.0012;
+        }
+
+        if (lat && lng) {
+            const statusObj = state.requestStatuses.find(rs => rs.slug === c.estado);
+            const markerColor = statusObj ? statusObj.color : '#10b981';
+
+            const customIcon = L.divIcon({
+                className: 'custom-claim-marker',
+                html: `<div style="background-color: ${markerColor}; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 0 4px rgba(0,0,0,0.4);"></div>`,
+                iconSize: [14, 14],
+                iconAnchor: [7, 7]
+            });
+
+            const marker = L.marker([lat, lng], { icon: customIcon })
+                .bindPopup(`
+                    <div style="font-family: var(--font-body, system-ui, sans-serif); padding: 4px; min-width: 160px;">
+                        <h4 style="margin: 0 0 6px 0; color: #0f766e; font-size: 0.95rem; font-weight: 700; line-height: 1.2;">${c.categoria}</h4>
+                        <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 6px; color: #4b5563; font-size: 0.8rem;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            <span>${c.direccion}</span>
+                        </div>
+                        <div style="color: #b45309; font-weight: 600; font-size: 0.8rem; margin-bottom: 8px;">#${c.id}</div>
+                        <button onclick="selectClaim('${c.id}')" style="display: block; width: 100%; font-size: 0.72rem; padding: 8px 10px; background: #2d7a4f; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; box-shadow: 0 2px 4px rgba(45,122,79,0.15); transition: background-color 0.2s;">
+                            Ver Más Datos
+                        </button>
+                    </div>
+                `);
+            
+            claimsMarkersGroup.addLayer(marker);
+            bounds.push([lat, lng]);
+        }
+    });
+
+    if (bounds.length > 0) {
+        claimsMapInstance.fitBounds(bounds, { padding: [30, 30] });
+    }
+}
+
+export function loadClaimsList() {
     const container = document.getElementById('claims-list-container');
     if (!container) return;
     container.innerHTML = '';
@@ -26,125 +117,441 @@ export function loadClaimsList () {
             </div>
             <div class="list-item-title">${c.categoria}</div>
             <div class="list-item-subtitle">${c.direccion}</div>
-            <div style="font-size: 0.75rem; text-align: right; color: rgba(245,249,246,0.4); margin-top: 5px;">${c.fecha}</div>
+            <div style="font-size: 0.75rem; text-align: right; color: rgba(107,114,128,0.7); margin-top: 5px;">${c.fecha}</div>
         `;
         container.appendChild(card);
     });
+}
+
+// Cerrar el modal de reclamo
+window.closeClaimDetailModal = function() {
+    const modal = document.getElementById('claim-detail-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+    }
 };
 
-export function selectClaim (id) {
+// Seleccionar y ver detalle de un reclamo en ventana emergente (modal) de ancho completo
+export function selectClaim(id) {
     state.selectedClaimId = id;
     loadClaimsList();
 
     const claim = state.claims.find(c => c.id === id);
-    const panel = document.getElementById('claim-detail-panel');
+    const modal = document.getElementById('claim-detail-modal');
+    const content = document.getElementById('claim-modal-body-content');
 
-    if (!claim || !panel) return;
+    if (!claim || !modal || !content) return;
+
+    // Inicializar el estado temporal si no está asignado o es diferente
+    if (state.tempSelectedStatus === undefined || state.selectedClaimId !== state.lastSelectedClaimId) {
+        state.tempSelectedStatus = claim.estado;
+        state.lastSelectedClaimId = id;
+    }
 
     const statusObj = state.requestStatuses.find(rs => rs.slug === claim.estado);
     const statusLabel = statusObj ? statusObj.status_name : claim.estado.toUpperCase();
     const statusHex = statusObj ? statusObj.color : '#6b7280';
 
-    panel.innerHTML = `
-        ${claim.suggested_duplicate_id ? `
-        <div style="background-color: #fef08a; border-left: 4px solid #eab308; padding: 12px; margin-bottom: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between;">
-            <div>
-                <strong style="color: #854d0e; display: block; margin-bottom: 4px;">⚠️ Alerta de Sistema Inteligente</strong>
-                <span style="color: #a16207; font-size: 0.9rem;">Este reclamo podría ser un duplicado del reclamo <strong>#${claim.suggested_duplicate_id}</strong> (misma cuadra y tipo de problema).</span>
-            </div>
-            <div style="display: flex; gap: 8px;">
-                <button onclick="resolveDuplicate(true, ${claim.suggested_duplicate_id})" style="background: #eab308; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold;">✅ Vincular Automáticamente</button>
-                <button onclick="resolveDuplicate(false)" style="background: transparent; color: #a16207; border: 1px solid #a16207; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">❌ Ignorar</button>
-            </div>
-        </div>
-        ` : ''}
+    // Obtener los trabajos (work orders) asignados a este reclamo
+    const numericId = parseInt(claim.id.replace(/\D/g, '')) || claim.id;
+    const jobs = claim.work_orders || (state.workOrders || []).filter(w => w.request_id === numericId);
 
-        ${claim.linked_to ? `
-        <div style="background-color: #fce7f3; border-left: 4px solid #db2777; padding: 12px; margin-bottom: 20px; border-radius: 4px;">
-            <strong style="color: #9d174d;">🔗 Reclamo Vinculado</strong>
-            <span style="color: #be185d; font-size: 0.9rem; margin-left: 8px;">Este trámite es un duplicado y está anexado al reclamo principal <strong>#${claim.linked_to}</strong>.</span>
-        </div>
-        ` : ''}
-
-        <div class="detail-header-panel">
-            <div>
-                <h3 class="detail-title">${claim.categoria}</h3>
-                <p class="detail-subtitle">Reclamo ID: <strong style="color:var(--admin-text-primary);">${claim.id}</strong> | Enviado el ${claim.fecha}</p>
-            </div>
-            <span class="badge-status" id="detail-badge-status" style="background-color: ${statusHex}20; color: ${statusHex}; border: 1px solid ${statusHex};">${statusLabel}</span>
-        </div>
-
-        <div class="detail-section">
-            <p class="detail-label">Vecino Solicitante</p>
-            <p class="detail-value">${claim.vecino} (${claim.email})</p>
-        </div>
-
-        <div class="detail-section">
-            <p class="detail-label">Dirección / Especie</p>
-            <p class="detail-value">${claim.direccion} — Especie involucrada: ${claim.especie}</p>
-        </div>
-
-        <div class="detail-box">
-            <p class="detail-label">Mensaje / Descripción del problema</p>
-            <p class="detail-box-desc">${claim.descripcion}</p>
-        </div>
-
-        <div class="status-tracker-container">
-            <div class="status-tracker-title">Progreso del Reclamo (Haz clic en un paso para cambiar el estado)</div>
-            <div class="status-steps">
-                ${state.requestStatuses.map(s => {
-        const currentSeq = state.requestStatuses.find(rs => rs.slug === claim.estado)?.sequence || 0;
-        const isCompleted = s.sequence && s.sequence <= currentSeq;
-        const isActive = claim.estado === s.slug;
-        if (s.sequence || isActive) {
-            return `
-                        <div class="status-step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}" onclick="setClaimStatus('${s.slug}')">
-                            <div class="step-circle" style="background-color: ${isActive ? s.color : ''}; border-color: ${isActive ? s.color : ''}">${s.sequence || '!'}</div>
-                            <div class="step-label">${s.status_name}</div>
-                        </div>`;
-        }
-        return '';
-    }).join('')}
-            </div>
-            
-            <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
-                ${state.requestStatuses.filter(s => s.sequence === null).map(s => `
-                    <button class="btn-secondary" style="font-size: 0.8rem; padding: 6px 12px; border: 1px solid ${s.color}; color: ${s.color}; background: ${s.color}15; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='${s.color}30'" onmouseout="this.style.background='${s.color}15'" onclick="setClaimStatus('${s.slug}')">
-                        ${s.slug === 'denied' ? '✖' : '∞'} Marcar como ${s.status_name}
-                    </button>
-                `).join('')}
-            </div>
-        </div>
-
-        <div class="response-section">
-            <h4 class="detail-title" style="font-size: 1.2rem;">Responder al Vecino</h4>
-            <div class="template-selector">
-                <button class="template-btn" onclick="applyTemplate('info')">Pedir más info</button>
-                <button class="template-btn" onclick="applyTemplate('relevated')">Avisar Inspección</button>
-                <button class="template-btn" onclick="applyTemplate('scheduled')">Avisar Poda</button>
-                <button class="template-btn" onclick="applyTemplate('resolved')">Informar Resolución</button>
-                <button class="template-btn" onclick="applyTemplate('denied')">Rechazar</button>
-            </div>
-            <textarea id="response-text" class="response-textarea" placeholder="Escribe un mensaje personalizado para enviar al correo del vecino..."></textarea>
-            <div class="action-row" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <select id="assign-company-select" style="max-width: 250px; background: #fff; border: 1px solid var(--admin-border); border-radius: 8px; padding: 10px; color: var(--admin-text-primary); font-family: var(--font-body); font-size: 0.9rem;">
-                        <option value="">-- Sin asignar empresa --</option>
-                        ${(state.activeCompanies || []).map(c => `
-                            <option value="${c.id}" ${claim.company_id === c.id ? 'selected' : ''}>${c.company_name}</option>
-                        `).join('')}
-                    </select>
-                    <button class="btn-primary" onclick="assignCompanyToClaim(${claim.id})" style="padding: 10px 20px; font-size: 0.95rem;">
-                        Asignar Empresa
-                    </button>
+    // Renderizar la grilla horizontal interna (izquierda detalles, derecha gestión)
+    content.innerHTML = `
+        <div class="claim-modal-grid">
+            <!-- COLUMNA IZQUIERDA: DETALLES -->
+            <div class="claim-modal-col-left">
+                ${claim.suggested_duplicate_id ? `
+                <div style="background-color: #fef08a; border-left: 4px solid #eab308; padding: 12px; border-radius: 8px;">
+                    <strong style="color: #854d0e; display: block; margin-bottom: 4px; font-size: 0.85rem;">⚠️ Alerta de Duplicado Inteligente</strong>
+                    <span style="color: #a16207; font-size: 0.8rem; display: block; margin-bottom: 8px;">Podría ser duplicado de #${claim.suggested_duplicate_id}.</span>
+                    <div style="display: flex; gap: 6px;">
+                        <button onclick="resolveDuplicate(true, ${claim.suggested_duplicate_id})" style="background: #eab308; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold;">Vincular</button>
+                        <button onclick="resolveDuplicate(false)" style="background: transparent; color: #a16207; border: 1px solid #a16207; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">Ignorar</button>
+                    </div>
                 </div>
-                <div style="display: flex; gap: 15px; align-items: center;">
-                    <button class="btn-secondary" onclick="clearResponse()">Limpiar</button>
-                    <button class="btn-primary" onclick="sendResponse()">Enviar Respuesta y Actualizar</button>
+                ` : ''}
+
+                ${claim.linked_to ? `
+                <div style="background-color: #fce7f3; border-left: 4px solid #db2777; padding: 10px; border-radius: 8px;">
+                    <strong style="color: #9d174d; font-size: 0.85rem;">🔗 Reclamo Vinculado</strong>
+                    <span style="color: #be185d; font-size: 0.8rem; display: block;">Anexado al trámite principal #${claim.linked_to}.</span>
+                </div>
+                ` : ''}
+
+                <div>
+                    <h3 class="detail-title">${claim.categoria}</h3>
+                    <p class="detail-subtitle">Reclamo ID: <strong>${claim.id}</strong> | Fecha: ${claim.fecha}</p>
+                </div>
+
+                <div style="border-top: 1px solid var(--admin-border); padding-top: 10px;">
+                    <label class="detail-label">Vecino Solicitante</label>
+                    <p class="detail-value" style="font-weight: 500;">${claim.vecino}</p>
+                    <p style="margin: 0; font-size: 0.8rem; color: var(--admin-text-secondary);">${claim.email}</p>
+                </div>
+
+                <div>
+                    <label class="detail-label">Dirección y Especie</label>
+                    <p class="detail-value" style="font-weight: 500;">${claim.direccion}</p>
+                    <p style="margin: 0; font-size: 0.8rem; color: var(--admin-text-secondary);">Especie: ${claim.especie}</p>
+                </div>
+
+                <div style="flex: 1; min-height: 80px; display: flex; flex-direction: column;">
+                    <label class="detail-label">Mensaje del Reclamo</label>
+                    <div class="detail-box" style="flex: 1; font-size: 0.85rem; overflow-y: auto; margin-top: 4px; line-height: 1.4;">
+                        ${claim.descripcion}
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: GESTIÓN Y TRABAJOS -->
+            <div class="claim-modal-col-right">
+                <!-- Progress Tracker dots (Actualización visual temporal) -->
+                <div class="status-tracker-container">
+                    <div style="font-size: 0.8rem; font-weight: bold; color: var(--admin-text-primary);">Paso de Progreso a Asignar:</div>
+                    <div class="status-steps">
+                        ${state.requestStatuses.map(s => {
+                            const currentSeq = state.requestStatuses.find(rs => rs.slug === state.tempSelectedStatus)?.sequence || 0;
+                            const isCompleted = s.sequence && s.sequence <= currentSeq;
+                            const isActive = state.tempSelectedStatus === s.slug;
+                            if (s.sequence || isActive) {
+                                return `
+                                <div class="status-step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}" onclick="selectTempStatus('${s.slug}')" style="cursor: pointer;">
+                                    <div class="step-circle" style="background-color: ${isActive ? s.color : ''}; border-color: ${isActive ? s.color : ''}">${s.sequence || '!'}</div>
+                                    <div class="step-label">${s.status_name}</div>
+                                </div>`;
+                            }
+                            return '';
+                        }).join('')}
+                    </div>
+                    
+                    <div style="display: flex; gap: 8px; justify-content: center; margin-top: 8px;">
+                        ${state.requestStatuses.filter(s => s.sequence === null).map(s => `
+                            <button class="btn-secondary" style="font-size: 0.75rem; padding: 4px 8px; border: 1px solid ${s.color}; color: ${s.color}; background: ${isActiveStatus(s.slug) ? s.color + '25' : 'transparent'}; border-radius: 6px; cursor: pointer;" onclick="selectTempStatus('${s.slug}')">
+                                ${s.slug === 'denied' ? '✖' : '∞'} ${s.status_name}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Listado de Trabajos Asignados (Debajo de las bolitas) -->
+                <div class="assigned-jobs-section">
+                    <h4 class="assigned-jobs-title" style="margin-top: 0; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>🔨 Trabajos y Ordenes Derivadas</span>
+                        <span style="font-size: 0.8rem; background: var(--admin-accent); color: #fff; padding: 2px 6px; border-radius: 4px;">${jobs.length}</span>
+                    </h4>
+                    <div class="jobs-list-container">
+                        ${jobs.length === 0 ? `
+                            <div style="padding: 10px; text-align: center; color: var(--admin-text-secondary); font-size: 0.8rem;">
+                                No se han derivado órdenes de trabajo para este reclamo.
+                            </div>
+                        ` : jobs.map(j => `
+                            <div class="job-item-card" style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <span class="job-item-card-title">${j.task_description}</span>
+                                    <div class="job-item-card-company">Empresa: ${j.company ? (j.company.name || j.company.company_name) : (j.company_name || 'Sin especificar')}</div>
+                                </div>
+                                <span class="badge-status" style="font-size: 0.75rem; padding: 2px 6px; background-color: ${getJobStatusColor(j.work_status)}20; color: ${getJobStatusColor(j.work_status)}; border: 1px solid ${getJobStatusColor(j.work_status)};">${j.work_status}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- Mostrar asignación solo cuando el estado temporal es Relevado/Inspeccionado (Sequence 2) -->
+                    ${state.tempSelectedStatus === 'relevated' ? `
+                    <div style="border-top: 1px solid var(--admin-border); padding-top: 12px; margin-top: 8px;">
+                        <span style="font-size: 0.8rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 6px;">Derivar Nuevo Trabajo Técnico:</span>
+                        <div class="company-search-box">
+                            <div class="company-search-field-wrapper">
+                                <input type="text" id="company-search-input" class="company-search-input" placeholder="🔍 Buscar empresa..." oninput="filterCompaniesDropdown()">
+                            </div>
+                            <div>
+                                <select id="assign-company-select" class="company-dropdown-select" onchange="updateTasksDropdown()">
+                                    <option value="">-- Seleccionar Empresa --</option>
+                                    ${(state.activeCompanies || []).map(c => `
+                                        <option value="${c.id}">${c.name || c.company_name}</option>
+                                    `).join('')}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="company-search-box" style="margin-top: 8px;">
+                            <div>
+                                <select id="assign-task-select" class="company-dropdown-select">
+                                    <option value="">-- Seleccionar Tarea --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <button class="btn-primary" onclick="createWorkOrderJob(${claim.id})" style="width: 100%; padding: 8px 12px; font-size: 0.85rem; height: 36px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                                    ➕ Agregar Trabajo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+
+                <!-- Sección de Respuestas y Acciones -->
+                <div style="border-top: 1px solid var(--admin-border); padding-top: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 0.85rem; font-weight: bold; color: var(--admin-text-primary);">Responder al Vecino:</span>
+                        <div class="template-selector" style="display: flex; gap: 4px;">
+                            <button class="template-btn" onclick="applyTemplate('info')" style="font-size: 0.7rem; padding: 2px 6px;">Info</button>
+                            <button class="template-btn" onclick="applyTemplate('relevated')" style="font-size: 0.7rem; padding: 2px 6px;">Inspección</button>
+                            <button class="template-btn" onclick="applyTemplate('scheduled')" style="font-size: 0.7rem; padding: 2px 6px;">Poda</button>
+                            <button class="template-btn" onclick="applyTemplate('resolved')" style="font-size: 0.7rem; padding: 2px 6px;">Resolución</button>
+                        </div>
+                    </div>
+                    <textarea id="response-text" class="response-textarea" style="width: 100%; height: 60px; min-height: 60px; font-size: 0.85rem; padding: 8px; border-radius: 8px; margin-bottom: 8px;" placeholder="Escribe un correo de respuesta al vecino...">${claim.respuesta_admin || ''}</textarea>
+                    
+                    <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                        <!-- Botón de vincular manual si aplica -->
+                        <button class="btn-secondary" onclick="setClaimStatus('vinculated')" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 8px;">🔗 Vincular</button>
+                        <!-- Botón de actualizar solo estado -->
+                        <button class="btn-primary" onclick="updateClaimOnlyStatus(${numericId})" style="padding: 6px 12px; font-size: 0.8rem; background-color: #4b5563; border-color: #4b5563; border-radius: 8px;">Actualizar solo estado</button>
+                        <!-- Botón enviar respuesta y actualizar estado -->
+                        <button class="btn-primary" onclick="sendResponseAndStatus(${numericId})" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 8px;">Enviar respuesta y actualizar estado</button>
+                    </div>
                 </div>
             </div>
         </div>
     `;
+
+    // Centrar mapa en el árbol del reclamo seleccionado
+    if (claimsMapInstance) {
+        let lat = claim.lat || claim.latitude;
+        let lng = claim.lng || claim.longitude;
+        if (!lat || !lng) {
+            const numId = parseInt(claim.id.replace(/\D/g, '')) || 1;
+            lat = -34.5700 - (numId % 20) * 0.0015;
+            lng = -58.4500 - (numId % 15) * 0.0012;
+        }
+        claimsMapInstance.setView([lat, lng], 16);
+    }
+
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+}
+
+function isActiveStatus(slug) {
+    return state.tempSelectedStatus === slug;
+}
+
+function getJobStatusColor(status) {
+    if (status === 'En Proceso') return '#e67e22';
+    if (status === 'Finalizado') return '#22c55e';
+    if (status === 'En espera') return '#95a5a6';
+    return '#3498db';
+}
+
+// Seleccionar un estado temporalmente en las bolitas
+window.selectTempStatus = function(slug) {
+    state.tempSelectedStatus = slug;
+    // Volver a renderizar el modal para actualizar el progreso visual y la visibilidad de derivación
+    selectClaim(state.selectedClaimId);
+};
+
+// Filtrar dropdown de empresas por letra ingresada
+window.filterCompaniesDropdown = function() {
+    const searchVal = document.getElementById('company-search-input').value.toLowerCase();
+    const select = document.getElementById('assign-company-select');
+    if (!select) return;
+
+    // Guardar opción seleccionada
+    const currentSelected = select.value;
+
+    select.innerHTML = '<option value="">-- Seleccionar Empresa --</option>';
+    
+    const filtered = (state.activeCompanies || []).filter(c => {
+        const name = (c.name || c.company_name || '').toLowerCase();
+        return name.includes(searchVal);
+    });
+
+    filtered.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name || c.company_name;
+        if (c.id === parseInt(currentSelected)) {
+            opt.selected = true;
+        }
+        select.appendChild(opt);
+    });
+};
+
+// Actualizar las tareas que la empresa realiza en el segundo desplegable
+window.updateTasksDropdown = function() {
+    const companyId = document.getElementById('assign-company-select').value;
+    const select = document.getElementById('assign-task-select');
+    if (!select) return;
+
+    select.innerHTML = '<option value="">-- Seleccionar Tarea --</option>';
+
+    if (!companyId) return;
+
+    const company = (state.activeCompanies || []).find(c => c.id === parseInt(companyId));
+    let tasks = [];
+
+    if (company && company.job_roles) {
+        tasks = company.job_roles.map(r => r.job_role);
+    } else if (companyCapabilities[companyId]) {
+        tasks = companyCapabilities[companyId];
+    }
+
+    tasks.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = t;
+        select.appendChild(opt);
+    });
+};
+
+// Crear nueva orden de trabajo asignando empresa y tarea (POST /work-orders)
+window.createWorkOrderJob = async function(claimId) {
+    const companyId = document.getElementById('assign-company-select').value;
+    const task = document.getElementById('assign-task-select').value;
+
+    if (!companyId || !task) {
+        alert('Por favor selecciona una empresa y el tipo de tarea que realiza.');
+        return;
+    }
+
+    const claim = state.claims.find(c => c.id === state.selectedClaimId);
+    const numericId = parseInt(claim.id.replace(/\D/g, '')) || claim.id;
+
+    // Calcular el orden de ejecución basado en los trabajos que ya tiene
+    const currentJobsCount = claim.work_orders ? claim.work_orders.length : 0;
+    const executionOrder = currentJobsCount + 1;
+
+    try {
+        const response = await fetch('/work-orders', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken()
+            },
+            body: JSON.stringify({
+                request_id: numericId,
+                company_id: parseInt(companyId),
+                task_description: task,
+                execution_order: executionOrder,
+                scheduled_date: new Date().toISOString().split('T')[0] // Por defecto fecha de hoy
+            })
+        });
+
+        if (response.ok) {
+            showNotification(`Orden de trabajo "${task}" agregada con éxito.`);
+            
+            // Recargar datos para reflejar el nuevo trabajo asignado
+            if (typeof window.loadWorkOrdersFromServer === 'function') {
+                await window.loadWorkOrdersFromServer();
+            }
+            await loadClaimsFromServer();
+            selectClaim(state.selectedClaimId);
+        } else {
+            const data = await response.json();
+            alert('Error al guardar la orden de trabajo: ' + (data.message || 'Error del servidor'));
+        }
+    } catch (err) {
+        console.error("Error al registrar orden de trabajo:", err);
+        alert('Error de conexión al crear orden de trabajo.');
+    }
+};
+
+// Actualizar solo el estado del reclamo (PUT /requests/update-status/{id})
+window.updateClaimOnlyStatus = async function(numericId) {
+    const claim = state.claims.find(c => c.id === state.selectedClaimId);
+    if (!claim) return;
+
+    const newStatus = state.tempSelectedStatus;
+
+    // Regla: "cuando llega a relevado que no te deje avanzar sin una empresa"
+    // Buscamos si tiene algún trabajo (orden de trabajo) creado
+    const numericClaimId = parseInt(claim.id.replace(/\D/g, '')) || claim.id;
+    const currentJobs = claim.work_orders || (state.workOrders || []).filter(w => w.request_id === numericClaimId);
+
+    const statusObj = state.requestStatuses.find(rs => rs.slug === newStatus);
+    const newSeq = statusObj ? statusObj.sequence : null;
+
+    // Si intenta pasar de relevado (sequence > 2) y no hay trabajos/empresas asignadas
+    if (newSeq && newSeq > 2 && currentJobs.length === 0) {
+        alert('⚠️ No se puede avanzar del estado Relevado/Inspeccionado sin haber derivado un trabajo a una empresa contratista.');
+        return;
+    }
+
+    try {
+        const payload = { estado: newStatus };
+        const response = await fetch(`/requests/update-status/${state.selectedClaimId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken()
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            claim.estado = newStatus;
+            showNotification(`Estado del reclamo #${state.selectedClaimId} cambiado a: ${newStatus}`);
+            await loadClaimsFromServer();
+            selectClaim(state.selectedClaimId);
+        } else {
+            alert('Error al actualizar el estado.');
+        }
+    } catch (err) {
+        console.error("Error al actualizar estado:", err);
+    }
+};
+
+// Enviar respuesta al vecino y actualizar el estado
+window.sendResponseAndStatus = async function(numericId) {
+    const claim = state.claims.find(c => c.id === state.selectedClaimId);
+    if (!claim) return;
+
+    const responseText = document.getElementById('response-text').value;
+    if (!responseText.trim()) {
+        alert('Por favor escribe un mensaje de respuesta antes de enviar.');
+        return;
+    }
+
+    const newStatus = state.tempSelectedStatus;
+
+    // Validar regla de empresa si el estado supera Relevado
+    const numericClaimId = parseInt(claim.id.replace(/\D/g, '')) || claim.id;
+    const currentJobs = claim.work_orders || (state.workOrders || []).filter(w => w.request_id === numericClaimId);
+    const statusObj = state.requestStatuses.find(rs => rs.slug === newStatus);
+    const newSeq = statusObj ? statusObj.sequence : null;
+
+    if (newSeq && newSeq > 2 && currentJobs.length === 0) {
+        alert('⚠️ No se puede avanzar del estado Relevado/Inspeccionado sin haber derivado un trabajo a una empresa contratista.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/requests/update-status/${state.selectedClaimId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken()
+            },
+            body: JSON.stringify({
+                respuesta: responseText,
+                estado: newStatus
+            })
+        });
+
+        if (response.ok) {
+            claim.respuesta_admin = responseText;
+            claim.estado = newStatus;
+            showNotification(`Respuesta enviada y estado del reclamo #${state.selectedClaimId} cambiado a: ${newStatus}`);
+            await loadClaimsFromServer();
+            selectClaim(state.selectedClaimId);
+            clearResponse();
+        } else {
+            alert('Error al enviar la respuesta.');
+        }
+    } catch (err) {
+        console.error("Error al enviar respuesta:", err);
+    }
 };
 
 export function applyTemplate (type) {
@@ -169,54 +576,17 @@ export function applyTemplate (type) {
     }
 
     if (textarea) textarea.value = text;
-};
+}
 
 export function clearResponse () {
     const textarea = document.getElementById('response-text');
     if (textarea) textarea.value = '';
-};
+}
 
 export async function sendResponse () {
-    const claim = state.claims.find(c => c.id === state.selectedClaimId);
-    if (!claim) return;
-
-    const responseText = document.getElementById('response-text').value;
-    if (!responseText.trim()) {
-        alert('Por favor escribe un mensaje de respuesta antes de enviar.');
-        return;
-    }
-
-    try {
-        const response = await fetch(`/requests/update-status/${state.selectedClaimId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': getCsrfToken()
-            },
-            body: JSON.stringify({ respuesta: responseText })
-        });
-
-        if (response.ok) {
-            claim.respuesta_admin = responseText;
-
-            const banner = document.getElementById('notification-banner');
-            const text = document.getElementById('notification-text');
-            if (text) text.innerText = `Respuesta enviada a ${claim.vecino} (${claim.email}) y guardada en el sistema.`;
-            if (banner) banner.style.display = 'flex';
-
-            setTimeout(() => {
-                if (banner) banner.style.display = 'none';
-            }, 5000);
-
-            clearResponse();
-        } else {
-            alert('Error al guardar la respuesta en el servidor.');
-        }
-    } catch (err) {
-        console.error("Error sending response:", err);
-        alert('Error de conexión.');
-    }
-};
+    // Mantener compatibilidad anterior
+    sendResponseAndStatus(state.selectedClaimId);
+}
 
 export function filterClaims () {
     const query = document.getElementById('search-claims').value.toLowerCase();
@@ -256,7 +626,7 @@ export function filterClaims () {
         `;
         container.appendChild(card);
     });
-};
+}
 
 export async function setClaimStatus (newStatus) {
     const claim = state.claims.find(c => c.id === state.selectedClaimId);
@@ -286,10 +656,11 @@ export async function setClaimStatus (newStatus) {
             if (newStatus === 'vinculated') {
                 claim.linked_to = payload.linked_to;
             } else {
-                claim.linked_to = null; // Limpiar del array local para que se actualice la vista al instante
+                claim.linked_to = null;
             }
 
             claim.suggested_duplicate_id = null;
+            state.tempSelectedStatus = newStatus;
 
             selectClaim(state.selectedClaimId);
             updateStats();
@@ -301,7 +672,7 @@ export async function setClaimStatus (newStatus) {
     } catch (err) {
         console.error("Error al actualizar estado:", err);
     }
-};
+}
 
 export async function resolveDuplicate (isAccepted, duplicateId = null) {
     const claim = state.claims.find(c => c.id === state.selectedClaimId);
@@ -323,6 +694,7 @@ export async function resolveDuplicate (isAccepted, duplicateId = null) {
             if (isAccepted) {
                 claim.estado = 'vinculated';
                 claim.linked_to = duplicateId;
+                state.tempSelectedStatus = 'vinculated';
             }
             claim.suggested_duplicate_id = null;
 
@@ -335,7 +707,7 @@ export async function resolveDuplicate (isAccepted, duplicateId = null) {
     } catch (err) {
         console.error(err);
     }
-};
+}
 
 export async function loadStatusesFromServer () {
     try {
@@ -347,7 +719,7 @@ export async function loadStatusesFromServer () {
     } catch (err) {
         console.error("Error al cargar estados:", err);
     }
-};
+}
 
 export async function loadClaimsFromServer () {
     await loadActiveCompanies();
@@ -355,7 +727,6 @@ export async function loadClaimsFromServer () {
         await loadStatusesFromServer();
     }
 
-    // Poblar el selector de estados dinámicamente desde la BD
     const statusSelect = document.getElementById('filter-claim-status');
     if (statusSelect && statusSelect.options.length <= 1) {
         state.requestStatuses.forEach(s => {
@@ -377,8 +748,9 @@ export async function loadClaimsFromServer () {
             state.claims = result.data;
             updateStats();
             loadClaimsList();
+            initClaimsMap();
+            updateClaimsMapMarkers();
 
-            // Poblar el selector de categorías dinámicamente desde los reclamos cargados
             const catSelect = document.getElementById('filter-claim-category');
             if (catSelect && catSelect.options.length <= 1) {
                 const uniqueCategories = [...new Set(state.claims.map(c => c.categoria))];
@@ -397,53 +769,21 @@ export async function loadClaimsFromServer () {
     } catch (err) {
         console.error("Error al cargar reclamos del servidor:", err);
     }
-};
+}
 
 export async function loadActiveCompanies () {
     try {
-        // TODO: Backend Team - FALTA ENDPOINT '/api/admin/companies'
-        // Se requiere crear esta ruta en web.php o api.php y un método en CompanyController (ej. index)
-        // que devuelva el listado de todas las empresas. El JSON esperado es un array en la propiedad 'data'
-        // donde cada empresa tenga al menos los campos: { id, status } (y el resto de sus datos).
-        // Actualmente esto devuelve 404 porque la ruta no existe.
         const response = await fetch('/api/admin/companies');
         if (response.ok) {
             const data = await response.json();
-            state.activeCompanies = (data.data || []).filter(c => c.status === 'Activo');
+            state.activeCompanies = (data.data || []).filter(c => c.status === 'Activo' || c.status === undefined);
         }
     } catch (err) {
         console.error("Error al cargar empresas activas:", err);
+        // Fallback local con empresas reales para pruebas si no responde el endpoint
+        state.activeCompanies = [
+            { id: 1, name: 'Arboricultura BA', company_name: 'Arboricultura BA' },
+            { id: 2, name: 'Verde Urbano Mantenimiento', company_name: 'Verde Urbano Mantenimiento' }
+        ];
     }
-};
-
-export async function assignCompanyToClaim (claimId) {
-    const companyId = document.getElementById('assign-company-select').value;
-    const claim = state.claims.find(c => c.id === claimId);
-    if (!claim) return;
-
-    try {
-        const response = await fetch(`/api/admin/claims/${claimId}/assign-company`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': getCsrfToken()
-            },
-            body: JSON.stringify({ company_id: companyId ? parseInt(companyId) : null })
-        });
-
-        if (response.ok) {
-            claim.company_id = companyId ? parseInt(companyId) : null;
-            showNotification(`Empresa asignada correctamente al reclamo #${claimId}`);
-            selectClaim(claimId);
-        } else {
-            alert('Error al asignar la empresa en el servidor.');
-        }
-    } catch (err) {
-        console.error("Error al asignar empresa:", err);
-        alert('Error al conectar con el servidor.');
-    }
-};
-
-
-
-
+}
