@@ -81,7 +81,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const fileInput = document.getElementById('foto');
             if (fileInput && fileInput.files.length > 0) {
-                formData.append('foto', fileInput.files[0]);
+                if (fileInput.files.length > 3) {
+                    alert('Solo se permite adjuntar un máximo de 3 fotos por reclamo.');
+                    return;
+                }
+
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    const file = fileInput.files[i];
+                    
+                    // Validación de tamaño (Máx 10MB)
+                    const maxSize = 10 * 1024 * 1024; // 10 MB
+                    if (file.size > maxSize) {
+                        alert(`La foto "${file.name}" supera el tamaño máximo permitido de 10MB.`);
+                        return;
+                    }
+
+                    // Lista blanca de extensiones de imagen permitidas
+                    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.heic'];
+                    const fileName = file.name.toLowerCase();
+                    const isValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+                    
+                    if (!isValidExtension) {
+                        alert(`El archivo "${file.name}" no es válido. Sube únicamente imágenes (JPG, PNG, WEBP).`);
+                        return;
+                    }
+
+                    // Se envía como un arreglo (foto[]) para que el backend lo reciba como array
+                    formData.append('foto[]', file);
+                }
             }
 
             try {

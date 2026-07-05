@@ -6,7 +6,7 @@
 @section('active-reclamos', 'active')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/forms/reclamos.css') }}?v={{ filemtime(public_path('css/forms/reclamos.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/forms/reclamos.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboards/dynamic-status.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 @endsection
@@ -94,10 +94,16 @@
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-paperclip"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
                                 <span>Seleccionar archivo</span>
                             </label>
-                            <input type="file" id="foto" accept="image/*" class="foto-input" style="display: none;" onchange="document.getElementById('foto-name').textContent = this.files[0] ? this.files[0].name : 'Ningún archivo seleccionado'">
+                            <input type="file" id="foto" accept="image/*" multiple class="foto-input" style="display: none;" onchange="
+                                const count = this.files.length;
+                                const label = document.getElementById('foto-name');
+                                if(count === 0) label.textContent = 'Ningún archivo seleccionado';
+                                else if(count === 1) label.textContent = this.files[0].name;
+                                else label.textContent = count + ' archivos seleccionados (Máx 3)';
+                            ">
                             <span class="file-name" id="foto-name">Ningún archivo seleccionado</span>
                         </div>
-                        <small class="foto-help-text">Formatos soportados: JPG, PNG. Tamaño máximo: 5MB.</small>
+                        <small class="foto-help-text">Formatos: JPG, PNG, WEBP. Hasta 3 fotos (Máx 10MB c/u).</small>
                     </div>
 
                     <div class="form-actions">

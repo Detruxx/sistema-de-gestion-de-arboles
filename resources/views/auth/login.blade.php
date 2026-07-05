@@ -4,22 +4,7 @@
 @section('navbar-class', 'scrolled')
 @section('active-login', 'active')
 @section('styles')
-    <style>
-        @media (max-width: 768px) {
-            .login-bg-branches-left, .login-bg-branches-right {
-                width: 100% !important;
-                opacity: 0.08 !important; /* Marca de agua sutil en mobile */
-            }
-            .login-bg-branches-left {
-                background-position: top center !important;
-                background-size: cover !important;
-            }
-            .login-bg-branches-right {
-                background-position: bottom center !important;
-                background-size: cover !important;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/auth/login.css') }}">
 @endsection
 
 @section('content')

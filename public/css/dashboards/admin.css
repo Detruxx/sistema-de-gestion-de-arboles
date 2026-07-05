@@ -975,3 +975,9 @@
         gap: 15px;
     }
 }
+/* Garantizar matemáticamente la misma altura para inputs y botón */
+.inventory-filter-group select,
+.inventory-filter-group input {
+    height: 40px !important;
+    box-sizing: border-box !important;
+}

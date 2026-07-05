@@ -6,7 +6,7 @@
 @section('active-plantacion', 'active')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/forms/plantacion.css') }}?v={{ filemtime(public_path('css/forms/plantacion.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/forms/plantacion.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 @endsection
 
