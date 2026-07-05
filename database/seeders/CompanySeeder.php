@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Company;
-use App\Models\CompanyRole; // 📍 Importamos el nuevo modelo
+use App\Models\CompanyRole;
 
 class CompanySeeder extends Seeder
 {
@@ -20,7 +20,7 @@ class CompanySeeder extends Seeder
             'location'      => 'Comuna 3, CABA',
         ]);
 
-        // 📍 Asignamos los roles usando el modelo CompanyRole
+        //Asignamos los roles usando el modelo CompanyRole
         CompanyRole::create(['company_id' => $company1->id, 'job_role' => 'Poda Integral']);
         CompanyRole::create(['company_id' => $company1->id, 'job_role' => 'Extracción y Destoconado']);
 
