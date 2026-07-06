@@ -78,21 +78,53 @@ class WorkOrderController extends Controller
 
         // Validamos el estado
         $request->validate([
-            'work_status' => 'required|in:Asignado, En espera, Finalizado'
+            'work_status' => 'required|in:Asignado,En espera,En Proceso,Finalizado'
         ]);
         
         // Actualizamos el estado
         $workOrder->update([
             'work_status' => $request->work_status
         ]);
-
-        //Si es una peticion JSON
-        if ($request->wantsJson() || $request->is('api/*')) {
-            return response()->json(['status' =>'success'],200);
-        }
         
-        //Respuesta normal para vista
-        return redirect()->back()->with('work_updated', 'Estado de la orden de trabajo actualizado correctamente.');
+        // Sincronizamos con el reclamo
+        $claim = $workOrder->request;
+        if($claim){
+            $newRequestStatusSlug = null;
+            $justification = '';
+
+            // Cambiamos según el estado
+            if($request->work_status === 'En Proceso'){
+                $newRequestStatusSlug = 'in_progress';
+                $justification = 'Trabajo en curso iniciado por la contratista.';
+
+            // Si finaliza
+            }elseif($request->work_status === 'Finalizado'){
+                $newRequestStatusSlug = 'resolved';
+                $justification = 'Trabajo finalizado por la contratista.';
+            }
+
+            // Verificamos que se haya establecido un nuevo estado
+            if($newRequestStatusSlug){
+                $statusObj = RequestStatus::where('slug', $newRequestStatusSlug)->first();
+                if($statusObj){
+                    $claim->update([
+                        'request_status_id' => $statusObj->id,
+                    ]);
+
+                    RequestStatusHistory::create([
+                        'request_id' => $claim->id,
+                        'request_status_id' => $statusObj->id,
+                        'user_id' => auth()->id() ?? 1,
+                        'justification' => $justification,
+                    ]);
+                }
+            }
+        }
+
+        return response->json([
+            'status'  => 'success',
+            'message' => 'Estado de la orden de trabajo actualizado y reclamo sincronizado.'
+        ], 200);
     }
 
     /**

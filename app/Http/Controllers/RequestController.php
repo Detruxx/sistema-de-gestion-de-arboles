@@ -62,56 +62,56 @@ class RequestController extends Controller
             'description.min' => 'La descripción debe tener al menos 10 caracteres.',
         ]);
 
-    $userId = auth()->id() ?? 1;
+        $userId = auth()->id() ?? 1;
 
-    // Delegamos la lógica de la calle 
-    $street = $streetService->resolveFromAddress($request->address);
+        // Delegamos la lógica de la calle 
+        $street = $streetService->resolveFromAddress($request->address);
 
-    // Manejo de la subida de múltiples fotos 
-    $photoPaths = [];
-    if ($request->hasFile('foto')) {
-        foreach ($request->file('foto') as $file) {
-            $photoPaths[] = $file->store('fotos/reclamos', 'public');
+        // Manejo de la subida de múltiples fotos 
+        $photoPaths = [];
+        if ($request->hasFile('foto')) {
+            foreach ($request->file('foto') as $file) {
+                $photoPaths[] = $file->store('fotos/reclamos', 'public');
+            }
         }
+
+        // Algoritmo de Detección de Duplicados 
+        $estadosTerminalesIds = \App\Models\RequestStatus::where('is_terminal', true)->pluck('id')->toArray();
+        $posibleDuplicado = \App\Models\Request::where('street_id', $street->id)
+                                ->where('request_type_id', $request->request_type_id)
+                                ->whereNotIn('request_status_id', $estadosTerminalesIds)
+                                ->first();
+
+        // Crear el reclamo en la base de datos
+        $incident = \App\Models\Request::create([
+            'user_id'           => $userId,
+            'tree_id'           => $request->tree_id,
+            'request_type_id'   => $request->request_type_id,
+            'street_id'         => $street->id,
+            'description'       => $request->description,
+            'path'              => $photoPaths, // Guardamos la colección de rutas completa
+            'request_status_id' => 1,
+            'suggested_duplicate_id' => $posibleDuplicado ? $posibleDuplicado->id : null,
+        ]);
+
+        // Registrar en la bitácora
+        $incident->histories()->create([
+            'request_status_id' => 1,
+            'user_id'           => $userId,
+            'justification'     => 'Registro inicial del reclamo.',
+        ]);
+
+        // Responder en JSON 
+        if ($request->wantsJson() || $request->is('api/*') || $request->is('requests')) {
+            return response()->json([
+                'status'    => 'success',
+                'message'   => 'Solicitud registrada con éxito',
+                'data'      => $incident
+            ], 201);
+        }
+
+        return redirect()->back()->with('success', '¡Su reclamo ha sido registrado con éxito!');
     }
-
-    // Algoritmo de Detección de Duplicados 
-    $estadosTerminalesIds = \App\Models\RequestStatus::where('is_terminal', true)->pluck('id')->toArray();
-    $posibleDuplicado = \App\Models\Request::where('street_id', $street->id)
-                            ->where('request_type_id', $request->request_type_id)
-                            ->whereNotIn('request_status_id', $estadosTerminalesIds)
-                            ->first();
-
-    // Crear el reclamo en la base de datos
-    $incident = \App\Models\Request::create([
-        'user_id'           => $userId,
-        'tree_id'           => $request->tree_id,
-        'request_type_id'   => $request->request_type_id,
-        'street_id'         => $street->id,
-        'description'       => $request->description,
-        'path'              => $photoPaths, // Guardamos la colección de rutas completa
-        'request_status_id' => 1,
-        'suggested_duplicate_id' => $posibleDuplicado ? $posibleDuplicado->id : null,
-    ]);
-
-    // Registrar en la bitácora
-    $incident->histories()->create([
-        'request_status_id' => 1,
-        'user_id'           => $userId,
-        'justification'     => 'Registro inicial del reclamo.',
-    ]);
-
-    // Responder en JSON 
-    if ($request->wantsJson() || $request->is('api/*') || $request->is('requests')) {
-        return response()->json([
-            'status'    => 'success',
-            'message'   => 'Solicitud registrada con éxito',
-            'data'      => $incident
-        ], 201);
-    }
-
-    return redirect()->back()->with('success', '¡Su reclamo ha sido registrado con éxito!');
-}
 
     /**
      * Muestra el reclamo especificado (Búsqueda de Seguimiento).
@@ -156,6 +156,7 @@ class RequestController extends Controller
             ]
         ], 200);
     }
+
     /**
      * Actualiza el estado del reclamo y/o la justificación en la base de datos real.
      */
@@ -262,7 +263,7 @@ class RequestController extends Controller
             'data'   => $requests,
         ], 200);
     }
-    
+
     /**
      * Muestra todas las solicitudes por estado.
      */
@@ -283,7 +284,7 @@ class RequestController extends Controller
         return response()->json([
             'status' => 'success',
             'count'  => $requests->count(),
-            'data'   => $requests,
+            'data'  => $requests,
         ], 200);
     }
 
@@ -340,6 +341,4 @@ class RequestController extends Controller
             'data'   => $statuses
         ], 200);
     }
-
-
 }
