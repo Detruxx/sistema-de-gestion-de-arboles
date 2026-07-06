@@ -34,18 +34,7 @@
 
         <!-- TAB: CREATE COMPLAINT -->
         <div id="section-create" class="tab-content" style="display: block;">
-            <x-layouts.alert-modal 
-                type="success" 
-                title="¡Trámite Enviado!" 
-                message="Tu sugerencia/reclamo ha sido registrado correctamente."
-                image="{{ asset('img/components/success-tree.webp') }}"
-            />
-            <x-layouts.alert-modal 
-                type="error" 
-                title="ID no encontrado" 
-                message="El ID de árbol ingresado es erróneo o el árbol no fue encontrado. Por favor, verifique el código y vuelva a intentarlo."
-                image="{{ asset('img/components/error-tree.png') }}"
-            />
+
             <section class="reveal delay-1">
                 <!-- Banner de información de árbol preseleccionado -->
                 <div id="selected-tree-banner" style="display: none;">
@@ -64,21 +53,21 @@
                 <form class="contact-form" id="reclamo-form">
                     <div class="form-group">
                         <label for="tipo-reclamo">Tipo de Error <span class="required-asterisk">*</span></label>
-                        <select id="tipo-reclamo" class="form-control" required>
+                        <select id="tipo-reclamo" name="request_type_id" class="form-control" required>
                         <!-- Aca se rellena solo con el JS -->
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label for="arbol-id">ID del Árbol (Opcional)</label>
-                        <input type="number" id="arbol-id" placeholder="Ej: 1001 (Si lo conoces y deseas vincularlo)" class="form-control">
+                        <input type="number" id="arbol-id" name="arbol_id" placeholder="Ej: 1001 (Si lo conoces y deseas vincularlo)" class="form-control">
                         <small id="arbol-id-help" style="display: none;"></small>
                     </div>
 
                     <div class="form-group">
                         <label for="direccion">Dirección / Ubicación aproximada <span class="required-asterisk">*</span></label>
                         <div class="input-with-button">
-                            <input type="text" id="direccion" placeholder="Ej: Av. Santa Fe 2500, Palermo" class="form-control" required>
+                            <input type="text" id="direccion" name="address" placeholder="Ej: Av. Santa Fe 2500, Palermo" class="form-control" required>
                             <button type="button" id="btn-select-map" class="btn-main-cta track-btn">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--spring-leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
@@ -91,7 +80,7 @@
 
                     <div class="form-group">
                         <label for="descripcion">Detalles del Reclamo <span class="required-asterisk">*</span></label>
-                        <textarea id="descripcion" placeholder="Describe brevemente la situación para ayudar a los inspectores..." required rows="4" class="form-control"></textarea>
+                        <textarea id="descripcion" name="description" placeholder="Describe brevemente la situación para ayudar a los inspectores..." required rows="4" class="form-control"></textarea>
                     </div>
 
                     <div class="form-group">
@@ -101,7 +90,7 @@
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-paperclip"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
                                 <span>Seleccionar archivo</span>
                             </label>
-                            <input type="file" id="foto" accept="image/*" multiple class="foto-input" style="display: none;" onchange="
+                            <input type="file" id="foto" name="foto" accept="image/*" multiple class="foto-input" style="display: none;" onchange="
                                 const count = this.files.length;
                                 const label = document.getElementById('foto-name');
                                 if(count === 0) label.textContent = 'Ningún archivo seleccionado';
@@ -230,6 +219,20 @@
             </div>
         </div>
     </div>
+    </main>
+
+    <x-layouts.alert-modal 
+        type="success" 
+        title="¡Trámite Enviado!" 
+        message="Tu sugerencia/reclamo ha sido registrado correctamente."
+        image="{{ asset('img/components/success-tree.webp') }}"
+    />
+    <x-layouts.alert-modal 
+        type="error" 
+        title="ID no encontrado" 
+        message="El ID de árbol ingresado es erróneo o el árbol no fue encontrado. Por favor, verifique el código y vuelva a intentarlo."
+        image="{{ asset('img/components/error-tree.webp') }}"
+    />
 @endsection
 
 @section('scripts')
