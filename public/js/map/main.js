@@ -53,6 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') searchAddress();
         });
+
+        // Escuchar cuando el buscador inteligente devuelve coordenadas (Nominatim)
+        searchInput.addEventListener('addressGeocoded', (e) => {
+            const { lat, lng } = e.detail;
+            
+            // Volar hacia la direccion
+            map.flyTo([lat, lng], 17, { duration: 1.5 });
+        });
     }
 
     // 6. Recalcular tamaños de pines al hacer zoom

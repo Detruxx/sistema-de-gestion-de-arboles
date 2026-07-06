@@ -11,25 +11,26 @@
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
     font-weight: 600;
+    font-size: 0.9rem;
     color: var(--forest-night);
 }
 
 .form-control {
     background-color: var(--paper-white);
-    border: 1px solid rgba(45, 122, 79, 0.3);
+    border: 1px solid var(--deep-canopy);
     border-radius: 8px;
-    padding: 15px;
+    padding: 10px 15px;
     color: var(--forest-night);
     caret-color: var(--forest-night);
     font-family: var(--font-body);
-    font-size: 1rem;
+    font-size: 0.95rem;
     width: 100%;
     transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
 }
@@ -100,25 +101,56 @@
     to { transform: rotate(360deg); }
 }
 
-.tramites-page-container .cuidados-header .hero-title,
-.tramites-page-container .cuidados-header .section-subtitle {
-    color: var(--paper-white) !important;
+/* Split Layout - Full Width, Compact Form */
+.split-layout-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #efe8d8; /* Color arena heredado de Cuidados */
 }
 
-/* Background Image styling */
-.bg-blurred-image {
-    position: fixed;
-    top: -5%;
-    left: -5%;
-    width: 110vw;
-    height: 110vh;
+.split-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 140px 8% 80px 8%; /* Más espacio arriba (navbar) y abajo (footer) */
+    max-width: 50%;
+    z-index: 10;
+}
+
+.split-left .cuidados-header {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.split-left .plantacion-form-container {
+    margin: 0;
+    max-width: 100%;
+}
+
+#company-postulation-form.contact-form {
+    border: 2px solid var(--deep-canopy);
+}
+
+.split-right {
+    flex: 1;
+    background-image: url('../../img/bg-proposals/bg_handshake_tree_3.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    filter: blur(2px) brightness(0.8);
-    z-index: 0;
+    position: relative;
 }
 
-.postulacion-bg {
-    background-image: url('../../img/tramites/reclamos_bg_ai.png');
+/* Responsive for Split Layout */
+@media (max-width: 992px) {
+    .split-layout-container {
+        flex-direction: column;
+    }
+    .split-left {
+        max-width: 100%;
+        padding: 90px 5% 30px 5%;
+    }
+    .split-right {
+        min-height: 350px;
+    }
 }

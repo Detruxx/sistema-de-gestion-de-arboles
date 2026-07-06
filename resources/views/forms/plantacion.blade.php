@@ -7,6 +7,7 @@
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/forms/plantacion.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/shared/autocomplete.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 @endsection
 
@@ -126,7 +127,15 @@
 @section('scripts')
     @auth
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="{{ asset('js/shared/address-autocomplete.js') }}"></script>
     <script src="{{ asset('js/forms/planting.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof initAddressAutocomplete === 'function') {
+                initAddressAutocomplete('direccion-solicitud');
+            }
+        });
+    </script>
     @endauth
 @endsection
 

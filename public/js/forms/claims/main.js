@@ -123,7 +123,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 setSeleccionArbolUI(null);
             } catch (err) {
                 console.error('Submit error:', err);
-                alert('Error al intentar registrar el reclamo. Verifique consola.');
+                if (typeof window.openAlertModal === 'function') {
+                    window.openAlertModal('alert-modal-error');
+                } else {
+                    alert('Error al intentar registrar el reclamo. El ID es erróneo o el árbol no fue encontrado.');
+                }
             }
         });
     }

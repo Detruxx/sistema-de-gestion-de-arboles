@@ -7,6 +7,7 @@
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/forms/reclamos.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/shared/autocomplete.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboards/dynamic-status.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 @endsection
@@ -39,6 +40,12 @@
                 message="Tu sugerencia/reclamo ha sido registrado correctamente."
                 image="{{ asset('img/components/success-tree.webp') }}"
             />
+            <x-layouts.alert-modal 
+                type="error" 
+                title="ID no encontrado" 
+                message="El ID de árbol ingresado es erróneo o el árbol no fue encontrado. Por favor, verifique el código y vuelva a intentarlo."
+                image="{{ asset('img/components/error-tree.png') }}"
+            />
             <section class="reveal delay-1">
                 <!-- Banner de información de árbol preseleccionado -->
                 <div id="selected-tree-banner" style="display: none;">
@@ -56,7 +63,7 @@
                 @auth
                 <form class="contact-form" id="reclamo-form">
                     <div class="form-group">
-                        <label for="tipo-reclamo">Tipo de Incidencia <span class="required-asterisk">*</span></label>
+                        <label for="tipo-reclamo">Tipo de Error <span class="required-asterisk">*</span></label>
                         <select id="tipo-reclamo" class="form-control" required>
                         <!-- Aca se rellena solo con el JS -->
                         </select>
@@ -227,7 +234,15 @@
 
 @section('scripts')
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="{{ asset('js/shared/address-autocomplete.js') }}"></script>
     <script type="module" src="{{ asset('js/forms/claims/main.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof initAddressAutocomplete === 'function') {
+                initAddressAutocomplete('direccion');
+            }
+        });
+    </script>
 
     <!-- Lógica Frontend para el formato automático de código (Sin necesidad de Backend) -->
     <script>
