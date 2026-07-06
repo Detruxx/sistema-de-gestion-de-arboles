@@ -146,3 +146,18 @@ Route::get('/api/request-statuses', [\App\Http\Controllers\RequestController::cl
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
+
+// Datos para el Panel de la Empresa Contratista 
+Route::get('/company/dashboard-data', [CompanyPanelController::class, 'getDashboardData']);
+
+// Postulación de Empresas 
+Route::post('/work-orders/{id}/apply', [WorkOrderController::class, 'applyForTender']);
+
+// Rutas de Administración / Inspectores
+Route::prefix('admin')->group(function () {
+
+    //Carga el selector desplegable para asignar empresas
+    Route::get('/companies', [CompanyController::class, 'getActiveCompanies']);
+    //Guarda la empresa asignada al reclamo
+    Route::patch('/claims/{id}/assign-company', [RequestController::class, 'assignCompany']);
+});

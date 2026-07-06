@@ -6,7 +6,6 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Request;
 use App\Models\RequestStatusHistory;
-use App\Models\User; // 📍 IMPORTANTE: No te olvides de importar el modelo User
 
 class RequestSeeder extends Seeder
 {
@@ -14,55 +13,16 @@ class RequestSeeder extends Seeder
      * Run the database seeds.
      */
     public function run(): void
-    {
-        //RECOMENDACIÓN: Creamos un usuario vecino temporal para asociar al historial inicial
-        $vecinoTemporal = User::factory()->create([
-            'name' => 'Vecino',
-            'last_name' => 'Digital',
-            'role' => 'vecino',
-            'email' => 'vecino.temporal@example.com',
-            'password' => bcrypt('password'),
-            'email_verified_at' => now(),
-        ]);
-
-        //RECOMENDACIÓN: Creamos un inspector temporal para asociar a los movimientos avanzados
-        $inspectorTemporal = User::factory()->create([
-            'name' => 'Inspector',
-            'last_name' => 'Turno',
-            'role' => 'inspector',
-            'email' => 'inspector.temporal@example.com',
-            'password' => bcrypt('password'),
-            'email_verified_at' => now(),
-        ]);
-
-        // 1. Creamos 10 reclamos aleatorios
+    { 
+        // 1. Creamos, por ejemplo, 10 reclamos de prueba usando el Factory
         $reclamos = Request::factory()->count(10)->create();
-
-        // 1.5 Creamos un caso EXPLICITO de duplicado para probar el algoritmo
-        $reclamoMaestro = Request::factory()->create([
-            'street_id' => 1,
-            'request_type_id' => 1,
-            'request_status_id' => 2, // Relevado
-            'description' => 'Reclamo Original: Rama gigante a punto de caer'
-        ]);
-
-        $reclamoDuplicado = Request::factory()->create([
-            'street_id' => 1,
-            'request_type_id' => 1, // Misma calle y mismo tipo de reclamo
-            'request_status_id' => 1, // Nuevo reclamo pendiente
-            'description' => 'Reclamo Duplicado: Vecino reporta la misma rama gigante',
-            'suggested_duplicate_id' => $reclamoMaestro->id
-        ]);
-
-        $reclamos->push($reclamoMaestro);
-        $reclamos->push($reclamoDuplicado);
 
         // 2. Recorremos cada reclamo recién creado para generarle su "primer paso" en la bitácora
         foreach ($reclamos as $reclamo) {
             RequestStatusHistory::create([
                 'request_id'        => $reclamo->id,
                 'request_status_id' => $reclamo->request_status_id, // Usamos el mismo estado con el que nació el reclamo
-                'user_id'           => $vecinoTemporal->id, // 📍 Reemplazado el 1 fijo por el ID del vecino temporal
+                'user_id'           => 1, // Asumimos que lo inició el vecino (ID 1) o el sistema
                 'justification'     => 'Registro inicial del reclamo ingresado por el ciudadano de forma digital.',
             ]);
 
@@ -71,7 +31,7 @@ class RequestSeeder extends Seeder
                 RequestStatusHistory::create([
                     'request_id'        => $reclamo->id,
                     'request_status_id' => $reclamo->request_status_id, // Estado actual
-                    'user_id'           => $inspectorTemporal->id, // 📍 Reemplazado el 2 fijo por el ID del inspector temporal
+                    'user_id'           => 2, // El inspector Carlos (ID 2) hizo el movimiento
                     'justification'     => 'Simulación de actualización realizada por el cuerpo de inspectores de arbolado.',
                 ]);
             }
