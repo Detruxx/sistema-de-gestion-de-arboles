@@ -10,7 +10,7 @@
 
 @section('content')
     <main class="tramites-page-container" style="position: relative; overflow: hidden;">
-        <div class="bg-blurred-image plantacion-bg" style="background: linear-gradient(135deg, rgba(45, 122, 79, 0.05) 0%, rgba(20, 50, 30, 0.08) 100%);"></div>
+        <div class="bg-blurred-image postulacion-bg"></div>
         
         <section class="cuidados-header reveal">
             <h1 class="hero-title">Postulación de Empresa</h1>
@@ -19,7 +19,7 @@
             </p>
         </section>
 
-        <section class="plantacion-form-container reveal delay-1" style="max-width: 700px; margin: 0 auto; background: var(--paper-white); padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(45, 122, 79, 0.1); z-index: 5; margin-bottom: 80px;">
+        <section class="plantacion-form-container reveal delay-1">
             
             <div id="postulacion-success-card" style="display: none; text-align: center; padding: 20px 0;">
                 <div style="width: 80px; height: 80px; background: rgba(34, 197, 94, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">

@@ -128,9 +128,26 @@
                 <h2 class="track-title">Consulta tu Reclamo</h2>
                 <p class="track-subtitle">Ingresa el código identificador de tu solicitud (ej: REC-2026-001) para ver el progreso actual y la respuesta de la Comuna.</p>
                 
-                <div class="track-input-group">
-                    <input type="text" id="track-id-input" placeholder="Ej. REC-2026-001" class="track-input">
-                    <button type="button" class="btn-main-cta track-btn" onclick="trackComplaint()">Buscar Solicitud</button>
+                <div class="track-input-group" style="display: flex; gap: 15px; align-items: stretch; justify-content: flex-start; flex-wrap: wrap;">
+                    
+                    <!-- Contenedor visual que simula ser un solo input -->
+                    <div style="display: flex; align-items: center; gap: 8px; background-color: var(--paper-white); border: 1px solid rgba(45, 122, 79, 0.3); border-radius: 8px; padding: 0 15px; flex-grow: 1; max-width: 320px; transition: all 0.3s ease;">
+                        
+                        <input type="text" id="track-part1" maxlength="3" placeholder="REC" style="width: 50px; border: none; background: transparent; outline: none; text-align: left; font-size: 1.1rem; color: var(--forest-night); text-transform: uppercase; font-family: var(--font-body); padding: 15px 0;">
+                        
+                        <span style="color: rgba(45, 122, 79, 0.5); font-weight: bold;">-</span>
+                        
+                        <input type="text" id="track-part2" maxlength="4" placeholder="2026" style="width: 60px; border: none; background: transparent; outline: none; text-align: left; font-size: 1.1rem; color: var(--forest-night); font-family: var(--font-body); padding: 15px 0;">
+                        
+                        <span style="color: rgba(45, 122, 79, 0.5); font-weight: bold;">-</span>
+                        
+                        <input type="text" id="track-part3" maxlength="3" placeholder="001" style="width: 50px; border: none; background: transparent; outline: none; text-align: left; font-size: 1.1rem; color: var(--forest-night); font-family: var(--font-body); padding: 15px 0;">
+                        
+                        <!-- Input oculto (ESQUELETO BACKEND): Almacena el valor completo (Ej: REC-2026-001) para que el backend o el JS existente lo procese sin tener que cambiar nada en su lógica -->
+                        <input type="hidden" id="track-id-input" class="track-input">
+                    </div>
+
+                    <button type="button" class="btn-main-cta track-btn" onclick="trackComplaint()" style="white-space: nowrap;">Buscar Solicitud</button>
                 </div>
 
             <!-- Error container -->
@@ -212,6 +229,82 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script type="module" src="{{ asset('js/forms/claims/main.js') }}"></script>
 
-    
+    <!-- Lógica Frontend para el formato automático de código (Sin necesidad de Backend) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const p1 = document.getElementById('track-part1');
+            const p2 = document.getElementById('track-part2');
+            const p3 = document.getElementById('track-part3');
+            const hiddenInput = document.getElementById('track-id-input');
+
+            // Función para unificar los 3 campos en el input oculto que usa el sistema/backend
+            function updateHiddenInput() {
+                const val1 = p1.value.toUpperCase();
+                const val2 = p2.value;
+                const val3 = p3.value;
+                if (val1 || val2 || val3) {
+                    hiddenInput.value = `${val1}-${val2}-${val3}`;
+                } else {
+                    hiddenInput.value = '';
+                }
+            }
+
+            function setupAutoAdvance(current, next, prev, maxLength) {
+                // Evento al escribir
+                current.addEventListener('input', function(e) {
+                    // Limpieza: Solo letras en la 1ra parte, solo números en las demás
+                    if (current.id === 'track-part1') {
+                        current.value = current.value.replace(/[^a-zA-Z]/g, '');
+                    } else {
+                        current.value = current.value.replace(/[^0-9]/g, '');
+                    }
+
+                    updateHiddenInput();
+
+                    // Pasar al siguiente input si ya completó los caracteres
+                    if (current.value.length >= maxLength && next) {
+                        next.focus();
+                    }
+                });
+
+                // Eventos de teclado (Retroceso y Enter)
+                current.addEventListener('keydown', function(e) {
+                    // Volver al input anterior al borrar si está vacío
+                    if (e.key === 'Backspace' && current.value === '' && prev) {
+                        prev.focus();
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (typeof trackComplaint === 'function') {
+                            trackComplaint();
+                        }
+                    }
+                });
+                
+                // Manejar Pegado (Paste) de un código completo (ej: REC-2026-001 o REC2026001)
+                current.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    let pasted = (e.clipboardData || window.clipboardData).getData('text');
+                    pasted = pasted.replace(/[^a-zA-Z0-9]/g, ''); // Remover guiones
+                    
+                    if (pasted.length > 0) {
+                        p1.value = pasted.substring(0, 3).toUpperCase();
+                        p2.value = pasted.substring(3, 7);
+                        p3.value = pasted.substring(7, 10);
+                        updateHiddenInput();
+                        
+                        if (pasted.length <= 3) p1.focus();
+                        else if (pasted.length <= 7) p2.focus();
+                        else p3.focus();
+                    }
+                });
+            }
+
+            if (p1 && p2 && p3) {
+                setupAutoAdvance(p1, p2, null, 3);
+                setupAutoAdvance(p2, p3, p1, 4);
+                setupAutoAdvance(p3, null, p2, 3);
+            }
+        });
+    </script>
 @endsection
 

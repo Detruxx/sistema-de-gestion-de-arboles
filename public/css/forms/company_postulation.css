@@ -4,13 +4,8 @@
 
 /* Estilos para la página de Postulación de Empresa */
 .plantacion-form-container {
-    max-width: 700px;
-    margin: 40px auto 80px;
-    background: var(--paper-white);
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    border: 1px solid rgba(45, 122, 79, 0.1);
+    max-width: 650px;
+    margin: 0 auto 80px;
     position: relative;
     z-index: 10;
 }
@@ -30,18 +25,25 @@
     background-color: var(--paper-white);
     border: 1px solid rgba(45, 122, 79, 0.3);
     border-radius: 8px;
-    padding: 12px 15px;
+    padding: 15px;
     color: var(--forest-night);
+    caret-color: var(--forest-night);
     font-family: var(--font-body);
     font-size: 1rem;
     width: 100%;
-    transition: all 0.3s ease;
+    transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:hover {
+    border-color: var(--living-moss);
+    background-color: rgba(91, 191, 140, 0.04);
 }
 
 .form-control:focus {
     outline: none;
-    border-color: var(--spring-leaf);
-    box-shadow: 0 0 0 3px rgba(45, 122, 79, 0.15);
+    border-color: var(--living-moss);
+    box-shadow: 0 0 10px rgba(45, 122, 79, 0.15);
+    background-color: #ffffff;
 }
 
 .form-control:disabled {
@@ -98,11 +100,25 @@
     to { transform: rotate(360deg); }
 }
 
-.tramites-page-container .cuidados-header .hero-title {
-    color: var(--deep-canopy) !important;
+.tramites-page-container .cuidados-header .hero-title,
+.tramites-page-container .cuidados-header .section-subtitle {
+    color: var(--paper-white) !important;
 }
 
-.tramites-page-container .cuidados-header .section-subtitle {
-    color: var(--deep-canopy) !important;
-    opacity: 0.9;
+/* Background Image styling */
+.bg-blurred-image {
+    position: fixed;
+    top: -5%;
+    left: -5%;
+    width: 110vw;
+    height: 110vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(2px) brightness(0.8);
+    z-index: 0;
+}
+
+.postulacion-bg {
+    background-image: url('../../img/tramites/reclamos_bg_ai.png');
 }
