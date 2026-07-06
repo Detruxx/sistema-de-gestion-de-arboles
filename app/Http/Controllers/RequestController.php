@@ -72,6 +72,8 @@ class RequestController extends Controller
             'description'     => 'required|string|min:10',
             'tree_id'         => 'nullable|exists:trees,id',
             'foto'            => 'nullable|image|mimes:jpeg,png,jpg|max:5120', // Opcional, pero debe ser imagen si se envía
+        ], [
+            'description.min' => 'La descripción debe tener al menos 10 caracteres.',
         ]);
 
         $userId = auth()->id() ?? 1;
