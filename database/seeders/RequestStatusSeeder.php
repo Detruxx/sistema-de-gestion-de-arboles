@@ -23,6 +23,8 @@ class RequestStatusSeeder extends Seeder
             ['status_name' => 'Certificado', 'slug' => 'certified', 'sequence' => 6, 'is_terminal' => true, 'color' => '#15803d'],
             ['status_name' => 'Denegado', 'slug' => 'denied', 'sequence' => null, 'is_terminal' => true, 'color' => '#ef4444'],
             ['status_name' => 'Vinculado (Duplicado)', 'slug' => 'vinculated', 'sequence' => null, 'is_terminal' => true, 'color' => '#d946ef'],
+            ['status_name' => 'Cancelado por Vecino', 'slug' => 'cancelled', 'sequence' => null, 'is_terminal' => true, 'color' => '#78909c'],
+            ['status_name' => 'Cancelación Solicitada', 'slug' => 'cancel_requested', 'sequence' => null, 'is_terminal' => false, 'color' => '#ff0077'],
         ];
 
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
