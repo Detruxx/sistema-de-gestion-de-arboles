@@ -9,11 +9,24 @@ class Request extends Model
 {
     use HasFactory;
 
-    // Asegúrate de tener 'request_status_id' en tu array $fillable si lo usás
     protected $fillable = [
-        'user_id', 'tree_id', 'request_type_id', 'street_id', 
-        'description', 'path', 'request_status_id',
-        'linked_to', 'suggested_duplicate_id'
+        'user_id',
+        'tree_id',
+        'request_type_id',
+        'street_id',
+        'description',
+        'path',               
+        'request_status_id',
+        'cancellation_reason',
+        'priority_id',
+        'company_id',         //Permitir asignación de empresa
+        'linked_to',
+        'suggested_duplicate_id',
+    ];
+
+    // Esto hace que Laravel convierta el JSON de la BDD a un array de PHP automáticamente
+    protected $casts = [
+        'path' => 'array',
     ];
 
     // Esto es para que se pueda acceder al codigo de seguimiento como si fuera una propiedad normal
@@ -89,5 +102,11 @@ class Request extends Model
     {
         $year = $this->created_at ? $this->created_at->format('Y') : date('Y');
         return 'REC-' . $year . '-' . str_pad($this->id, 3, '0', STR_PAD_LEFT);
+    }
+
+    //Relación: Un reclamo puede tener una empresa asignada.
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }

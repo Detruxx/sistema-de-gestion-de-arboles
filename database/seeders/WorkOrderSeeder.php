@@ -26,10 +26,15 @@ class WorkOrderSeeder extends Seeder
                 'scheduled_date'   => now()->addDays(2)->format('Y-m-d'),
                 'execution_order'  => 1,
                 'work_status'      => 'Asignado',
+                
+                // Configurados estratégicamente para pruebas en el Panel de Empresas
+                'payment_status'   => 'Pendiente', // Nace pendiente de validación/cobro [cite: 23]
+                'cost'             => 75450.00,    // Le asignamos un costo fijo inicial para auditar [cite: 25, 26]
             ]);
         }
 
         // 2. Creamos 5 órdenes de trabajo más completamente aleatorias
+        // (Estas ya van a incluir costos y estados de pago variados gracias al Factory modificado)
         WorkOrder::factory()->count(5)->create();
     }
 }

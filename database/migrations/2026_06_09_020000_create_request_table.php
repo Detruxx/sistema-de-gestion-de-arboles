@@ -14,18 +14,23 @@ return new class extends Migration
         Schema::create('requests', function (Blueprint $table) {
             $table->id();
 
-            //Parte que rellena el usuario /se manda por el formulario
+            // Rellenado por el vecino
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict');
             $table->foreignId('tree_id')->nullable()->constrained('trees')->onDelete('restrict');
             $table->foreignId('request_type_id')->constrained('request_types')->onDelete('restrict');
             $table->foreignId('street_id')->constrained('streets')->onDelete('restrict');
             $table->text('description');
-            $table->string('path')->nullable(); // path que lleva a la foto
             
-            //Parte que pasa a ser completada por inspectores
+            // Modificado para soportar un array JSON con múltiples fotos (hasta 3)
+            $table->json('path')->nullable(); 
+            
+            // Completado por inspectores
             $table->foreignId('request_status_id')->constrained('request_statuses')->onDelete('restrict');
-            $table->text('cancellation_reason')->nullable(); //Lugar en que el inspector justificará por que cancela el reclamo
+            $table->text('cancellation_reason')->nullable(); // Justificación de inspector o ciudadano
             $table->foreignId('priority_id')->nullable()->constrained('priorities')->onDelete('restrict');
+
+            // Asignación directa de la empresa contratista al reclamo
+            $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('set null');
 
             // Relaciones de vinculación y duplicados
             $table->unsignedBigInteger('linked_to')->nullable();
