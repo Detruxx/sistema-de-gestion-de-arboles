@@ -20,7 +20,14 @@ class RequestController extends Controller
     {
         $requests = \App\Models\Request::with(['user', 'street', 'requestType', 'tree', 'histories.status', 'status', 'workOrders.company', 'priority'])->orderBy('created_at', 'desc')->get();
 
-        $mapped = $requests->map(function ($req) {
+        $mapped = $requests->values()->map(function ($req, $key) {
+            
+            // --- HACK PARA PREVISUALIZAR ---
+            $prioridadSimulada = $req->priority ? $req->priority->priority_name : 'Baja';
+            if ($key === 0) $prioridadSimulada = 'auto-alta';
+            if ($key === 1) $prioridadSimulada = 'auto-media';
+            // -------------------------------
+
             return [
                 'id' => $req->tracking_code,
                 'vecino' => $req->user ? $req->user->name : 'Vecino Anónimo',
@@ -32,7 +39,9 @@ class RequestController extends Controller
                 'especie' => $req->tree ? $req->tree->species_name : 'No vinculada',
                 'email' => $req->user ? $req->user->email : 'sin-email@treeba.gob.ar',
                 'linked_to' => $req->linked_to,
-                'suggested_duplicate_id' => $req->suggested_duplicate_id
+                'suggested_duplicate_id' => $req->suggested_duplicate_id,
+                'priority' => $prioridadSimulada,
+                'risk_score' => ($key === 0) ? 92 : (($key === 1) ? 58 : null) // Simular score
             ];
         });
 
@@ -59,7 +68,16 @@ class RequestController extends Controller
             'foto'            => 'nullable|array|max:3', // Valida que vengan como máximo 3 fotos 
             'foto.*'          => 'image|mimes:jpeg,png,jpg,webp,heic|max:10240', 
         ], [
-            'description.min' => 'La descripción debe tener al menos 10 caracteres.',
+            'request_type_id.required' => 'El campo tipo de reclamo es obligatorio.',
+            'request_type_id.exists'   => 'El tipo de reclamo seleccionado es inválido.',
+            'address.required'         => 'El campo dirección es obligatorio.',
+            'description.required'     => 'El campo descripción es obligatorio.',
+            'description.min'          => 'La descripción debe tener al menos 10 caracteres.',
+            'tree_id.exists'           => 'El ID de árbol ingresado es erróneo o el árbol no fue encontrado.',
+            'foto.max'                 => 'No puedes subir más de 3 fotografías.',
+            'foto.*.image'             => 'El archivo debe ser una imagen.',
+            'foto.*.mimes'             => 'El formato de imagen no es válido.',
+            'foto.*.max'               => 'La imagen no debe pesar más de 10 MB.',
         ]);
 
     $userId = auth()->id() ?? 1;
@@ -82,6 +100,27 @@ class RequestController extends Controller
                             ->whereNotIn('request_status_id', $estadosTerminalesIds)
                             ->first();
 
+    // =========================================================================
+    // INICIO DEL ALGORITMO DE SCORING (Lógica para el equipo de Backend)
+    // =========================================================================
+    // TODO (BACKEND): Implementar algoritmo de procesamiento de lenguaje natural
+    // 1. Definir diccionario de palabras clave. Ej:
+    //    $palabrasCriticas = ['cable', 'fuego', 'caer', 'peligro', 'escuela', 'urgente'];
+    //    $palabrasMedias   = ['rama', 'apoyado', 'tapando', 'luz'];
+    // 2. Procesar $request->description:
+    //    - Convertir a minúsculas.
+    //    - Contar cuántas palabras críticas/medias aparecen.
+    // 3. Asignar puntaje (Ej: +50 por crítica, +20 por media).
+    // 4. Determinar ID de prioridad ($priority_id) y puntaje ($risk_score):
+    //    - ATENCIÓN BACKEND: Deben agregar 'auto-media' y 'auto-alta' en PrioritySeeder.php y DB.
+    //    - Si > 60 pts -> Prioridad auto-alta (id: X)
+    //    - Si > 30 pts -> Prioridad auto-media (id: Y)
+    //    - Sino        -> Prioridad Baja/Normal (id: 1)
+    
+    $calculatedPriorityId = 1; // <--- Reemplazar con el resultado del algoritmo
+    $riskScore = 0;            // <--- Reemplazar con el cálculo exacto
+    // =========================================================================
+
     // Crear el reclamo en la base de datos
     $incident = \App\Models\Request::create([
         'user_id'           => $userId,
@@ -92,6 +131,8 @@ class RequestController extends Controller
         'path'              => $photoPaths, // Guardamos la colección de rutas completa
         'request_status_id' => 1,
         'suggested_duplicate_id' => $posibleDuplicado ? $posibleDuplicado->id : null,
+        'priority_id'       => $calculatedPriorityId, // Prioridad calculada por el algoritmo
+        // 'risk_score'        => $riskScore, // TODO: Descomentar al agregar columna risk_score
     ]);
 
     // Registrar en la bitácora
@@ -191,6 +232,9 @@ class RequestController extends Controller
             if ($dbSlug === 'vinculated' && $request->has('linked_to')) {
                 $linkedTo = $request->linked_to;
                 $suggestedDuplicateId = null;
+                
+                // TODO (BACKEND): Enviar notificación por correo al vecino avisando que se unificó su reclamo
+                // Ej: Mail::to($userRequest->user->email)->send(new ClaimMergedMail($linkedTo));
             } elseif ($dbSlug !== 'vinculated') {
                 // Si cambiamos de estado "vinculado" a cualquier otro (ej. por error),
                 // desvinculamos el reclamo limpiando la columna.

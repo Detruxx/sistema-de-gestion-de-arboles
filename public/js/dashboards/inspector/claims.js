@@ -110,10 +110,21 @@ export function loadClaimsList() {
         const statusObj = state.requestStatuses.find(rs => rs.slug === c.estado);
         let statusLabel = statusObj ? statusObj.status_name : c.estado.toUpperCase();
         let statusHex = statusObj ? statusObj.color : '#6b7280';
+        
+        let priorityBadge = '';
+        if (c.priority === 'auto-alta') {
+            priorityBadge = `<span style="background-color: #fef2f2; color: #dc2626; border: 1px solid #dc2626; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; white-space: nowrap;">URGENTE</span>`;
+        } else if (c.priority === 'auto-media') {
+            priorityBadge = `<span style="background-color: #fffbeb; color: #d97706; border: 1px solid #d97706; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; white-space: nowrap;">PRECAUCIÓN</span>`;
+        }
+
         card.innerHTML = `
-            <div class="list-item-header">
-                <span class="list-item-id">${c.id}</span>
-                <span class="badge-status" style="background-color: ${statusHex}20; color: ${statusHex}; border: 1px solid ${statusHex};">${statusLabel}</span>
+            <div class="list-item-header" style="align-items: flex-start;">
+                <span class="list-item-id" style="margin-right: 5px; word-break: break-all;">${c.id}</span>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
+                    <span class="badge-status" style="background-color: ${statusHex}20; color: ${statusHex}; border: 1px solid ${statusHex}; white-space: nowrap;">${statusLabel}</span>
+                    ${priorityBadge}
+                </div>
             </div>
             <div class="list-item-title">${c.categoria}</div>
             <div class="list-item-subtitle">${c.direccion}</div>
@@ -183,6 +194,18 @@ export function selectClaim(id) {
                 <div>
                     <h3 class="detail-title">${claim.categoria}</h3>
                     <p class="detail-subtitle">Reclamo ID: <strong>${claim.id}</strong> | Fecha: ${claim.fecha}</p>
+                    
+                    ${claim.priority === 'auto-alta' || claim.priority === 'auto-media' ? `
+                    <div style="margin-top: 10px; margin-bottom: 15px; background-color: #f3f4f6; border-left: 4px solid ${claim.priority === 'auto-alta' ? '#dc2626' : '#d97706'}; padding: 10px; border-radius: 8px;">
+                        <strong style="color: ${claim.priority === 'auto-alta' ? '#991b1b' : '#92400e'}; display: flex; align-items: center; gap: 5px; font-size: 0.85rem;">
+                            Elevado automáticamente por el Sistema Inteligente
+                        </strong>
+                        <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: #4b5563;">
+                            El algoritmo de Procesamiento de Lenguaje detectó palabras clave en la solicitud.<br>
+                            Score de Riesgo Calculado: <strong>${claim.risk_score || 'Pendiente'}/100</strong>
+                        </p>
+                    </div>
+                    ` : ''}
                 </div>
 
                 <div style="border-top: 1px solid var(--admin-border); padding-top: 10px;">
@@ -278,8 +301,12 @@ export function selectClaim(id) {
                                 </select>
                             </div>
                             <div>
-                                <button class="btn-primary" onclick="createWorkOrderJob(${claim.id})" style="width: 100%; padding: 8px 12px; font-size: 0.85rem; height: 36px; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                                    ➕ Agregar Trabajo
+                                <button class="btn-primary" onclick="createWorkOrderJob(${claim.id})" style="width: 100%; padding: 8px 12px; font-size: 0.85rem; height: 36px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                    Agregar Trabajo
                                 </button>
                             </div>
                         </div>
