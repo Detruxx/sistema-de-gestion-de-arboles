@@ -102,9 +102,9 @@ class WorkOrderController extends Controller
     /**
      * Un trabajador de empresa se postula para realizar un trabajo.
      */
-    public function applyforTender($id)
+    public function applyForTender($id)
     {
-        $workOrder = workOrder::findOrFail($id);
+        $workOrder = WorkOrder::findOrFail($id);
 
         $workOrder->update([
             'company_id' => auth()->user()->company_id

@@ -355,19 +355,5 @@ class RequestController extends Controller
         ], 200);
     }
 
-    /**
-     * Asigna una empresa a un reclamo.
-     */
-    public function assingCompany(Request $request, $id)
-    {
-        $requestModel = RequestModel::findOrFail($id);
-        
-        $requestModel->update([
-            'company_id' => $request->input('company_id')
-        ]);
 
-        return response()->json([
-            'status' => 'success',
-        ],200);
-    }   
 }

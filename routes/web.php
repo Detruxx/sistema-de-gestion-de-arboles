@@ -95,8 +95,9 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/configuracion', [ProfileController::class, 'configuracion'])->name('profile.configuracion');
         Route::post('/configuracion/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
-        Route::get('/mis-reclamos', [ProfileController::class, 'misReclamos'])->name('profile.mis-reclamos');
-        Route::post('/reclamos/{id}/status', [ProfileController::class, 'updateReclamoStatus'])->name('profile.reclamo.status');
+        Route::post('/configuracion/photo', [ProfileController::class, 'updateProfilePhoto'])->name('profile.photo.update');
+        Route::get('/mis-reclamos', [ProfileController::class, 'myRequests'])->name('profile.mis-reclamos');
+        Route::post('/reclamos/{id}/status', [ProfileController::class, 'updateRequestStatus'])->name('profile.reclamo.status');
         Route::get('/bandeja-entrada', [ProfileController::class, 'misMensajes'])->name('profile.bandeja-entrada');
         Route::get('/mensajes', [ContactController::class, 'index'])->name('contact.index');
         Route::post('/mensajes/{id}/read', [ContactController::class, 'markRead'])->name('contact.read');
@@ -158,6 +159,4 @@ Route::prefix('admin')->group(function () {
 
     //Carga el selector desplegable para asignar empresas
     Route::get('/companies', [CompanyController::class, 'getActiveCompanies']);
-    //Guarda la empresa asignada al reclamo
-    Route::patch('/claims/{id}/assign-company', [RequestController::class, 'assignCompany']);
 });

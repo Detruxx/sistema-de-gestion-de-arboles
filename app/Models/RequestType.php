@@ -18,7 +18,7 @@ class RequestType extends Model
     ];
 
     // Relacion con Request
-    public function request()
+    public function requests()
     {
         return $this->hasMany(Request::class, 'request_type_id');
     }
