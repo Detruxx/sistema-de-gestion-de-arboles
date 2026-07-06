@@ -17,15 +17,11 @@ class WorkOrderController extends Controller
         //Traemos todas las ordenes de trabajo ordenadas de manera descendente
         $workOrders = WorkOrder::with(['request', 'company'])->orderBy('id', 'desc')->get();
 
-        //Respuesta JSON para el frontend y api si lo necesitan
-        if($request->wantsJson() || $request->is('api/*')){
-            return response()->json([
-                'status' => 'success',
-                'data' => $workOrders,
-            ], 200);
-        }
-
-        return view('work_orders.index', compact('workOrders'));
+        //Respuesta JSON para el frontend
+        return response()->json([
+            'status' => 'success',
+            'data' => $workOrders,
+        ], 200);
     }
 
     /**

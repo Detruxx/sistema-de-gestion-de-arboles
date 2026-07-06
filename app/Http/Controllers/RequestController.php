@@ -36,30 +36,14 @@ class RequestController extends Controller
             ];
         });
 
-        if ($request->wantsJson() || $request->is('api/*') || $request->is('requests')) {
-            return response()->json([
-                'status' => 'success',
-                'data' => $mapped
-            ], 200);
-        }
-
-        return view('requests.index', compact('mapped'));
+        return response()->json([
+            'status' => 'success',
+            'data' => $mapped
+        ], 200);
     }
 
-    /**
-     * Muestra el formulario para crear un nuevo reclamo.
-     */
-    public function create()
-    {
-        // 1. Traemos los tipos de reclamo de la base de datos
-        $tiposDeReclamo = RequestType::all();
-
-        // 2. Traemos las calles para que el vecino también elija dónde es el problema
-        $calles = Street::all();
-
-        // 3. Cargamos la vista "create" y le enviamos las dos variables
-        return view('requests.create', compact('tiposDeReclamo', 'calles'));
-    }
+    // El formulario de creación de reclamos ahora vive en forms.reclamos y es manejado directamente
+    // en las rutas web, por lo que el método create() ya no es necesario aquí.
 
     /**
      * Guarda un reclamo recién creado en la base de datos.

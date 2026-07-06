@@ -20,7 +20,7 @@ class CompanyPanelController extends Controller
             ->orderBy('execution_order', 'asc')
             ->get();
 
-        return view('company.dashboard', compact('orders'));
+        return view('dashboards.empresa', compact('orders'));
     }
 
     /**
