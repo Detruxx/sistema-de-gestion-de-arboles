@@ -7,7 +7,6 @@ use Illuminate\Database\Seeder;
 use App\Models\Request as TreeRequest;
 use App\Models\RequestStatusHistory;
 use App\Models\RequestStatus;
-use App\Models\Company; 
 use App\Models\User;
 
 class RequestSeeder extends Seeder
@@ -20,9 +19,6 @@ class RequestSeeder extends Seeder
         // Traemos los IDs de los estados usando sus slugs para no usar números fijos
         $openStatusId = RequestStatus::where('slug', 'open')->first()->id ?? 1;
         $relevatedStatusId = RequestStatus::where('slug', 'relevated')->first()->id ?? 2;
-
-        // Buscamos una empresa contratista de prueba si es que existen
-        $companyId = Company::first()->id ?? null;
 
         // Creamos un usuario vecino temporal para asociar al historial inicial
         $vecinoTemporal = User::factory()->create([
@@ -51,18 +47,16 @@ class RequestSeeder extends Seeder
         $reclamoMaestro = TreeRequest::factory()->create([
             'street_id' => 1,
             'request_type_id' => 1,
-            'request_status_id' => $relevatedStatusId, // 📍 Dinámico
+            'request_status_id' => $relevatedStatusId, //Dinámico
             'description' => 'Reclamo Original: Rama gigante a punto de caer',
-            'company_id' => $companyId, // 📍 Asignamos empresa para simular el circuito completo del PDF
         ]);
 
         $reclamoDuplicado = TreeRequest::factory()->create([
             'street_id' => 1,
             'request_type_id' => 1, // Misma calle y mismo tipo de reclamo
-            'request_status_id' => $openStatusId, // 📍 Dinámico
+            'request_status_id' => $openStatusId, // Dinámico
             'description' => 'Reclamo Duplicado: Vecino reporta la misma rama gigante',
             'suggested_duplicate_id' => $reclamoMaestro->id,
-            'company_id' => null, // Los duplicados nacen sin empresa asignada
         ]);
 
         $reclamos->push($reclamoMaestro);
