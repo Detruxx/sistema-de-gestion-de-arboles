@@ -14,8 +14,10 @@ class PriorityController extends Controller
     public function index()
     {
         $priorities = Priority::OrderBy('id', 'asc')->get();
-
-        return view('admin.priorities.index', compact('priorities'));
+        return response()->json([
+            'status' => 'success',
+            'data' => $priorities
+        ], 200);
     }
 
     /**

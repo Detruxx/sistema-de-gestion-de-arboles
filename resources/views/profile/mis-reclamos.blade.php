@@ -3,7 +3,8 @@
 @section('title', 'Mis Reclamos | TreeBA')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/profile/profile.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/profile/mis-reclamos.css') }}">
 @endsection
 
 @section('content')
@@ -41,6 +42,7 @@
                         <select id="sort-reclamos" class="form-control sort-select" onchange="sortList('reclamos-list-container', this.value)">
                             <option value="desc">Más nuevo a más antiguo</option>
                             <option value="asc">Más antiguo a más nuevo</option>
+                            <option value="new">Nuevos/Sin Leer</option>
                         </select>
                     </div>
                 </div>
@@ -50,7 +52,14 @@
                         @php
                             // Ajustes para soportar tanto objetos Eloquent como arrays de la simulacion
                             $id = is_array($rec) ? $rec['id'] : $rec->id;
-                            $status = is_array($rec) ? $rec['status'] : $rec->status;
+                            $statusObj = is_array($rec) ? null : $rec->status;
+                            $statusSlug = is_array($rec) ? $rec['status'] : ($statusObj ? $statusObj->slug : 'open');
+                            
+                            // Mapear descartado a denied para consistencia
+                            if ($statusSlug === 'discarded') {
+                                $statusSlug = 'denied';
+                            }
+                            
                             $typeName = is_array($rec) ? $rec['type_name'] : ($rec->Request_Type ? $rec->Request_Type->type_name : 'Reclamo General');
                             $streetName = is_array($rec) ? $rec['street_name'] : ($rec->street ? $rec->street->street_name . ' ' . $rec->street->street_number : 'Ubicación no especificada');
                             $description = is_array($rec) ? $rec['description'] : $rec->description;
@@ -59,20 +68,113 @@
                             $createdAt = is_array($rec) ? $rec['created_at'] : $rec->created_at->format('Y-m-d H:i:s');
                             $dateFormatted = date('d/m/Y', strtotime($createdAt));
 
-                            // Clasificar el color del estado
+                            // Clasificar el color y badge de la tarjeta
                             $statusClass = 'open';
                             $statusText = 'En revisión';
-                            if ($status === 'resolved' || $status === 'resolved') {
+                            if ($statusSlug === 'resolved' || $statusSlug === 'certified') {
                                 $statusClass = 'resolved';
                                 $statusText = 'Completado';
-                            } elseif ($status === 'discarded') {
+                            } elseif ($statusSlug === 'denied' || $statusSlug === 'vinculated') {
                                 $statusClass = 'discarded';
-                                $statusText = 'Descartado';
+                                $statusText = $statusSlug === 'denied' ? 'Rechazado' : 'Vinculado';
                             }
                             $timestamp = strtotime($createdAt);
+                            // SKELETON PARA EL BACKEND: Reemplazar false por la lógica real de "no leído" de la base de datos
+                            $isNew = is_array($rec) ? ($rec['is_new'] ?? false) : false; 
+
+                            // Stepper de estados lineales (1 al 6)
+                            $linearSteps = [
+                                ['status_name' => 'Pendiente', 'slug' => 'open', 'sequence' => 1, 'color' => '#eab308'],
+                                ['status_name' => 'Relevado / Inspeccionado', 'slug' => 'relevated', 'sequence' => 2, 'color' => '#ea580c'],
+                                ['status_name' => 'Programado', 'slug' => 'scheduled', 'sequence' => 3, 'color' => '#6b21a8'],
+                                ['status_name' => 'En curso', 'slug' => 'in_progress', 'sequence' => 4, 'color' => '#2563eb'],
+                                ['status_name' => 'Completado', 'slug' => 'resolved', 'sequence' => 5, 'color' => '#22c55e'],
+                                ['status_name' => 'Certificado', 'slug' => 'certified', 'sequence' => 6, 'color' => '#15803d'],
+                            ];
+
+                            // Buscar si el estado es de excepción terminal
+                            $terminalStatus = null;
+                            if ($statusSlug === 'denied') {
+                                $terminalStatus = ['status_name' => 'Denegado', 'slug' => 'denied', 'color' => '#ef4444'];
+                            } elseif ($statusSlug === 'vinculated') {
+                                $terminalStatus = ['status_name' => 'Vinculado (Duplicado)', 'slug' => 'vinculated', 'color' => '#d946ef'];
+                            }
+
+                            $isTerminalException = ($terminalStatus !== null);
+
+                            // Obtener la secuencia actual
+                            $currentSeq = 0;
+                            $currentStatusColor = '#eab308';
+                            $currentStatusName = 'Pendiente';
+                            if (!$isTerminalException) {
+                                foreach ($linearSteps as $ls) {
+                                    if ($ls['slug'] === $statusSlug) {
+                                        $currentSeq = $ls['sequence'];
+                                        $currentStatusColor = $ls['color'];
+                                        $currentStatusName = $ls['status_name'];
+                                        break;
+                                    }
+                                }
+                            } else {
+                                $currentStatusColor = $terminalStatus['color'];
+                                $currentStatusName = $terminalStatus['status_name'];
+                            }
+
+                            // Calcular porcentaje de relleno
+                            $progressPercent = 0;
+                            if (!$isTerminalException && $currentSeq > 1) {
+                                $progressPercent = (($currentSeq - 1) / (count($linearSteps) - 1)) * 100;
+                            }
+                            $lineBg = $isTerminalException ? $currentStatusColor : '#15803d';
+
+                            // Historial de cambios
+                            if (is_array($rec)) {
+                                $histories = [];
+                                $createdAtTime = strtotime($createdAt);
+                                $histories[] = (object)[
+                                    'created_at' => date('Y-m-d H:i:s', $createdAtTime),
+                                    'status' => (object)['status_name' => 'Pendiente', 'color' => '#eab308', 'slug' => 'open'],
+                                    'justification' => 'Registro inicial del reclamo.'
+                                ];
+                                if ($statusSlug === 'resolved') {
+                                    $histories[] = (object)[
+                                        'created_at' => date('Y-m-d H:i:s', $createdAtTime + 86400),
+                                        'status' => (object)['status_name' => 'Relevado / Inspeccionado', 'color' => '#ea580c', 'slug' => 'relevated'],
+                                        'justification' => 'El inspector visitó el lugar y constató la situación de la plantera y del ejemplar.'
+                                    ];
+                                    $histories[] = (object)[
+                                        'created_at' => date('Y-m-d H:i:s', $createdAtTime + 172800),
+                                        'status' => (object)['status_name' => 'Programado', 'color' => '#6b21a8', 'slug' => 'scheduled'],
+                                        'justification' => 'Se programó la cuadrilla de poda/remoción correspondiente.'
+                                    ];
+                                    $histories[] = (object)[
+                                        'created_at' => date('Y-m-d H:i:s', $createdAtTime + 259200),
+                                        'status' => (object)['status_name' => 'En curso', 'color' => '#2563eb', 'slug' => 'in_progress'],
+                                        'justification' => 'La cuadrilla contratista comunal se encuentra operando en la zona.'
+                                    ];
+                                    $histories[] = (object)[
+                                        'created_at' => date('Y-m-d H:i:s', $createdAtTime + 345600),
+                                        'status' => (object)['status_name' => 'Completado', 'color' => '#22c55e', 'slug' => 'resolved'],
+                                        'justification' => 'Los trabajos concluyeron de manera satisfactoria. La incidencia queda cerrada.'
+                                    ];
+                                } elseif ($statusSlug === 'denied') {
+                                    $histories[] = (object)[
+                                        'created_at' => date('Y-m-d H:i:s', $createdAtTime + 86400),
+                                        'status' => (object)['status_name' => 'Denegado', 'color' => '#ef4444', 'slug' => 'denied'],
+                                        'justification' => 'El reclamo fue denegado debido a que los datos de ubicación no corresponden o la intervención ya fue resuelta.'
+                                    ];
+                                }
+                            } else {
+                                $histories = $rec->histories;
+                            }
                         @endphp
 
-                        <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}">
+                        <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}" data-is-new="{{ $isNew ? 'true' : 'false' }}" data-type="reclamo" data-id="{{ $id }}" style="position: relative;">
+                            @if($isNew)
+                                <div class="new-dot-indicator" style="position: absolute; left: -14px; top: 15px;">
+                                    <x-layouts.notification-badge isDot="true" />
+                                </div>
+                            @endif
                             <summary class="reclamo-card-summary">
                                 <div class="card-summary-left">
                                     <span class="reclamo-id">#{{ $id }}</span>
@@ -112,20 +214,94 @@
                                     @endif
                                 </div>
 
-                                @if($statusClass === 'resolved')
-                                    <div class="inspector-response-box">
-                                        <div class="response-header">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                            </svg>
-                                            <strong>Resolución del Inspector</strong>
+                                <!-- Stepper de Progreso (Lectura) -->
+                                <div class="claim-progress-container">
+                                    <div class="claim-progress-title">Progreso del Reclamo</div>
+                                    <div class="claim-steps-wrapper">
+                                        <div class="claim-progress-line">
+                                            <div class="claim-progress-line-fill" style="width: {{ $progressPercent }}%; background: {{ $lineBg }};"></div>
                                         </div>
-                                        <p>
-                                            El área operativa de la Comuna ha verificado y resuelto la incidencia reportada de forma satisfactoria. Las tareas de mantenimiento han finalizado.
-                                        </p>
+                                        @foreach($linearSteps as $step)
+                                            @php
+                                                $isActive = !$isTerminalException && $step['sequence'] === $currentSeq;
+                                                $isPassed = !$isTerminalException && $step['sequence'] < $currentSeq;
+
+                                                $bgNum = '#ffffff';
+                                                $borderNum = '#e5e7eb';
+                                                $colorNum = '#9ca3af';
+                                                $colorLbl = '#9ca3af';
+                                                $fontLbl = '500';
+
+                                                $labelText = $step['status_name'];
+                                                $numText = $step['sequence'];
+                                                $nodeClass = '';
+
+                                                if ($isTerminalException && $step['sequence'] === 1) {
+                                                    $bgNum = $currentStatusColor;
+                                                    $borderNum = $currentStatusColor;
+                                                    $colorNum = '#ffffff';
+                                                    $colorLbl = $currentStatusColor;
+                                                    $labelText = $currentStatusName;
+                                                    $numText = $statusSlug === 'denied' ? '✖' : '●';
+                                                    $nodeClass = 'active';
+                                                } elseif ($isActive) {
+                                                    $bgNum = $currentStatusColor;
+                                                    $borderNum = $currentStatusColor;
+                                                    $colorNum = '#ffffff';
+                                                    $colorLbl = $currentStatusColor;
+                                                    $fontLbl = '700';
+                                                    $nodeClass = 'active';
+                                                } elseif ($isPassed) {
+                                                    $bgNum = '#15803d';
+                                                    $borderNum = '#15803d';
+                                                    $colorNum = '#ffffff';
+                                                    $colorLbl = '#15803d';
+                                                    $nodeClass = 'passed';
+                                                }
+                                            @endphp
+                                            <div class="claim-step-node {{ $nodeClass }}">
+                                                <div class="claim-step-circle {{ $isTerminalException && $step['sequence'] === 1 && $statusSlug === 'denied' ? 'is-denied' : '' }}" style="background: {{ $bgNum }}; border-color: {{ $borderNum }}; color: {{ $colorNum }};">
+                                                    {{ $numText }}
+                                                </div>
+                                                <span class="claim-step-label" style="color: {{ $colorLbl }}; font-weight: {{ $fontLbl }};">
+                                                    {{ $labelText }}
+                                                </span>
+                                            </div>
+                                        @endforeach
                                     </div>
-                                @endif
+                                </div>
+
+                                <!-- Historial de Cambios / Mensajes del Inspector -->
+                                <div class="claim-history-container">
+                                    <div class="claim-history-title">Historial de Actualizaciones</div>
+                                    <div class="claim-history-list">
+                                        @if(count($histories) === 0)
+                                            <p style="color: #6b7280; font-style: italic; font-size: 0.9rem;">No hay actualizaciones registradas para este reclamo.</p>
+                                        @else
+                                            @foreach($histories as $history)
+                                                @php
+                                                    $hStatusName = $history->status ? $history->status->status_name : 'Actualización';
+                                                    $hColor = $history->status ? $history->status->color : '#6b7280';
+                                                    $hDate = date('d/m/Y H:i', strtotime($history->created_at));
+                                                @endphp
+                                                <div class="claim-history-item">
+                                                    <div class="history-meta">
+                                                        <span style="font-weight: 600;">{{ $hDate }} hs</span>
+                                                        <span style="font-size: 0.75rem; color: #9ca3af;">Por Inspector</span>
+                                                    </div>
+                                                    <div class="history-content">
+                                                        <span class="history-status-badge" style="background-color: {{ $hColor }};">
+                                                            {{ $hStatusName }}
+                                                        </span>
+                                                        <p class="history-justification">
+                                                            {{ $history->justification ?: 'Estado de la solicitud actualizado por el área técnica.' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </div>
 
                                 <!-- Sección de Cancelación del Reclamo (para Vecinos) -->
                                 @if($statusClass !== 'resolved' && $statusClass !== 'discarded')
@@ -188,6 +364,7 @@
                             <select id="sort-plantaciones" class="form-control sort-select" onchange="sortList('plantaciones-list-container', this.value)">
                                 <option value="desc">Más nuevo a más antiguo</option>
                                 <option value="asc">Más antiguo a más nuevo</option>
+                                <option value="new">Nuevos/Sin Leer</option>
                             </select>
                         </div>
                     </div>
@@ -213,9 +390,16 @@
                                     $statusClass = 'discarded';
                                     $statusText = 'Rechazada';
                                 }
+                                // SKELETON PARA EL BACKEND: Reemplazar false por la lógica real
+                                $isNew = is_array($rec) ? ($rec['is_new'] ?? false) : false;
                             @endphp
 
-                            <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}">
+                            <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}" data-is-new="{{ $isNew ? 'true' : 'false' }}" data-type="plantacion" data-id="{{ $id }}" style="position: relative;">
+                                @if($isNew)
+                                    <div class="new-dot-indicator" style="position: absolute; left: -14px; top: 15px;">
+                                        <x-layouts.notification-badge isDot="true" />
+                                    </div>
+                                @endif
                                 <summary class="reclamo-card-summary">
                                     <div class="card-summary-left">
                                         <span class="reclamo-id">#{{ $id }}</span>
@@ -342,18 +526,80 @@
             if (!container) return;
             const items = Array.from(container.querySelectorAll('.reclamo-card'));
             
-            items.sort((a, b) => {
-                const timeA = parseInt(a.getAttribute('data-timestamp'));
-                const timeB = parseInt(b.getAttribute('data-timestamp'));
-                if (order === 'desc') {
-                    return timeB - timeA;
+            items.forEach(item => {
+                if (order === 'new') {
+                    // Ocultar los que no son nuevos
+                    if (item.getAttribute('data-is-new') === 'true') {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
                 } else {
-                    return timeA - timeB;
+                    item.style.display = 'block';
                 }
             });
-            
-            // Re-append in new order
-            items.forEach(item => container.appendChild(item));
+
+            if (order !== 'new') {
+                items.sort((a, b) => {
+                    const timeA = parseInt(a.getAttribute('data-timestamp'));
+                    const timeB = parseInt(b.getAttribute('data-timestamp'));
+                    if (order === 'desc') {
+                        return timeB - timeA;
+                    } else {
+                        return timeA - timeB;
+                    }
+                });
+                // Re-append in new order
+                items.forEach(item => container.appendChild(item));
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            applyLocalCancellations();
+
+            // Logica para marcar como leido al abrir un <details>
+            const detailCards = document.querySelectorAll('.reclamo-card');
+            detailCards.forEach(card => {
+                card.addEventListener('toggle', function() {
+                    if (this.open && this.getAttribute('data-is-new') === 'true') {
+                        // Marcarlo como leido localmente
+                        this.setAttribute('data-is-new', 'false');
+                        
+                        // Remover el puntito rojo flotante
+                        const dot = this.querySelector('.new-dot-indicator');
+                        if (dot) dot.remove();
+
+                        // Restar del menu superior (Mis Reclamos)
+                        const claimsBadge = document.getElementById('badge-unread-claims');
+                        if (claimsBadge) {
+                            let count = parseInt(claimsBadge.innerText) || 0;
+                            count--;
+                            if (count <= 0) {
+                                claimsBadge.remove(); // Si llega a 0, borrar la burbuja entera
+                            } else {
+                                claimsBadge.innerText = count;
+                            }
+                        }
+
+                        // Revisar si ya no hay más notificaciones de NADA para borrar el global dot
+                        checkGlobalDot();
+
+                        // SKELETON PARA EL BACKEND: Llamada para guardar en la BD
+                        // const type = this.getAttribute('data-type');
+                        // const id = this.getAttribute('data-id');
+                        // fetch(`/api/mark-read/${type}/${id}`, { method: 'POST' });
+                    }
+                });
+            });
+        });
+
+        function checkGlobalDot() {
+            const claimsBadge = document.getElementById('badge-unread-claims');
+            const msgsBadge = document.getElementById('badge-unread-messages');
+            if (!claimsBadge && !msgsBadge) {
+                const globalDot = document.getElementById('badge-global-dot');
+                if (globalDot) globalDot.remove();
+            }
         }
     </script>
 @endsection

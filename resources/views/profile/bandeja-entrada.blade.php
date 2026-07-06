@@ -4,59 +4,7 @@
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
-    <style>
-        .msg-response-preview {
-            font-size: 0.95rem;
-            color: var(--forest-night);
-            font-style: italic;
-            border-left: 3px solid var(--living-moss);
-            padding-left: 10px;
-            margin-top: 8px;
-        }
-        .msg-original-preview {
-            font-size: 0.95rem;
-            color: var(--forest-night);
-            opacity: 0.8;
-            margin-top: 8px;
-        }
-        
-        .message-full-response {
-            background-color: #e8f5e9;
-            border: 1px solid #a5d6a7;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-        .message-full-response h4 {
-            color: #2e7d32;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-family: var(--font-display);
-        }
-        .message-full-response p {
-            color: #1b5e20;
-            font-size: 1.05rem;
-            margin: 0;
-            line-height: 1.6;
-        }
-        
-        .message-original-content {
-            background-color: rgba(45, 122, 79, 0.05);
-            border-left: 4px solid rgba(45, 122, 79, 0.3);
-            padding: 15px 20px;
-            border-radius: 0 8px 8px 0;
-        }
-        .message-original-content h5 {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            color: var(--deep-canopy);
-            margin-bottom: 8px;
-            opacity: 0.8;
-            font-family: var(--font-display);
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/profile/bandeja-entrada.css') }}">
 @endsection
 
 @section('content')
@@ -84,6 +32,7 @@
                         <select id="sort-mensajes" class="form-control sort-select" onchange="sortList('mensajes-list-container', this.value)">
                             <option value="desc">Más nuevo a más antiguo</option>
                             <option value="asc">Más antiguo a más nuevo</option>
+                            <option value="new">Nuevos/Sin Leer</option>
                         </select>
                     </div>
                 </div>
@@ -105,9 +54,16 @@
                                 $statusClass = 'resolved';
                                 $statusText = 'Respondido';
                             }
+                            // SKELETON PARA EL BACKEND: Reemplazar false por la lógica real
+                            $isNew = is_array($msg) ? ($msg['is_new'] ?? false) : false;
                         @endphp
 
-                        <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}">
+                        <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}" data-is-new="{{ $isNew ? 'true' : 'false' }}" data-type="mensaje" data-id="{{ $id }}" style="position: relative;">
+                            @if($isNew)
+                                <div class="new-dot-indicator" style="position: absolute; left: -14px; top: 15px;">
+                                    <x-layouts.notification-badge isDot="true" />
+                                </div>
+                            @endif
                             <summary class="reclamo-card-summary">
                                 <div class="card-summary-left">
                                     <span class="reclamo-id" style="background-color: transparent; border: 1px solid var(--living-moss); padding: 8px; border-radius: 12px;">
@@ -177,17 +133,75 @@
             if (!container) return;
             const items = Array.from(container.querySelectorAll('.reclamo-card'));
             
-            items.sort((a, b) => {
-                const timeA = parseInt(a.getAttribute('data-timestamp'));
-                const timeB = parseInt(b.getAttribute('data-timestamp'));
-                if (order === 'desc') {
-                    return timeB - timeA;
+            items.forEach(item => {
+                if (order === 'new') {
+                    if (item.getAttribute('data-is-new') === 'true') {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
                 } else {
-                    return timeA - timeB;
+                    item.style.display = 'block';
                 }
             });
-            
-            items.forEach(item => container.appendChild(item));
+
+            if (order !== 'new') {
+                items.sort((a, b) => {
+                    const timeA = parseInt(a.getAttribute('data-timestamp'));
+                    const timeB = parseInt(b.getAttribute('data-timestamp'));
+                    if (order === 'desc') {
+                        return timeB - timeA;
+                    } else {
+                        return timeA - timeB;
+                    }
+                });
+                
+                items.forEach(item => container.appendChild(item));
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const detailCards = document.querySelectorAll('.reclamo-card');
+            detailCards.forEach(card => {
+                card.addEventListener('toggle', function() {
+                    if (this.open && this.getAttribute('data-is-new') === 'true') {
+                        // Marcarlo como leido localmente
+                        this.setAttribute('data-is-new', 'false');
+                        
+                        // Remover el puntito rojo flotante
+                        const dot = this.querySelector('.new-dot-indicator');
+                        if (dot) dot.remove();
+
+                        // Restar del menu superior (Bandeja de Entrada)
+                        const msgsBadge = document.getElementById('badge-unread-messages');
+                        if (msgsBadge) {
+                            let count = parseInt(msgsBadge.innerText) || 0;
+                            count--;
+                            if (count <= 0) {
+                                msgsBadge.remove();
+                            } else {
+                                msgsBadge.innerText = count;
+                            }
+                        }
+
+                        // Revisar si ya no hay más notificaciones
+                        checkGlobalDot();
+
+                        // SKELETON PARA EL BACKEND
+                        // const id = this.getAttribute('data-id');
+                        // fetch(`/api/mark-read/mensaje/${id}`, { method: 'POST' });
+                    }
+                });
+            });
+        });
+
+        function checkGlobalDot() {
+            const claimsBadge = document.getElementById('badge-unread-claims');
+            const msgsBadge = document.getElementById('badge-unread-messages');
+            if (!claimsBadge && !msgsBadge) {
+                const globalDot = document.getElementById('badge-global-dot');
+                if (globalDot) globalDot.remove();
+            }
         }
     </script>
 @endsection

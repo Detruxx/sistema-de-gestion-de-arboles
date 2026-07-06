@@ -1,3 +1,7 @@
+/**
+ * Vista de Autenticación: Lógica e interacciones para el inicio de sesión.
+ */
+
 // ================= LÓGICA DE LOGIN =================
 function switchRole(role) {
     const tabVecino = document.getElementById('tab-vecino');

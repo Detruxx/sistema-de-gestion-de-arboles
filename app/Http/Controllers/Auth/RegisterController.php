@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
 {
@@ -54,10 +55,14 @@ class RegisterController extends Controller
             'role'       => 'vecino', // Por defecto todos entran con el rol básico de ciudadano
         ]);
 
-        // 3. Iniciamos la sesión automáticamente para mejorar la UX
+        // Ves esto orne?
+        // 3. Disparamos el evento de Laravel para enviar el correo de verificación
+        event(new Registered($user));
+
+        // 4. Iniciamos la sesión automáticamente
         Auth::login($user);
 
-        // 4. Redirección final con un mensaje flash de éxito por si lo quieren mostrar en la vista
-        return redirect('/')->with('success', '¡Te registraste correctamente!');
+        // 5. Lo redirigimos a la pantalla de aviso de verificación (verification.notice)
+        return redirect()->route('verification.notice');
     }
 }

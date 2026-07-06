@@ -8,6 +8,7 @@ use App\Models\Street;
 use App\Models\Priority;
 use App\Models\Company;
 use Illuminate\Http\Request;
+use App\Models\Request as RequestModel;
 use Illuminate\Support\Facades\DB;
 
 class RequestController extends Controller
@@ -35,72 +36,58 @@ class RequestController extends Controller
             ];
         });
 
-        if ($request->wantsJson() || $request->is('api/*') || $request->is('requests')) {
-            return response()->json([
-                'status' => 'success',
-                'data' => $mapped
-            ], 200);
-        }
-
-        return view('requests.index', compact('mapped'));
+        return response()->json([
+            'status' => 'success',
+            'data' => $mapped
+        ], 200);
     }
 
-    /**
-     * Muestra el formulario para crear un nuevo reclamo.
-     */
-    public function create()
-    {
-        // 1. Traemos los tipos de reclamo de la base de datos
-        $tiposDeReclamo = RequestType::all();
-
-        // 2. Traemos las calles para que el vecino también elija dónde es el problema
-        $calles = Street::all();
-
-        // 3. Cargamos la vista "create" y le enviamos las dos variables
-        return view('requests.create', compact('tiposDeReclamo', 'calles'));
-    }
+    // El formulario de creación de reclamos ahora vive en forms.reclamos y es manejado directamente
+    // en las rutas web, por lo que el método create() ya no es necesario aquí.
 
     /**
      * Guarda un reclamo recién creado en la base de datos.
      */
     public function store(Request $request, \App\Services\StreetService $streetService)
     {
-        // 1. Validamos los datos de entrada
+        // Validamos los datos de entrada
         $request->validate([
             'request_type_id' => 'required|exists:request_types,id',
             'address'         => 'required|string', 
             'description'     => 'required|string|min:10',
             'tree_id'         => 'nullable|exists:trees,id',
-            'foto'            => 'nullable|image|mimes:jpeg,png,jpg|max:5120', // Opcional, pero debe ser imagen si se envía
+            'foto'            => 'nullable|array|max:3', // Valida que vengan como máximo 3 fotos 
+            'foto.*'          => 'image|mimes:jpeg,png,jpg,webp,heic|max:10240', 
         ]);
 
         $userId = auth()->id() ?? 1;
 
-        // 2. Delegamos la lógica de la calle al StreetService (SRP - Responsabilidad Única)
+        // Delegamos la lógica de la calle 
         $street = $streetService->resolveFromAddress($request->address);
 
-        // 3. Manejo de la subida de foto
-        $photoPath = 'fotos/reclamos/default.jpg';
+        // Manejo de la subida de múltiples fotos 
+        $photoPaths = [];
         if ($request->hasFile('foto')) {
-            // Guarda el archivo en storage/app/public/fotos/reclamos y devuelve el path
-            $photoPath = $request->file('foto')->store('fotos/reclamos', 'public');
+            foreach ($request->file('foto') as $file) {
+                $photoPaths[] = $file->store('fotos/reclamos', 'public');
+            }
         }
 
-        // Algoritmo de Detección de Duplicados (Híbrido)
+        // Algoritmo de Detección de Duplicados 
         $estadosTerminalesIds = \App\Models\RequestStatus::where('is_terminal', true)->pluck('id')->toArray();
         $posibleDuplicado = \App\Models\Request::where('street_id', $street->id)
                                 ->where('request_type_id', $request->request_type_id)
                                 ->whereNotIn('request_status_id', $estadosTerminalesIds)
                                 ->first();
 
-        // 4. Crear el reclamo en la base de datos
+        // Crear el reclamo en la base de datos
         $incident = \App\Models\Request::create([
             'user_id'           => $userId,
             'tree_id'           => $request->tree_id,
             'request_type_id'   => $request->request_type_id,
             'street_id'         => $street->id,
             'description'       => $request->description,
-            'path'              => $photoPath,
+            'path'              => $photoPaths, // Guardamos la colección de rutas completa
             'request_status_id' => 1,
             'suggested_duplicate_id' => $posibleDuplicado ? $posibleDuplicado->id : null,
         ]);
@@ -112,7 +99,7 @@ class RequestController extends Controller
             'justification'     => 'Registro inicial del reclamo.',
         ]);
 
-        // Responder en JSON para el frontend
+        // Responder en JSON 
         if ($request->wantsJson() || $request->is('api/*') || $request->is('requests')) {
             return response()->json([
                 'status'    => 'success',
@@ -166,30 +153,6 @@ class RequestController extends Controller
                 'respuesta_admin' => $respuestaAdmin
             ]
         ], 200);
-    }
-
-    /**
-     * Muestra el formulario para editar el reclamo especificado.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Actualiza el reclamo especificado en la base de datos.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Elimina el reclamo especificado de la base de datos.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 
     /**
@@ -350,7 +313,7 @@ class RequestController extends Controller
 
         if ($requests->isEmpty()) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'No se encontraron solicitudes',
             ], 404);
         }
@@ -373,7 +336,7 @@ class RequestController extends Controller
             
         return response()->json([
             'status' => 'success',
-            'data' => $statuses
+            'data'   => $statuses
         ], 200);
     }
 }

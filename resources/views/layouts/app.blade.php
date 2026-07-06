@@ -17,7 +17,7 @@
     @yield('styles') <!-- Aca se colocan estilos especificos de cada vista -->
     
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=1.1"> <!-- Aca va el css de la pagina -->
-    <link rel="stylesheet" href="{{ asset('css/generales/modal.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/shared/modal.css') }}">
 </head>
 <body class="@yield('body-class')">
     @yield('canvas') <!-- Aca va el canvas de la pagina -->
@@ -64,8 +64,14 @@
                 <a href="/login" class="nav-pill btn-login @yield('active-login')">Login</a>
             @endguest
             @auth <!-- Si el usuario esta logueado, se muestra el menu de perfil -->
+                @php
+                    // TODO (Backend): Reemplazar estas variables hardcodeadas con datos reales (ej. desde el controlador, View Composer, o Auth::user())
+                    $unreadClaimsCount = 2; // Número de notificaciones no leídas en Mis Reclamos
+                    $unreadMessagesCount = 1; // Número de mensajes no leídos en la Bandeja de Entrada
+                    $hasAnyNotification = ($unreadClaimsCount > 0 || $unreadMessagesCount > 0);
+                @endphp
                 <div class="nav-dropdown">
-                    <button class="nav-pill dropdown-trigger" aria-expanded="false" style="background: none; border: 1px solid transparent; padding: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; color: var(--paper-white); overflow: hidden;" title="Perfil de {{ Auth::user()->name }}">
+                    <button class="nav-pill dropdown-trigger" aria-expanded="false" style="position: relative; background: none; border: 1px solid transparent; padding: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; color: var(--paper-white); overflow: visible;" title="Perfil de {{ Auth::user()->name }}">
                         <!-- Icono SVG de persona (cabeza y cuerpo) o imagen del avatar -->
                         <span id="nav-avatar-container" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 50%; overflow: hidden;">
                             <svg id="nav-avatar-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -74,18 +80,38 @@
                             </svg>
                             <img id="nav-avatar-img" src="" alt="Avatar" style="display: none; width: 100%; height: 100%; object-fit: cover;">
                         </span>
+                        <!-- Punto rojo de notificacion general -->
+                        @if(Auth::user()->role === 'vecino' && $hasAnyNotification)
+                            <x-layouts.notification-badge id="badge-global-dot" isDot="true" position="absolute" top="-2px" right="-2px" />
+                        @endif
                     </button>
                     <div class="dropdown-menu">
                         <a href="/configuracion">Mi Perfil</a>
+                        @if(in_array(Auth::user()->role, ['vecino', 'admin', 'inspector']))
+                            <a href="/mis-reclamos" style="display: flex; justify-content: space-between; align-items: center;">
+                                Mis Reclamos
+                                @if($unreadClaimsCount > 0)
+                                    <x-layouts.notification-badge id="badge-unread-claims" :count="$unreadClaimsCount" />
+                                @endif
+                            </a>
+                        @endif
                         @if(Auth::user()->role === 'vecino')
-                            <a href="/mis-reclamos">Mis Reclamos</a>
-                            <a href="/bandeja-entrada">Bandeja de Entrada</a>
+                            <a href="/bandeja-entrada" style="display: flex; justify-content: space-between; align-items: center;">
+                                Bandeja de Entrada
+                                @if($unreadMessagesCount > 0)
+                                    <x-layouts.notification-badge id="badge-unread-messages" :count="$unreadMessagesCount" />
+                                @endif
+                            </a>
+                        @elseif(Auth::user()->role === 'empresa')
+                            <a href="/dashboard/empresa">Panel de Empresa</a>
+                        @elseif(Auth::user()->role === 'inspector')
+                            <a href="/dashboard/inspector">Panel de Control</a>
                         @else
-                            <a href="/admin/dashboard">Panel de Control</a>
+                            <a href="/dashboard/admin">Panel de Control</a>
                         @endif
                         <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="border-top: 1px solid rgba(45, 122, 79, 0.15); color: #d32f2f; display: flex; justify-content: center; align-items: center; gap: 8px;">
                             <span>Cerrar Sesión</span>
-                            <img src="{{ asset('img/logout_icon_red.webp') }}" alt="Cerrar Sesión" style="width: 18px; height: auto;">
+                            <img src="{{ asset('img/buttons/logout_icon_red.webp') }}" alt="Cerrar Sesión" style="width: 18px; height: auto;">
                         </a>
                     </div>
                 </div>
@@ -99,7 +125,7 @@
     @yield('content') <!-- Aca va el contenido de la pagina el cual es propio de cada pagina-->
 
     @section('footer') <!-- Aca va el footer de la pagina -->
-    <footer class="main-footer">
+    <footer class="main-footer" style="position: relative; z-index: 20; background-color: var(--forest-night, #203528);">
         <div class="footer-container">
             <div class="footer-brand">
                 <div class="footer-logo">
@@ -132,10 +158,15 @@
                     @endguest
                     @auth
                         <li><a href="/configuracion">Configuración</a></li>
-                        @if(Auth::user()->role === 'vecino')
+                        @if(in_array(Auth::user()->role, ['vecino', 'admin', 'inspector']))
                             <li><a href="/mis-reclamos">Mis Reclamos</a></li>
-                        @else
-                            <li><a href="/admin/dashboard">Panel de Control</a></li>
+                        @endif
+                        @if(Auth::user()->role === 'empresa')
+                            <li><a href="/dashboard/empresa">Panel de Empresa</a></li>
+                        @elseif(Auth::user()->role === 'inspector')
+                            <li><a href="/dashboard/inspector">Panel de Control</a></li>
+                        @elseif(Auth::user()->role === 'admin')
+                            <li><a href="/dashboard/admin">Panel de Control</a></li>
                         @endif
                         <li><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="color: #d32f2f;">Cerrar Sesión</a></li>
                     @endauth
@@ -148,6 +179,7 @@
                     <li><a href="/tramites/reclamos">Reclamos y Solicitudes</a></li>
                     <li><a href="/tramites/plantacion">Solicitar Plantación</a></li>
                     <li><a href="/tramites/permisos">Permisos de Poda</a></li>
+                    <li><a href="/postulacion-empresa" style="font-weight: 600; color: var(--spring-leaf);">¡Postúlate como Empresa!</a></li>
                 </ul>
             </div>
             
@@ -187,8 +219,8 @@
     @show
 
     @yield('scripts') <!-- Aca van los scripts de cada vista -->
-    <script src="{{ asset('js/generales/navbar.js') }}"></script> <!-- script de la barra de navegacion -->
-    <script src="{{ asset('js/generales/reveal.js') }}"></script> <!-- script de revelacion de elementos -->
+    <script src="{{ asset('js/shared/navbar.js') }}"></script> <!-- script de la barra de navegacion -->
+    <script src="{{ asset('js/shared/reveal.js') }}"></script> <!-- script de revelacion de elementos -->
     <!-- Modal de Éxito Global -->
     <div id="success-modal" class="address-map-modal-overlay" style="display: none; align-items: center; justify-content: center; z-index: 9999; background: rgba(0, 0, 0, 0.7);">
         <div class="address-map-modal-container" style="background-color: var(--paper-white); max-width: 400px; text-align: center; padding: 40px 30px; border-radius: 20px;">
@@ -229,3 +261,4 @@
     </script>
 </body>
 </html>
+

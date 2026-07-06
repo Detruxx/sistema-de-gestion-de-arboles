@@ -6,13 +6,16 @@
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/auth/register.css') }}">
+
 @endsection
 
 @section('content')
-    <main class="tramites-page-container" style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
-        <div class="bg-blurred-image" style="background-image: url('{{ asset('images/home/hero-bg.jpg') }}'); opacity: 0.15; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;"></div>
+    <main class="tramites-page-container">
+        <!-- Top Vines & Leaves -->
+        <div class="login-bg-branches-left" style="background-image: url('{{ asset('img/user/vector_left.webp') }}'); position: absolute; top: 0; left: 0; width: 37.5%; height: 100%; background-size: cover; background-position: left center; background-repeat: no-repeat; z-index: 0; mix-blend-mode: multiply;"></div>
+        <div class="login-bg-branches-right" style="background-image: url('{{ asset('img/user/register_top_right.png') }}'); position: absolute; top: 0; right: 0; width: 37.5%; height: 100%; background-size: cover; background-position: right top; background-repeat: no-repeat; z-index: 0; mix-blend-mode: multiply;"></div>
         
-        <section class="register-wrapper reveal" style="max-width: 650px; width: 100%; position: relative; z-index: 10;">
+        <section class="register-wrapper reveal" style="width: 100%; position: relative; z-index: 10;">
             <div class="contact-form">
                 <div style="text-align: center; margin-bottom: 30px;">
                     <h2 style="font-family: var(--font-display); color: var(--deep-canopy); font-size: 2.2rem; margin-bottom: 8px;">Crear Cuenta</h2>
@@ -37,45 +40,41 @@
                 <form method="POST" action="/register" id="register-form">
                     @csrf
 
-                    <!-- Fila de Nombre y Apellido -->
-                    <div class="register-form-row">
-                        <div class="form-group register-form-group">
+                    <!-- Fila 1: Nombre, Apellido, DNI -->
+                    <div class="register-form-row" style="display: flex; gap: 15px;">
+                        <div class="form-group register-form-group" style="flex: 1;">
                             <label for="name">Nombre <span class="required-asterisk">*</span></label>
                             <input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="Juan" class="form-control" required autofocus>
                         </div>
-                        <div class="form-group register-form-group">
+                        <div class="form-group register-form-group" style="flex: 1;">
                             <label for="last_name">Apellido <span class="required-asterisk">*</span></label>
                             <input type="text" id="last_name" name="last_name" value="{{ old('last_name') }}" placeholder="Pérez" class="form-control" required>
                         </div>
-                    </div>
-
-                    <!-- Fila de Fecha Nacimiento y DNI -->
-                    <div class="register-form-row">
-                        <div class="form-group register-form-group">
-                            <label for="dob">Fecha de Nacimiento <span class="required-asterisk">*</span></label>
-                            <input type="date" id="dob" name="dob" value="{{ old('dob') }}" class="form-control" required>
-                        </div>
-                        <div class="form-group register-form-group">
+                        <div class="form-group register-form-group" style="flex: 1;">
                             <label for="dni">DNI <span class="required-asterisk">*</span></label>
                             <input type="text" id="dni" name="dni" value="{{ old('dni') }}" placeholder="12345678" class="form-control" required>
                         </div>
                     </div>
 
-                    <!-- Campo Domicilio (Residencia) -->
-                    <div class="form-group">
-                        <label for="address">Domicilio <span class="required-asterisk">*</span></label>
-                        <input type="text" id="address" name="address" value="{{ old('address') }}" placeholder="Av. de Mayo 1234, CABA" class="form-control" required>
+                    <!-- Fila 2: Fecha Nacimiento, Domicilio, Correo -->
+                    <div class="register-form-row" style="display: flex; gap: 15px;">
+                        <div class="form-group register-form-group" style="flex: 1;">
+                            <label for="dob">Nacimiento <span class="required-asterisk">*</span></label>
+                            <input type="date" id="dob" name="dob" value="{{ old('dob') }}" class="form-control" required>
+                        </div>
+                        <div class="form-group register-form-group" style="flex: 1;">
+                            <label for="address">Domicilio <span class="required-asterisk">*</span></label>
+                            <input type="text" id="address" name="address" value="{{ old('address') }}" placeholder="Av. de Mayo 1234" class="form-control" required>
+                        </div>
+                        <div class="form-group register-form-group" style="flex: 1;">
+                            <label for="email">Correo Electrónico <span class="required-asterisk">*</span></label>
+                            <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="juan@correo.com" class="form-control" required>
+                        </div>
                     </div>
 
-                    <!-- Campo Correo -->
-                    <div class="form-group">
-                        <label for="email">Correo Electrónico <span class="required-asterisk">*</span></label>
-                        <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="juan.perez@correo.com" class="form-control" required>
-                    </div>
-
-                    <!-- Fila de Contraseñas -->
-                    <div class="register-form-row">
-                        <div class="form-group register-form-group">
+                    <!-- Fila 3: Contraseñas -->
+                    <div class="register-form-row" style="display: flex; gap: 15px;">
+                        <div class="form-group register-form-group" style="flex: 1;">
                             <label for="password">Contraseña <span class="required-asterisk">*</span></label>
                             <div style="position: relative; display: flex; align-items: center;">
                                 <input type="password" id="password" name="password" placeholder="••••••••" class="form-control" required style="padding-right: 40px; width: 100%;">
@@ -87,7 +86,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="form-group register-form-group">
+                        <div class="form-group register-form-group" style="flex: 1;">
                             <label for="password_confirmation">Confirmar Contraseña <span class="required-asterisk">*</span></label>
                             <div style="position: relative; display: flex; align-items: center;">
                                 <input type="password" id="password_confirmation" name="password_confirmation" placeholder="••••••••" class="form-control" required style="padding-right: 40px; width: 100%;">

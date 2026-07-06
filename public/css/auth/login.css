@@ -1,4 +1,7 @@
-/* ================= Estilos de Login ================= */
+/**
+ * Estilos para la página de inicio de sesión (login.blade.php).
+ */
+
 .login-page-container {
     display: flex;
     align-items: center;
@@ -187,5 +190,20 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .login-bg-branches-left, .login-bg-branches-right {
+        width: 100% !important;
+        opacity: 0.08 !important; /* Marca de agua sutil en mobile */
+    }
+    .login-bg-branches-left {
+        background-position: top center !important;
+        background-size: cover !important;
+    }
+    .login-bg-branches-right {
+        background-position: bottom center !important;
+        background-size: cover !important;
     }
 }

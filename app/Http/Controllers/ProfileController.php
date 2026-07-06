@@ -14,7 +14,7 @@ class ProfileController extends Controller
     /**
      * Muestra la vista de configuracion del perfil.
      */
-    public function configuracion()
+    public function configuration()
     {
         $user = Auth::user();
         return view('profile.configuracion', compact('user'));
@@ -60,33 +60,33 @@ class ProfileController extends Controller
     /**
      * Muestra la lista de reclamos del vecino logueado (Los ultimos arriba).
      */
-    public function misReclamos(Request $request)
+    public function myRequests(Request $request)
     {
         $user = Auth::user();
         $userId = $user ? $user->id : 1;
 
-        $reclamos = collect();
+        $requests = collect();
         $isMock = false;
 
         try {
             // Intentar consultar base de datos
-            $reclamos = Reclamo::where('user_id', $userId)
-                ->with(['street', 'Request_Type', 'tree.specie'])
+            $requests = Request::where('user_id', $userId)
+                ->with(['street', 'RequestType', 'tree.specie']) 
                 ->orderBy('created_at', 'desc')
-                ->get();
+                ->get(); 
         } catch (\Exception $e) {
             $isMock = true;
         }
 
         // Si la consulta esta vacia o fallo la conexion, usamos Mock Data
-        if ($reclamos->isEmpty() || $isMock) {
+        if ($requests->isEmpty() || $isMock) {
             // Inicializamos la session con mock data si no existe
-            if (!$request->session()->has('mock_reclamos')) {
-                $this->initMockReclamos($request);
+            if (!$request->session()->has('mock_requests')) {
+                $this->initMockRequests($request);
             }
             // Filtrar solo los del usuario logueado (simulamos user_id = 1)
-            $allMock = collect($request->session()->get('mock_reclamos'));
-            $reclamos = $allMock->where('user_id', 1)->sortByDesc('created_at');
+            $allMock = collect($request->session()->get('mock_requests'));
+            $requests = $allMock->where('user_id', 1)->sortByDesc('created_at');
         }
 
         // Inicializamos y obtenemos Mock Data para Plantaciones
@@ -96,13 +96,14 @@ class ProfileController extends Controller
         $allMockPlantaciones = collect($request->session()->get('mock_plantaciones'));
         $plantaciones = $allMockPlantaciones->where('user_id', 1)->sortByDesc('created_at');
 
+        $reclamos = $requests;
         return view('profile.mis-reclamos', compact('reclamos', 'plantaciones'));
     }
-
+ 
     /**
      * Actualiza el estado del reclamo (completar o descartar).
      */
-    public function updateReclamoStatus(Request $request, $id)
+    public function updateRequestStatus(Request $request, $id)
     {
         $action = $request->input('action'); // 'completar' o 'descartar'
 
@@ -122,8 +123,8 @@ class ProfileController extends Controller
         }
 
         // Simulación en Session (Fallback)
-        if ($request->session()->has('mock_reclamos')) {
-            $mocks = $request->session()->get('mock_reclamos');
+        if ($request->session()->has('mock_requests')) {
+            $mocks = $request->session()->get('mock_requests');
             foreach ($mocks as &$m) {
                 if ($m['id'] == $id) {
                     if ($action === 'descartar') {
@@ -134,7 +135,7 @@ class ProfileController extends Controller
                     break;
                 }
             }
-            $request->session()->put('mock_reclamos', $mocks);
+            $request->session()->put('mock_requests', $mocks);
         }
 
         return back()->with('success', 'El estado del reclamo ha sido actualizado con éxito (Simulado).');
@@ -143,7 +144,7 @@ class ProfileController extends Controller
     /**
      * Inicializa los reclamos de prueba en la sesion.
      */
-    private function initMockReclamos(Request $request)
+    private function initMockRequests(Request $request)
     {
         $mocks = [
             [
@@ -200,7 +201,7 @@ class ProfileController extends Controller
             ]
         ];
 
-        $request->session()->put('mock_reclamos', $mocks);
+        $request->session()->put('mock_requests', $mocks);
     }
 
     /**

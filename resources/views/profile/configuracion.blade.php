@@ -4,19 +4,7 @@
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/profile/profile.css') }}">
-    <style>
-        .profile-avatar-wrapper:hover .avatar-edit-overlay {
-            opacity: 1 !important;
-        }
-        .default-avatar-option:hover {
-            transform: scale(1.15);
-            border-color: var(--living-moss) !important;
-        }
-        .default-avatar-option.selected {
-            border-color: var(--living-moss) !important;
-            box-shadow: 0 0 0 3px rgba(91, 191, 140, 0.4);
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/profile/configuracion.css') }}">
 @endsection
 
 @section('content')
