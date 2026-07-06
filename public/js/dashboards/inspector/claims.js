@@ -212,26 +212,18 @@ export function selectClaim(id) {
                     <div style="font-size: 0.8rem; font-weight: bold; color: var(--admin-text-primary);">Paso de Progreso a Asignar:</div>
                     <div class="status-steps">
                         ${state.requestStatuses.map(s => {
-                            const currentSeq = state.requestStatuses.find(rs => rs.slug === state.tempSelectedStatus)?.sequence || 0;
+                            const currentSeq = state.requestStatuses.find(rs => rs.slug === claim.estado)?.sequence || 0;
                             const isCompleted = s.sequence && s.sequence <= currentSeq;
-                            const isActive = state.tempSelectedStatus === s.slug;
+                            const isActive = claim.estado === s.slug;
                             if (s.sequence || isActive) {
                                 return `
-                                <div class="status-step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}" onclick="selectTempStatus('${s.slug}')" style="cursor: pointer;">
+                                <div class="status-step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}">
                                     <div class="step-circle" style="background-color: ${isActive ? s.color : ''}; border-color: ${isActive ? s.color : ''}">${s.sequence || '!'}</div>
                                     <div class="step-label">${s.status_name}</div>
                                 </div>`;
                             }
                             return '';
                         }).join('')}
-                    </div>
-                    
-                    <div style="display: flex; gap: 8px; justify-content: center; margin-top: 8px;">
-                        ${state.requestStatuses.filter(s => s.sequence === null).map(s => `
-                            <button class="btn-secondary" style="font-size: 0.75rem; padding: 4px 8px; border: 1px solid ${s.color}; color: ${s.color}; background: ${isActiveStatus(s.slug) ? s.color + '25' : 'transparent'}; border-radius: 6px; cursor: pointer;" onclick="selectTempStatus('${s.slug}')">
-                                ${s.slug === 'denied' ? '✖' : '∞'} ${s.status_name}
-                            </button>
-                        `).join('')}
                     </div>
                 </div>
 
@@ -289,8 +281,17 @@ export function selectClaim(id) {
 
                 <!-- Sección de Respuestas y Acciones -->
                 <div style="border-top: 1px solid var(--admin-border); padding-top: 10px;">
+                    <div style="margin-bottom: 10px;">
+                        <label style="font-size: 0.85rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 4px;">Cambiar estado a:</label>
+                        <select id="new-status-select" class="company-dropdown-select" onchange="selectTempStatus(this.value)" style="width: 100%;">
+                            ${state.requestStatuses.map(s => `
+                                <option value="${s.slug}" ${state.tempSelectedStatus === s.slug ? 'selected' : ''}>${s.status_name}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <span style="font-size: 0.85rem; font-weight: bold; color: var(--admin-text-primary);">Responder al Vecino:</span>
+                        <span style="font-size: 0.85rem; font-weight: bold; color: var(--admin-text-primary);">Mensaje / Respuesta (Opcional):</span>
                         <div class="template-selector" style="display: flex; gap: 4px;">
                             <button class="template-btn" onclick="applyTemplate('info')" style="font-size: 0.7rem; padding: 2px 6px;">Info</button>
                             <button class="template-btn" onclick="applyTemplate('relevated')" style="font-size: 0.7rem; padding: 2px 6px;">Inspección</button>
@@ -298,15 +299,14 @@ export function selectClaim(id) {
                             <button class="template-btn" onclick="applyTemplate('resolved')" style="font-size: 0.7rem; padding: 2px 6px;">Resolución</button>
                         </div>
                     </div>
-                    <textarea id="response-text" class="response-textarea" style="width: 100%; height: 60px; min-height: 60px; font-size: 0.85rem; padding: 8px; border-radius: 8px; margin-bottom: 8px;" placeholder="Escribe un correo de respuesta al vecino...">${claim.respuesta_admin || ''}</textarea>
+                    <textarea id="response-text" class="response-textarea" style="width: 100%; height: 60px; min-height: 60px; font-size: 0.85rem; padding: 8px; border-radius: 8px; margin-bottom: 8px;" placeholder="Escribe un correo de respuesta al vecino (Si se deja vacío, solo se actualizará el estado interno)...">${claim.respuesta_admin || ''}</textarea>
                     
                     <div style="display: flex; justify-content: flex-end; gap: 8px;">
                         <!-- Botón de vincular manual si aplica -->
-                        <button class="btn-secondary" onclick="setClaimStatus('vinculated')" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 8px;">🔗 Vincular</button>
-                        <!-- Botón de actualizar solo estado -->
-                        <button class="btn-primary" onclick="updateClaimOnlyStatus(${numericId})" style="padding: 6px 12px; font-size: 0.8rem; background-color: #4b5563; border-color: #4b5563; border-radius: 8px;">Actualizar solo estado</button>
-                        <!-- Botón enviar respuesta y actualizar estado -->
-                        <button class="btn-primary" onclick="sendResponseAndStatus(${numericId})" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 8px;">Enviar respuesta y actualizar estado</button>
+                        ${state.tempSelectedStatus === 'vinculated' ? `<button class="btn-secondary" onclick="setClaimStatus('vinculated')" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 8px;">🔗 Vincular a ID</button>` : ''}
+                        
+                        <!-- Botón único inteligente -->
+                        <button class="btn-primary" onclick="smartUpdateClaim(${numericId})" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 8px;">Guardar y Actualizar</button>
                     </div>
                 </div>
             </div>
@@ -424,6 +424,16 @@ window.createWorkOrderJob = async function(claimId) {
     } catch (err) {
         console.error("Error al registrar orden de trabajo:", err);
         alert('Error de conexión al crear orden de trabajo.');
+    }
+};
+
+// Función Inteligente para Actualizar (Si hay texto, envía mensaje. Si no, solo actualiza estado).
+window.smartUpdateClaim = function(numericId) {
+    const responseText = document.getElementById('response-text').value.trim();
+    if (responseText === '') {
+        updateClaimOnlyStatus(numericId);
+    } else {
+        sendResponseAndStatus(numericId);
     }
 };
 

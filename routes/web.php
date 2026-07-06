@@ -91,7 +91,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['verified'])->group(function () {
 
         // Perfil del vecino
-        Route::get('/configuracion', [ProfileController::class, 'configuracion'])->name('profile.configuracion');
+        Route::get('/configuracion', [ProfileController::class, 'configuration'])->name('profile.configuracion');
         Route::post('/configuracion/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
         Route::post('/configuracion/photo', [ProfileController::class, 'updateProfilePhoto'])->name('profile.photo.update');
         Route::get('/mis-reclamos', [ProfileController::class, 'myRequests'])->name('profile.mis-reclamos');
