@@ -18,18 +18,23 @@ class DashboardController extends Controller
                 ->latest()
                 ->get();
 
-            // Mapeamos los datos de manera ultra segura usando operadores null-safe (?->)
+            // Mapeamos los datos de manera ultra segura
             $formattedTrees = $reclamos->map(function ($reclamo) {
                 
                 return [
                     'id'            => $reclamo->id,
-                    'codigo'        => $reclamo->tracking_code, // 📍 Corregido para usar la variable interna
+                    'codigo'        => $reclamo->tracking_code, 
                     'descripcion'   => $reclamo->description ?? 'Sin descripción',
-                    'direccion'     => $reclamo->street?->street_name ?? 'Sin dirección',
+                    
+                    // 📍 CORREGIDO: Concatenamos calle + altura para que el Front muestre la dirección completa
+                    'direccion'     => $reclamo->street 
+                        ? $reclamo->street->street_name . ' ' . $reclamo->street->street_number 
+                        : 'Sin dirección',
+                        
                     'estado_slug'   => $reclamo->status?->slug ?? 'open',
                     'estado_nombre' => $reclamo->status?->status_name ?? 'Pendiente', 
                     
-                    // 📍 Usamos un fallback por si la columna se llama name, type_name o task_description
+                    // Usamos el fallback por si la columna se llama name, type_name o task_description
                     'categoria'     => $reclamo->requestType?->type_name 
                                        ?? $reclamo->requestType?->name 
                                        ?? $reclamo->requestType?->task_description 
@@ -46,7 +51,7 @@ class DashboardController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            // Si algo falla, esto te va a decir EXACTAMENTE qué línea y qué pasó en lugar de dar un error genérico
+            // Si algo falla, esto avisa la línea exacta y el motivo del error
             return response()->json([
                 'success' => false,
                 'message' => 'Error interno del servidor.',
