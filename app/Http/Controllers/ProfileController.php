@@ -96,7 +96,8 @@ class ProfileController extends Controller
         $allMockPlantaciones = collect($request->session()->get('mock_plantaciones'));
         $plantaciones = $allMockPlantaciones->where('user_id', 1)->sortByDesc('created_at');
 
-        return view('profile.mis-reclamos', compact('requests', 'plantaciones'));
+        $reclamos = $requests;
+        return view('profile.mis-reclamos', compact('reclamos', 'plantaciones'));
     }
  
     /**
