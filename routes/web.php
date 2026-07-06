@@ -15,7 +15,6 @@ use App\Http\Controllers\CompanyPanelController;
 use App\Http\Controllers\CompanyController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
-use App\Http\Controllers\ResolveCancellationController;
 
 Route::get('/', function () {
     return view('home');
@@ -55,7 +54,7 @@ Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->na
 Route::post('/register', [RegisterController::class, 'register']);
 
 // PARTE DE RECLAMOS
-Route::resource('requests', RequestController::class)->except(['create', 'edit']);
+Route::resource('requests', RequestController::class);
 
 Route::patch('/requests/{request}/update-status', [RequestController::class, 'updateStatus'])->name('requests.updateStatus');
 Route::post('/requests', [RequestController::class, 'store']);
@@ -92,7 +91,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['verified'])->group(function () {
 
         // Perfil del vecino
-        Route::get('/configuracion', [ProfileController::class, 'configuration'])->name('profile.configuracion');
+        Route::get('/configuracion', [ProfileController::class, 'configuracion'])->name('profile.configuracion');
         Route::post('/configuracion/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
         Route::post('/configuracion/photo', [ProfileController::class, 'updateProfilePhoto'])->name('profile.photo.update');
         Route::get('/mis-reclamos', [ProfileController::class, 'myRequests'])->name('profile.mis-reclamos');
@@ -143,6 +142,9 @@ Route::get('/api/request-types',[RequestTypeController::class, 'index']);
 // Endpoint para traer todos los estados de reclamo con su metadata UI
 Route::get('/api/request-statuses', [RequestController::class, 'getStatuses']);
 
+// Datos para el Panel de la Empresa Contratista 
+Route::get('/company/dashboard-data', [CompanyPanelController::class, 'getDashboardData']);
+
 // Postulación de Empresas 
 Route::post('/work-orders/{id}/apply', [WorkOrderController::class, 'applyForTender']);
 
@@ -185,21 +187,4 @@ Route::middleware(['auth', 'check.role:admin'])->group(function () {
     
     // Modificar el rol de un usuario específico (PATCH)
     Route::patch('/api/admin/users/{user}/role', [UserController::class, 'updateRole'])->name('api.admin.users.updateRole');
-});
-
-// sanctum es algo de laravel para proteger rutas 
-Route::middleware('auth:sanctum')->group(function () {
-    
-    // 1. Datos para el Panel de la Empresa Contratista
-    // Trae las órdenes asignadas a la empresa con todo el detalle mapeado
-    Route::get('/company/dashboard-data', [CompanyPanelController::class, 'getDashboardData']);
-    
-    // 2. Actualizar el estado de la Orden de Trabajo (Contratista)
-    // Cambia el estado de la orden y sincroniza automáticamente el historial del reclamo
-    Route::put('/work-orders/{id}/status', [WorkOrderController::class, 'updateWorkOrderStatus']);
-    
-    // 3. Resolver solicitud de cancelación (Inspector Municipal)
-    // Controlador de acción única para aceptar o rechazar la baja de un vecino
-    Route::patch('/admin/claims/{id}/resolve-cancellation', ResolveCancellationController::class);
-
 });
