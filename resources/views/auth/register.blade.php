@@ -40,7 +40,7 @@
                 <form method="POST" action="/register" id="register-form">
                     @csrf
 
-                    <!-- Fila 1: Nombre, Apellido, DNI -->
+                    <!-- Fila 1: Nombre, Apellido -->
                     <div class="register-form-row" style="display: flex; gap: 15px;">
                         <div class="form-group register-form-group" style="flex: 1;">
                             <label for="name">Nombre <span class="required-asterisk">*</span></label>
@@ -50,22 +50,10 @@
                             <label for="last_name">Apellido <span class="required-asterisk">*</span></label>
                             <input type="text" id="last_name" name="last_name" value="{{ old('last_name') }}" placeholder="Pérez" class="form-control" required>
                         </div>
-                        <div class="form-group register-form-group" style="flex: 1;">
-                            <label for="dni">DNI <span class="required-asterisk">*</span></label>
-                            <input type="text" id="dni" name="dni" value="{{ old('dni') }}" placeholder="12345678" class="form-control" required>
-                        </div>
                     </div>
 
-                    <!-- Fila 2: Fecha Nacimiento, Domicilio, Correo -->
+                    <!-- Fila 2: Correo -->
                     <div class="register-form-row" style="display: flex; gap: 15px;">
-                        <div class="form-group register-form-group" style="flex: 1;">
-                            <label for="dob">Nacimiento <span class="required-asterisk">*</span></label>
-                            <input type="date" id="dob" name="dob" value="{{ old('dob') }}" class="form-control" required>
-                        </div>
-                        <div class="form-group register-form-group" style="flex: 1;">
-                            <label for="address">Domicilio <span class="required-asterisk">*</span></label>
-                            <input type="text" id="address" name="address" value="{{ old('address') }}" placeholder="Av. de Mayo 1234" class="form-control" required>
-                        </div>
                         <div class="form-group register-form-group" style="flex: 1;">
                             <label for="email">Correo Electrónico <span class="required-asterisk">*</span></label>
                             <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="juan@correo.com" class="form-control" required>

@@ -48,17 +48,19 @@ class RequestController extends Controller
     /**
      * Guarda un reclamo recién creado en la base de datos.
      */
-   public function store(Request $request, \App\Services\StreetService $streetService)
-{
-    // Validamos los datos de entrada
-    $request->validate([
-        'request_type_id' => 'required|exists:request_types,id',
-        'address'         => 'required|string', 
-        'description'     => 'required|string|min:10',
-        'tree_id'         => 'nullable|exists:trees,id',
-        'foto'            => 'nullable|array|max:3', // Valida que vengan como máximo 3 fotos 
-        'foto.*'          => 'image|mimes:jpeg,png,jpg,webp,heic|max:10240', 
-    ]);
+    public function store(Request $request, \App\Services\StreetService $streetService)
+    {
+        // 1. Validamos los datos de entrada
+        $request->validate([
+            'request_type_id' => 'required|exists:request_types,id',
+            'address'         => 'required|string', 
+            'description'     => 'required|string|min:10',
+            'tree_id'         => 'nullable|exists:trees,id',
+            'foto'            => 'nullable|array|max:3', // Valida que vengan como máximo 3 fotos 
+            'foto.*'          => 'image|mimes:jpeg,png,jpg,webp,heic|max:10240', 
+        ], [
+            'description.min' => 'La descripción debe tener al menos 10 caracteres.',
+        ]);
 
     $userId = auth()->id() ?? 1;
 

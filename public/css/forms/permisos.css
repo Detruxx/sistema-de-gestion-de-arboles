@@ -124,18 +124,19 @@
 }
 
 .permisos-docs-card {
-    background-color: rgba(91, 191, 140, 0.35);
-    border: 2px dashed var(--spring-leaf);
+    background-color: #ffffff;
+    border: 2px solid var(--living-moss);
     border-radius: 16px;
-    padding: 35px;
+    padding: 40px;
+    box-shadow: 0 15px 35px rgba(45, 122, 79, 0.08);
     text-align: center;
 }
 
 .permisos-docs-title {
     font-family: var(--font-display);
-    font-size: 1.25rem;
-    color: #ffffff;
-    margin-bottom: 15px;
+    font-size: 1.4rem;
+    color: var(--deep-canopy);
+    margin-bottom: 20px;
     font-weight: 700;
 }
 

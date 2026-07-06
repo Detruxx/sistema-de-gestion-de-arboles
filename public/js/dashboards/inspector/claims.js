@@ -262,11 +262,8 @@ export function selectClaim(id) {
                     <div style="border-top: 1px solid var(--admin-border); padding-top: 12px; margin-top: 8px;">
                         <span style="font-size: 0.8rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 6px;">Derivar Nuevo Trabajo Técnico:</span>
                         <div class="company-search-box">
-                            <div class="company-search-field-wrapper">
-                                <input type="text" id="company-search-input" class="company-search-input" placeholder="🔍 Buscar empresa..." oninput="filterCompaniesDropdown()">
-                            </div>
-                            <div>
-                                <select id="assign-company-select" class="company-dropdown-select" onchange="updateTasksDropdown()">
+                            <div style="width: 100%;">
+                                <select id="assign-company-select" class="company-dropdown-select" onchange="updateTasksDropdown()" style="width: 100%;">
                                     <option value="">-- Seleccionar Empresa --</option>
                                     ${(state.activeCompanies || []).map(c => `
                                         <option value="${c.id}">${c.name || c.company_name}</option>
@@ -348,33 +345,6 @@ window.selectTempStatus = function(slug) {
     state.tempSelectedStatus = slug;
     // Volver a renderizar el modal para actualizar el progreso visual y la visibilidad de derivación
     selectClaim(state.selectedClaimId);
-};
-
-// Filtrar dropdown de empresas por letra ingresada
-window.filterCompaniesDropdown = function() {
-    const searchVal = document.getElementById('company-search-input').value.toLowerCase();
-    const select = document.getElementById('assign-company-select');
-    if (!select) return;
-
-    // Guardar opción seleccionada
-    const currentSelected = select.value;
-
-    select.innerHTML = '<option value="">-- Seleccionar Empresa --</option>';
-    
-    const filtered = (state.activeCompanies || []).filter(c => {
-        const name = (c.name || c.company_name || '').toLowerCase();
-        return name.includes(searchVal);
-    });
-
-    filtered.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c.id;
-        opt.textContent = c.name || c.company_name;
-        if (c.id === parseInt(currentSelected)) {
-            opt.selected = true;
-        }
-        select.appendChild(opt);
-    });
 };
 
 // Actualizar las tareas que la empresa realiza en el segundo desplegable
