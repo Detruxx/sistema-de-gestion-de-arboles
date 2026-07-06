@@ -14,6 +14,7 @@ use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\CompanyPanelController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\RequestCancellationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 

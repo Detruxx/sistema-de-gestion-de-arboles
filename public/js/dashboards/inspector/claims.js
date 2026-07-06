@@ -90,7 +90,7 @@ export function selectClaim (id) {
         </div>
 
         <div class="status-tracker-container">
-            <div class="status-tracker-title">Progreso del Reclamo (Haz clic en un paso para cambiar el estado)</div>
+            <div class="status-tracker-title">Progreso del Reclamo actual:</div>
             <div class="status-steps">
                 ${state.requestStatuses.map(s => {
         const currentSeq = state.requestStatuses.find(rs => rs.slug === claim.estado)?.sequence || 0;
@@ -98,7 +98,7 @@ export function selectClaim (id) {
         const isActive = claim.estado === s.slug;
         if (s.sequence || isActive) {
             return `
-                        <div class="status-step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}" onclick="setClaimStatus('${s.slug}')">
+                        <div class="status-step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}">
                             <div class="step-circle" style="background-color: ${isActive ? s.color : ''}; border-color: ${isActive ? s.color : ''}">${s.sequence || '!'}</div>
                             <div class="step-label">${s.status_name}</div>
                         </div>`;
@@ -106,18 +106,21 @@ export function selectClaim (id) {
         return '';
     }).join('')}
             </div>
-            
-            <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
-                ${state.requestStatuses.filter(s => s.sequence === null).map(s => `
-                    <button class="btn-secondary" style="font-size: 0.8rem; padding: 6px 12px; border: 1px solid ${s.color}; color: ${s.color}; background: ${s.color}15; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='${s.color}30'" onmouseout="this.style.background='${s.color}15'" onclick="setClaimStatus('${s.slug}')">
-                        ${s.slug === 'denied' ? '✖' : '∞'} Marcar como ${s.status_name}
-                    </button>
-                `).join('')}
-            </div>
         </div>
 
         <div class="response-section">
-            <h4 class="detail-title" style="font-size: 1.2rem;">Responder al Vecino</h4>
+            <h4 class="detail-title" style="font-size: 1.2rem;">Actualizar Trámite y Responder al Vecino</h4>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 0.95rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 8px;">Cambiar estado a:</label>
+                <select id="new-status-select" style="width: 100%; background: #fff; border: 1px solid var(--admin-border); border-radius: 8px; padding: 10px; color: var(--admin-text-primary); font-family: var(--font-body); font-size: 0.95rem;" onchange="if(this.value === 'vinculated') alert('Se te pedirá el ID a vincular al guardar.')">
+                    ${state.requestStatuses.map(s => `
+                        <option value="${s.slug}" ${claim.estado === s.slug ? 'selected' : ''}>${s.status_name}</option>
+                    `).join('')}
+                </select>
+            </div>
+
+            <label style="font-size: 0.95rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 8px;">Mensaje / Respuesta (Opcional):</label>
             <div class="template-selector">
                 <button class="template-btn" onclick="applyTemplate('info')">Pedir más info</button>
                 <button class="template-btn" onclick="applyTemplate('relevated')">Avisar Inspección</button>
@@ -125,7 +128,8 @@ export function selectClaim (id) {
                 <button class="template-btn" onclick="applyTemplate('resolved')">Informar Resolución</button>
                 <button class="template-btn" onclick="applyTemplate('denied')">Rechazar</button>
             </div>
-            <textarea id="response-text" class="response-textarea" placeholder="Escribe un mensaje personalizado para enviar al correo del vecino..."></textarea>
+            <textarea id="response-text" class="response-textarea" placeholder="Escribe un correo de respuesta al vecino (Si se deja vacío, solo se actualizará el estado interno)..."></textarea>
+            
             <div class="action-row" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <select id="assign-company-select" style="max-width: 250px; background: #fff; border: 1px solid var(--admin-border); border-radius: 8px; padding: 10px; color: var(--admin-text-primary); font-family: var(--font-body); font-size: 0.9rem;">
@@ -140,7 +144,7 @@ export function selectClaim (id) {
                 </div>
                 <div style="display: flex; gap: 15px; align-items: center;">
                     <button class="btn-secondary" onclick="clearResponse()">Limpiar</button>
-                    <button class="btn-primary" onclick="sendResponse()">Enviar Respuesta y Actualizar</button>
+                    <button class="btn-primary" onclick="smartUpdateClaim()">Guardar y Actualizar</button>
                 </div>
             </div>
         </div>
@@ -176,14 +180,22 @@ export function clearResponse () {
     if (textarea) textarea.value = '';
 };
 
-export async function sendResponse () {
+export async function smartUpdateClaim () {
     const claim = state.claims.find(c => c.id === state.selectedClaimId);
     if (!claim) return;
 
-    const responseText = document.getElementById('response-text').value;
-    if (!responseText.trim()) {
-        alert('Por favor escribe un mensaje de respuesta antes de enviar.');
-        return;
+    const responseText = document.getElementById('response-text').value.trim();
+    const newStatus = document.getElementById('new-status-select').value;
+    
+    let payload = { estado: newStatus };
+    if (responseText !== '') {
+        payload.respuesta = responseText;
+    }
+
+    if (newStatus === 'vinculated') {
+        const manualId = prompt('Ingrese el ID numérico del reclamo original al que desea vincularlo (Ej: 18):');
+        if (!manualId) return; // Canceló
+        payload.linked_to = parseInt(manualId);
     }
 
     try {
@@ -193,30 +205,45 @@ export async function sendResponse () {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': getCsrfToken()
             },
-            body: JSON.stringify({ respuesta: responseText })
+            body: JSON.stringify(payload)
         });
 
         if (response.ok) {
-            claim.respuesta_admin = responseText;
+            claim.estado = newStatus;
+            
+            if (newStatus === 'vinculated') {
+                claim.linked_to = payload.linked_to;
+            } else {
+                claim.linked_to = null;
+            }
+            claim.suggested_duplicate_id = null;
+
+            if (responseText !== '') {
+                claim.respuesta_admin = responseText;
+            }
 
             const banner = document.getElementById('notification-banner');
             const text = document.getElementById('notification-text');
-            if (text) text.innerText = `Respuesta enviada a ${claim.vecino} (${claim.email}) y guardada en el sistema.`;
+            if (text) text.innerText = `El estado se actualizó a '${newStatus}' y los cambios fueron guardados.`;
             if (banner) banner.style.display = 'flex';
 
             setTimeout(() => {
                 if (banner) banner.style.display = 'none';
             }, 5000);
 
-            clearResponse();
+            selectClaim(state.selectedClaimId); // Re-render
+            if (typeof updateStats === 'function') updateStats();
+            loadClaimsList();
         } else {
-            alert('Error al guardar la respuesta en el servidor.');
+            alert('Error al actualizar el estado/respuesta en el servidor.');
         }
     } catch (err) {
-        console.error("Error sending response:", err);
+        console.error("Error updating claim:", err);
         alert('Error de conexión.');
     }
 };
+
+window.smartUpdateClaim = smartUpdateClaim;
 
 export function filterClaims () {
     const query = document.getElementById('search-claims').value.toLowerCase();
