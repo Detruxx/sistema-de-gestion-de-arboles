@@ -12,12 +12,14 @@ class WorkOrder extends Model
     protected $table = 'work_orders';
 
     protected $fillable = [
-        'request_id', 
-        'company_id', 
-        'task_description', 
-        'scheduled_date', 
+        'request_id',
+        'company_id',
+        'task_description',
+        'scheduled_date',
         'execution_order',
-        'work_status'
+        'work_status',
+        'payment_status', 
+        'cost',           
     ];
 
     // Indicarle a Laravel que este campo es una fecha para poder usar ->format() en Blade
