@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Request as Reclamo;
 
@@ -14,7 +13,7 @@ class ProfileController extends Controller
     /**
      * Muestra la vista de configuracion del perfil.
      */
-    public function configuracion()
+    public function Configuration()
     {
         $user = Auth::user();
         return view('profile.configuracion', compact('user'));
@@ -60,60 +59,81 @@ class ProfileController extends Controller
     /**
      * Muestra la lista de reclamos del vecino logueado (Los ultimos arriba).
      */
-    public function misReclamos(Request $request)
+    public function myRequests(Request $request)
     {
         $user = Auth::user();
         $userId = $user ? $user->id : 1;
 
-        $reclamos = collect();
+        $requests = collect();
         $isMock = false;
 
         try {
             // Intentar consultar base de datos
-            $reclamos = Reclamo::where('user_id', $userId)
-                ->with(['street', 'Request_Type', 'tree.specie'])
+            $requests = Request::where('user_id', $userId)
+                ->with(['street', 'RequestType', 'tree.specie']) 
                 ->orderBy('created_at', 'desc')
-                ->get();
+                ->get(); 
         } catch (\Exception $e) {
             $isMock = true;
         }
 
         // Si la consulta esta vacia o fallo la conexion, usamos Mock Data
-        if ($reclamos->isEmpty() || $isMock) {
+        if ($requests->isEmpty() || $isMock) {
             // Inicializamos la session con mock data si no existe
-            if (!$request->session()->has('mock_reclamos')) {
-                $this->initMockReclamos($request);
+            if (!$request->session()->has('mock_requests')) {
+                $this->initMockRequests($request);
             }
             // Filtrar solo los del usuario logueado (simulamos user_id = 1)
-            $allMock = collect($request->session()->get('mock_reclamos'));
-            $reclamos = $allMock->where('user_id', 1)->sortByDesc('created_at');
+            $allMock = collect($request->session()->get('mock_requests'));
+            $requests = $allMock->where('user_id', 1)->sortByDesc('created_at');
         }
 
-        // Inicializamos y obtenemos Mock Data para Plantaciones
-        if (!$request->session()->has('mock_plantaciones')) {
-            $this->initMockPlantaciones($request);
-        }
-        $allMockPlantaciones = collect($request->session()->get('mock_plantaciones'));
-        $plantaciones = $allMockPlantaciones->where('user_id', 1)->sortByDesc('created_at');
-
-        return view('profile.mis-reclamos', compact('reclamos', 'plantaciones'));
+        return view('profile.mis-reclamos', compact('requests'));
     }
 
     /**
+     * Muestra la lista de todos los reclamos para el inspector (Los mas viejos arriba).
+     */
+    public function viewRequests(Request $request)
+    {
+        $requests = collect();
+        $isMock = false;
+
+        try {
+            $requests = Request::with(['user', 'street', 'RequestType', 'tree.specie'])
+                ->orderBy('created_at', 'asc')
+                ->get();
+        } catch (\Exception $e) {
+            $isMock = true;
+        }
+
+        if ($requests->isEmpty() || $isMock) {
+            if (!$request->session()->has('mock_requests')) {
+                $this->initMockRequests($request);
+            }
+            $allMock = collect($request->session()->get('mock_reclamos'));
+            // Los mas viejos arriba (ascendente) y que no esten descartados
+            $requests = $allMock->where('status', '!=', 'discarded')->sortBy('created_at');
+        }
+
+        return view('profile.ver-reclamos', compact('requests'));
+    }
+ 
+    /**
      * Actualiza el estado del reclamo (completar o descartar).
      */
-    public function updateReclamoStatus(Request $request, $id)
+    public function updateRequestStatus(Request $request, $id)
     {
         $action = $request->input('action'); // 'completar' o 'descartar'
 
         try {
-            $reclamo = Reclamo::find($id);
-            if ($reclamo) {
+            $request = Request::find($id);
+            if ($request) {
                 if ($action === 'descartar') {
-                    $reclamo->delete(); // O cambiar estado a descartado si prefieres
+                    $request->delete(); // O cambiar estado a descartado si prefieres
                 } else {
-                    $reclamo->status = 'resolved'; // Completado
-                    $reclamo->save();
+                    $request->status = 'resolved'; // Completado
+                    $request->save();
                 }
                 return back()->with('success', 'El estado del reclamo ha sido actualizado con éxito.');
             }
@@ -122,8 +142,8 @@ class ProfileController extends Controller
         }
 
         // Simulación en Session (Fallback)
-        if ($request->session()->has('mock_reclamos')) {
-            $mocks = $request->session()->get('mock_reclamos');
+        if ($request->session()->has('mock_requests')) {
+            $mocks = $request->session()->get('mock_requests');
             foreach ($mocks as &$m) {
                 if ($m['id'] == $id) {
                     if ($action === 'descartar') {
@@ -134,7 +154,7 @@ class ProfileController extends Controller
                     break;
                 }
             }
-            $request->session()->put('mock_reclamos', $mocks);
+            $request->session()->put('mock_requests', $mocks);
         }
 
         return back()->with('success', 'El estado del reclamo ha sido actualizado con éxito (Simulado).');
@@ -143,7 +163,7 @@ class ProfileController extends Controller
     /**
      * Inicializa los reclamos de prueba en la sesion.
      */
-    private function initMockReclamos(Request $request)
+    private function initMockRequests(Request $request)
     {
         $mocks = [
             [
@@ -200,119 +220,6 @@ class ProfileController extends Controller
             ]
         ];
 
-        $request->session()->put('mock_reclamos', $mocks);
-    }
-
-    /**
-     * Inicializa las solicitudes de plantacion de prueba en la sesion.
-     */
-    private function initMockPlantaciones(Request $request)
-    {
-        $mocks = [
-            [
-                'id' => 201,
-                'user_id' => 1,
-                'user_name' => 'Vecino Juan',
-                'street_name' => 'Av. San Martín 1500, Paternal',
-                'description' => 'Solicito la plantación de un árbol para dar sombra en la vereda, frente a la escuela primaria. La plantera está vacía.',
-                'status' => 'open',
-                'created_at' => now()->subDays(15)->format('Y-m-d H:i:s')
-            ],
-            [
-                'id' => 202,
-                'user_id' => 1,
-                'user_name' => 'Vecino Juan',
-                'street_name' => 'Av. Cabildo 3067, CABA',
-                'description' => 'Hace tiempo extrajeron un árbol enfermo y quedó el hueco. Me gustaría solicitar un Jacarandá.',
-                'status' => 'resolved',
-                'created_at' => now()->subDays(30)->format('Y-m-d H:i:s')
-            ]
-        ];
-
-        $request->session()->put('mock_plantaciones', $mocks);
-    }
-
-    public function updateProfilePhoto(Request $request) 
-    {
-        // 1. Validamos que sea una imagen real y no supere los 2MB
-        $request->validate([
-            'profile_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        $user = Auth::user();
-
-        // 2. Si el usuario ya tenía una foto vieja, la borramos del servidor para no acumular basura
-        if ($user->profile_photo) {
-            Storage::disk('public')->delete($user->profile_photo);
-        }
-
-        // 3. Guardamos el nuevo archivo en la carpeta 'avatars' dentro del disco público
-        $path = $request->file('profile_photo')->store('avatars', 'public');
-
-        // 4. Guardamos la ruta en la base de datos
-        $user->update([
-            'profile_photo' => $path
-        ]);
-
-        return redirect()->back()->with('status', '¡Foto de perfil actualizada con éxito!');
-    }
-
-    /**
-     * Muestra la bandeja de mensajes enviados por el usuario.
-     */
-    public function misMensajes(Request $request)
-    {
-        $user = Auth::user();
-        $userId = $user ? $user->id : 1;
-
-        $mensajes = collect();
-        $isMock = false;
-
-        try {
-            // Intentar cargar desde BD si existe modelo
-            // Por ahora forzamos mock para asegurar el UI
-            $isMock = true; 
-        } catch (\Exception $e) {
-            $isMock = true;
-        }
-
-        if ($mensajes->isEmpty() || $isMock) {
-            if (!$request->session()->has('mock_mis_mensajes')) {
-                $this->initMockMisMensajes($request);
-            }
-            $allMock = collect($request->session()->get('mock_mis_mensajes'));
-            $mensajes = $allMock->where('user_id', 1)->sortByDesc('created_at');
-        }
-
-        return view('profile.bandeja-entrada', compact('mensajes'));
-    }
-
-    /**
-     * Inicializa mock data de mensajes del usuario para la vista.
-     */
-    private function initMockMisMensajes(Request $request)
-    {
-        $mocks = [
-            [
-                'id' => 301,
-                'user_id' => 1,
-                'message' => 'Hola, envié un reclamo por un árbol seco hace un mes y quería saber si hay novedades sobre cuándo pasarían a extraerlo. Muchas gracias.',
-                'status' => 'answered', // answered, unread
-                'inspector_response' => 'Estimado vecino, su reclamo se encuentra agendado para la próxima semana. El equipo de arbolado pasará el día jueves por la mañana para realizar la extracción correspondiente.',
-                'created_at' => now()->subDays(5)->format('Y-m-d H:i:s'),
-                'responded_at' => now()->subDays(3)->format('Y-m-d H:i:s')
-            ],
-            [
-                'id' => 302,
-                'user_id' => 1,
-                'message' => 'Quería consultar sobre las especies permitidas para plantar en mi vereda. La calle es angosta y no sé si puedo poner un fresno.',
-                'status' => 'unread',
-                'inspector_response' => null,
-                'created_at' => now()->subDays(1)->format('Y-m-d H:i:s'),
-                'responded_at' => null
-            ]
-        ];
-
-        $request->session()->put('mock_mis_mensajes', $mocks);
+        $request->session()->put('mock_requests', $mocks);
     }
 }

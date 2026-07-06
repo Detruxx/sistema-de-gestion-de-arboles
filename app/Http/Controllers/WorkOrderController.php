@@ -45,7 +45,7 @@ class WorkOrderController extends Controller
         $currentOrder = $request->execution_order;
         $initialStatus = 'Asignado';
 
-        // 💡 Si es un trabajo secuencial posterior (ej: Trabajo 2)
+        // Si es un trabajo secuencial posterior (ej: Trabajo 2)
         if ($currentOrder > 1) {
             // Buscamos si la tarea inmediatamente anterior (ej: Trabajo 1) ya fue finalizada
             $previousTaskCompleted = WorkOrder::where('request_id', $request->request_id)
@@ -90,7 +90,26 @@ class WorkOrderController extends Controller
             'work_status' => $request->work_status
         ]);
 
+        //Si es una peticion JSON
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json(['status' =>'success'],200);
+        }
+        
+        //Respuesta normal para vista
         return redirect()->back()->with('work_updated', 'Estado de la orden de trabajo actualizado correctamente.');
     }
 
-}
+    /**
+     * Un trabajador de empresa se postula para realizar un trabajo.
+     */
+    public function applyforTender($id)
+    {
+        $workOrder = workOrder::findOrFail($id);
+
+        $workOrder->update([
+            'company_id' => auth()->user()->company_id
+        ]);
+
+        return response()->json(['status' => 'success'], 200);
+    }
+} 
