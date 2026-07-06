@@ -222,7 +222,7 @@ class TreeController extends Controller
     public function getTreeDetails($id)
     {
         // Validacion de datos
-        $tree = Tree::with(['street', 'specie', 'planter'])->find($id);
+        $tree = Tree::with(['street', 'specie', 'planter', 'park'])->find($id);
 
         // Si no se encuentra el arbol
         if (!$tree) {
@@ -262,12 +262,11 @@ class TreeController extends Controller
         ],200);
     }
 
-    // Retorna solo coordenadas y estados para que el mapa cargue rápido 
-    // y renderice los pines sin ponerse pesado
+    // Retorna solo coordenadas y datos basicos del arbol para cargar mas rapido, 
+    // debido a que se va a usar de forma masiva usamos Query Builder en vez de Eloquent para evitar construir objetos en memoria RAM
 
     public function getMapPins()
     {
-        // Usamos Query Builder puro en lugar de Eloquent para evitar construir 200.000 modelos en memoria RAM
         $pins = DB::table('trees')
             ->leftJoin('streets', 'trees.street_id', '=', 'streets.id')
             ->leftJoin('parks', 'trees.park_id', '=', 'parks.id')
@@ -276,8 +275,6 @@ class TreeController extends Controller
                 'trees.id',
                 'trees.latitude',
                 'trees.longitude',
-                'trees.height',
-                'trees.degree',
                 'streets.street_name',
                 'streets.street_number',
                 'streets.door_plate',
@@ -300,8 +297,6 @@ class TreeController extends Controller
                 'id' => $pin->id,
                 'latitude'  => (float)$pin->latitude,
                 'longitude' => (float)$pin->longitude,
-                'height' => $pin->height,
-                'degree' => $pin->degree,
                 'street' => $pin->street_name ? [
                     'street_name' => $pin->street_name,
                     'street_number' => $pin->street_number,

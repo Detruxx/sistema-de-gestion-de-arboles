@@ -5,6 +5,7 @@
 @section('active-cuidados', 'active')
 
 @section('content')
+    <canvas id="cuidados-canvas"></canvas>
     <main class="cuidados-page-container">
         <section class="cuidados-header reveal">
             <h1 class="hero-title">Cuidado del Arbolado</h1>
@@ -192,10 +193,6 @@
 
 
 @section('scripts')
-    
-<<<<<<< HEAD
-    <script src="{{ asset('js/modal.js') }}"></script>
-=======
-    <script src="{{ asset('js/generales/modal.js') }}"></script>
->>>>>>> 7df9417fa65fa2849e01939f57c5d7913c14c79a
+    <script src="{{ asset('js/pages/home/cuidados-canvas.js') }}"></script>
+    <script src="{{ asset('js/shared/modal.js') }}"></script>
 @endsection

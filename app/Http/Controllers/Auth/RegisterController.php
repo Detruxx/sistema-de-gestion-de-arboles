@@ -55,6 +55,7 @@ class RegisterController extends Controller
             'role'       => 'vecino', // Por defecto todos entran con el rol básico de ciudadano
         ]);
 
+        // Ves esto orne?
         // 3. Disparamos el evento de Laravel para enviar el correo de verificación
         event(new Registered($user));
 

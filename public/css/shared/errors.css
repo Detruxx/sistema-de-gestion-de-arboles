@@ -1,0 +1,106 @@
+/**
+ * Estilos para las páginas de error del sistema (404, 500, etc.).
+ */
+
+.error-page-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--paper-white);
+    padding: 140px 2rem 100px 2rem;
+    position: relative;
+    z-index: 10;
+}
+
+.error-layout {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    gap: 4rem;
+    max-width: 1000px;
+    width: 100%;
+}
+
+.error-image-col {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.error-image-col img {
+    width: 100%;
+    max-width: 450px;
+    height: auto;
+    object-fit: contain;
+    /* Evitamos que se pixele fijando un max-width razonable y asegurando el aspect ratio con auto */
+}
+
+.error-text-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Esto hace que el texto y los botones se estiren para cubrir el alto de la foto */
+    text-align: left;
+    padding: 1rem 0;
+}
+
+.error-code {
+    font-size: 10rem;
+    font-weight: 700;
+    color: var(--deep-canopy);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-display);
+    letter-spacing: -2px;
+}
+
+.error-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--forest-night);
+    margin-bottom: 1rem;
+    font-family: var(--font-display);
+}
+
+.error-message {
+    font-size: 1.1rem;
+    color: var(--forest-night);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-start;
+}
+
+@media (max-width: 768px) {
+    .error-layout {
+        flex-direction: column;
+        text-align: center;
+        gap: 2rem;
+    }
+    .error-image-col {
+        justify-content: center;
+    }
+    .error-text-col {
+        align-items: center;
+        text-align: center;
+        justify-content: center;
+        padding: 0;
+    }
+    .error-actions {
+        justify-content: center;
+        margin-top: 1rem;
+    }
+    .error-code {
+        font-size: 7rem;
+    }
+    .error-title {
+        font-size: 2rem;
+    }
+}

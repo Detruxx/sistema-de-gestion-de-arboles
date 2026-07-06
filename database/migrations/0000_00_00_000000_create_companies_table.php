@@ -13,7 +13,11 @@ return new class extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->string('company_name'); // Nombre de la empresa
+            $table->string('name');          // Nombre fantasía
+            $table->string('business_name'); // Razón social
+            $table->string('cuit')->unique();
+            $table->string('email')->unique();
+            $table->string('location');      // Dirección o zona de cobertura
             $table->timestamps();
         });
     }

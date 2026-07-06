@@ -1,0 +1,216 @@
+/**
+ * Estilos de la sección de especies emblemáticas en la página principal (home.blade.php).
+ */
+
+.featured-species-section {
+    padding: 80px 8%;
+    background-color: var(--paper-white);
+    color: var(--forest-night);
+    position: relative;
+    z-index: 10;
+}
+
+.featured-species-section .section-title {
+    color: var(--deep-canopy);
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.featured-species-section .section-subtitle {
+    color: var(--forest-night);
+    opacity: 0.8;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 50px auto;
+    font-size: 1.1rem;
+}
+
+.species-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.species-card {
+    background-color: #ffffff;
+    border: 2px solid rgba(45, 122, 79, 0.15);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(10, 26, 13, 0.04);
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+        box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+        border-color 0.4s ease;
+}
+
+.species-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--living-moss);
+    box-shadow: 0 20px 40px rgba(45, 122, 79, 0.12);
+}
+
+.species-image {
+    position: relative;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+}
+
+.species-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.species-card:hover .species-image img {
+    transform: scale(1.08);
+}
+
+.species-percentage {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: var(--deep-canopy);
+    color: var(--paper-white);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    border-radius: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.species-info {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-grow: 1;
+}
+
+.species-info h3 {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--deep-canopy);
+    font-weight: 700;
+}
+
+.scientific-name {
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--living-moss);
+    font-weight: 600;
+    margin-top: -6px;
+}
+
+.species-info p {
+    font-size: 0.95rem;
+    color: var(--forest-night);
+    line-height: 1.6;
+    opacity: 0.85;
+    flex-grow: 1;
+}
+
+.btn-species-map {
+    align-self: flex-start;
+    text-decoration: none;
+    color: var(--living-moss);
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-species-map:hover {
+    color: var(--spring-leaf);
+    transform: translateX(4px);
+}
+
+.read-more-link {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    color: var(--forest-night);
+    margin-top: 10px;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.read-more-link:hover {
+    color: var(--spring-leaf);
+    transform: translateX(4px);
+}
+
+.read-more-link svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ================= Divisor de Ondas (Wave Divider) ================= */
+.wave-divider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    z-index: 10;
+    background-color: var(--forest-night);
+}
+
+.wave-divider svg {
+    position: relative;
+    display: block;
+    width: calc(100% + 1.3px);
+    height: 70px;
+}
+
+.wave-divider.wave-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    transform: translateY(-99%);
+    background-color: transparent;
+    z-index: 10;
+}
+
+.wave-divider.wave-bottom {
+    background-color: var(--paper-white);
+    margin-top: -1px;
+}
+
+.wave-divider.wave-bottom svg {
+    transform: rotate(180deg);
+}
+
+.wave-divider.wave-bottom path {
+    fill: var(--paper-white);
+}
+
+.wave-divider.wave-top path {
+    fill: var(--paper-white);
+}
+
+@media (max-width: 768px) {
+    .featured-species-section {
+        padding: 60px 5%;
+    }
+
+    .species-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .species-image {
+        height: 180px;
+        aspect-ratio: auto;
+    }
+}

@@ -12,11 +12,12 @@ use App\Http\Controllers\WorkOrderController;
 use App\Http\Controllers\UserController; 
 use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\CompanyPanelController;
+use App\Http\Controllers\CompanyController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
 
 Route::get('/mapa', function () {
@@ -28,15 +29,19 @@ Route::get('/cuidados', function () {
 });
 
 Route::get('/tramites/reclamos', function () {
-    return view('tramites.reclamos');
+    return view('forms.reclamos');
 });
 
 Route::get('/tramites/plantacion', function () {
-    return view('tramites.plantacion');
+    return view('forms.plantacion');
 });
 
 Route::get('/tramites/permisos', function () {
-    return view('tramites.permisos');
+    return view('forms.permisos');
+});
+
+Route::get('/postulacion-empresa', function () {
+    return view('forms.postulacion');
 });
 
 // Rutas de Autenticación
@@ -44,7 +49,7 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-//Rutas para el Registro Público del Vecino
+// Rutas para el Registro Público del Vecino
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
@@ -60,8 +65,10 @@ Route::get('/requests/type/{typeId}', [RequestController::class, 'getRequestsByT
 // Rutas de Contacto (de rediseño-home)
 Route::post('/contacto', [ContactController::class, 'store'])->name('contacto.store');
 
-//RUTAS DE VERIFICACION 
+// Rutas protegidas por autenticación
 Route::middleware(['auth'])->group(function () {
+
+    // --- VERIFICACIÓN DE EMAIL ---
 
     // 1. La pantalla que le avisa al usuario: "Te mandamos un mail, verificalo"
     Route::get('/email/verify', function () {
@@ -78,48 +85,76 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/email/verification-notification', function (Request $request) {
         $request->user()->sendEmailVerificationNotification();
         return back()->with('message', '¡Se ha reenviado el enlace de verificación!');
-    })->middleware(['throttle:6,1'])->name('verification.send'); // Máximo 6 reenvíos por minuto
+    })->middleware(['throttle:6,1'])->name('verification.send');
 
-    
-    // RUTAS COMPLEMENTARIAS QUE ADEMÁS REQUIEREN VERIFICACIÓN (`verified`)
+    // --- RUTAS QUE REQUIEREN EMAIL VERIFICADO ---
     Route::middleware(['verified'])->group(function () {
-        
+
+        // Perfil del vecino
         Route::get('/configuracion', [ProfileController::class, 'configuracion'])->name('profile.configuracion');
         Route::post('/configuracion/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
-        Route::get('/mis-reclamos', [ProfileController::class, 'misReclamos'])->name('profile.mis-reclamos');
-        Route::post('/reclamos/{id}/status', [ProfileController::class, 'updateReclamoStatus'])->name('profile.reclamo.status');
+        Route::post('/configuracion/photo', [ProfileController::class, 'updateProfilePhoto'])->name('profile.photo.update');
+        Route::get('/mis-reclamos', [ProfileController::class, 'myRequests'])->name('profile.mis-reclamos');
+        Route::post('/reclamos/{id}/status', [ProfileController::class, 'updateRequestStatus'])->name('profile.reclamo.status');
+        Route::get('/bandeja-entrada', [ProfileController::class, 'misMensajes'])->name('profile.bandeja-entrada');
         Route::get('/mensajes', [ContactController::class, 'index'])->name('contact.index');
         Route::post('/mensajes/{id}/read', [ContactController::class, 'markRead'])->name('contact.read');
 
-        // Dashboard de Admin/Inspector
-        Route::middleware(['role:admin,inspector'])->group(function () {
-            Route::get('/admin/dashboard', function () {
-                return view('admin.dashboard');
-            })->name('admin.dashboard');
+        // Dashboard Exclusivo Admin
+        Route::middleware(['role:admin'])->group(function () {
+            Route::get('/dashboard/admin', function () {
+                return view('dashboards.admin');
+            })->name('dashboard.admin');
+        });
 
+        // Dashboard Exclusivo Inspector
+        Route::middleware(['role:inspector'])->group(function () {
+            Route::get('/dashboard/inspector', function () {
+                return view('dashboards.inspector');
+            })->name('dashboard.inspector');
+        });
+
+        // Acciones compartidas Admin/Inspector
+        Route::middleware(['role:admin,inspector'])->group(function () {
+            // Ruta para crear órdenes de trabajo/tareas de empresas contratistas
             Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
         });
 
-        // Panel Exclusivo para Empresas Tercerizadas
+        // Dashboard Exclusivo Empresas Tercerizadas
         Route::middleware(['role:empresa'])->group(function () {
-            Route::get('/company/dashboard', [CompanyPanelController::class, 'index'])->name('company.dashboard');
+            Route::get('/dashboard/empresa', [CompanyPanelController::class, 'index'])->name('dashboard.empresa');
         });
     });
 
 });
 
-
 // ENDPOINTS PUBLICOS DE API
+
+// Endpoint para traer los pines livianos
 Route::get('/api/arboles/pines', [TreeController::class, 'getMapPins']);
+
+// Endpoint para traer el detalle de un árbol específico
 Route::get('/api/arboles/{id}', [TreeController::class, 'getTreeDetails']);
 
 // Endpoint para traer todos los tipos de reclamo
 Route::get('/api/request-types',[RequestTypeController::class, 'index']);
+
 // Endpoint para traer todos los estados de reclamo con su metadata UI
 Route::get('/api/request-statuses', [RequestController::class, 'getStatuses']);
 
+// Datos para el Panel de la Empresa Contratista 
+Route::get('/company/dashboard-data', [CompanyPanelController::class, 'getDashboardData']);
 
-// 🛡️ Grupo de Administración Protegido (Rutas post-Register)
+// Postulación de Empresas 
+Route::post('/work-orders/{id}/apply', [WorkOrderController::class, 'applyForTender']);
+
+// Rutas de Administración protegidas
+Route::prefix('admin')->group(function () {
+    // Carga el selector desplegable para asignar empresas
+    Route::get('/companies', [CompanyController::class, 'getActiveCompanies']);
+});
+
+// Grupo de Administración Protegido
 Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')->group(function () {
     
     // 1. CONTROLADOR DE USUARIOS (UserController)
@@ -145,7 +180,7 @@ Route::middleware(['auth', 'check.role:admin,inspector'])->group(function () {
     Route::get('/api/admin/arboles', [TreeController::class, 'getAdminTrees'])->name('api.admin.trees');
 });
 
-// Grupo nuevo exclusivo: Solo el Administrador puede entrar
+// Grupo exclusivo: Solo el Administrador puede entrar
 Route::middleware(['auth', 'check.role:admin'])->group(function () {
     // Listado global de usuarios en formato JSON
     Route::get('/api/admin/users', [UserController::class, 'index'])->name('api.admin.users.index');

@@ -102,7 +102,7 @@
                                 <line x1="19" y1="12" x2="5" y2="12"></line>
                                 <polyline points="12 19 5 12 12 5"></polyline>
                             </svg>
-                            Volver a filtros
+                            Volver
                         </button>
 
                         <div class="tree-card-detail">
@@ -122,9 +122,13 @@
                                 <h4 class="data-title">DATOS DEL ARBOL</h4>
                                 <ul class="data-list">
                                     <li><strong>Especie:</strong> <span id="t-especie">-</span></li>
-                                    <li><strong>Edad:</strong> <span id="t-edad">-</span></li>
                                     <li><strong>Altura:</strong> <span id="t-altura">-</span></li>
-                                    <li><strong>Dirección:</strong> <span id="t-direccion">-</span></li>
+                                    <li><strong>DAP:</strong> <span id="t-dap">-</span></li>
+                                    <li><strong>Fitosanitario:</strong> <span id="t-vitalidad">-</span></li>
+                                    <li><strong>Mantenimiento:</strong> <span id="t-mantenimiento">-</span></li>
+                                    <li><strong>Estructura:</strong> <span id="t-estructura">-</span></li>
+                                    <li><strong>Observaciones:</strong> <span id="t-observaciones">-</span></li>
+                                    <li><strong id="t-direccion-label">Dirección:</strong> <span id="t-direccion">-</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -155,10 +159,5 @@
 
 @section('scripts')
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-<<<<<<< HEAD
-    <script src="{{ asset('js/map.js') }}"></script>
+    <script type="module" src="{{ asset('js/map/main.js') }}"></script>
 @endsection
-=======
-    <script src="{{ asset('js/home/map.js') }}"></script>
-@endsection
->>>>>>> 7df9417fa65fa2849e01939f57c5d7913c14c79a
