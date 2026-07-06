@@ -104,6 +104,10 @@ Route::middleware(['auth'])->group(function () {
         //Endpoint para la lista dinámica de árboles/reclamos en el Dashboard
         Route::get('/api/dashboard/trees-list', [DashboardController::class, 'getTreesList'])->name('dashboard.trees-list');
 
+        // Cancelación del Vecino
+        // Al ser un controlador Invocable, no hace falta especificar el nombre del método en un string
+        Route::patch('/api/reclamos/{id}/cancelar', RequestCancellationController::class)->name('requests.cancelar');
+
         // Dashboard Exclusivo Admin
         Route::middleware(['role:admin'])->group(function () {
             Route::get('/dashboard/admin', function () {
