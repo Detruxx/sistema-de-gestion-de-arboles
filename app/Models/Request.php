@@ -28,13 +28,6 @@ class Request extends Model
     protected $casts = [
         'path' => 'array',
     ];
-
-    /**
-     * Configuramos el casteo automático de la columna path
-     */
-    protected $casts = [
-        'path' => 'array', // Laravel transforma el JSON de la BDD a array de PHP solo
-    ];
     
     // Esto es para que se pueda acceder al codigo de seguimiento como si fuera una propiedad normal
     

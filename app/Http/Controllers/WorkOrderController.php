@@ -106,6 +106,10 @@ class WorkOrderController extends Controller
     {
         $workOrder = WorkOrder::findOrFail($id);
 
+        if ($workOrder->company_id !== null) {
+            return response()->json(['status' => 'error', 'message' => 'Este trabajo ya fue asignado a otra empresa.'], 403);
+        }
+
         $workOrder->update([
             'company_id' => auth()->user()->company_id
         ]);

@@ -14,7 +14,7 @@ class ProfileController extends Controller
     /**
      * Muestra la vista de configuracion del perfil.
      */
-    public function Configuration()
+    public function configuration()
     {
         $user = Auth::user();
         return view('profile.configuracion', compact('user'));
@@ -107,13 +107,13 @@ class ProfileController extends Controller
         $action = $request->input('action'); // 'completar' o 'descartar'
 
         try {
-            $request = Request::find($id);
-            if ($request) {
+            $reclamo = Reclamo::find($id);
+            if ($reclamo) {
                 if ($action === 'descartar') {
-                    $request->delete(); // O cambiar estado a descartado si prefieres
+                    $reclamo->delete(); // O cambiar estado a descartado si prefieres
                 } else {
-                    $request->status = 'resolved'; // Completado
-                    $request->save();
+                    $reclamo->status = 'resolved'; // Completado
+                    $reclamo->save();
                 }
                 return back()->with('success', 'El estado del reclamo ha sido actualizado con éxito.');
             }

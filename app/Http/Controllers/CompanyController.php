@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\Company;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
  
 class CompanyController extends Controller
 {
@@ -10,7 +11,7 @@ class CompanyController extends Controller
     /**
      * Obtiene todas las empresas activas para usar en dropdowns.
      */
-    public function getActivateCompanies() :JsonResponse
+    public function getActiveCompanies() :JsonResponse
     {
         $companies = Company::get(['id', 'name']);
 
