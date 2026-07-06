@@ -13,6 +13,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\CompanyPanelController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
@@ -99,6 +100,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/bandeja-entrada', [ProfileController::class, 'misMensajes'])->name('profile.bandeja-entrada');
         Route::get('/mensajes', [ContactController::class, 'index'])->name('contact.index');
         Route::post('/mensajes/{id}/read', [ContactController::class, 'markRead'])->name('contact.read');
+
+        //Endpoint para la lista dinámica de árboles/reclamos en el Dashboard
+        Route::get('/api/dashboard/trees-list', [DashboardController::class, 'getTreesList'])->name('dashboard.trees-list');
 
         // Dashboard Exclusivo Admin
         Route::middleware(['role:admin'])->group(function () {
