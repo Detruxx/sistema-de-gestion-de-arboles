@@ -128,6 +128,7 @@ Route::middleware(['auth'])->group(function () {
         Route::middleware(['role:admin,inspector'])->group(function () {
             // Ruta para crear órdenes de trabajo/tareas de empresas contratistas
             Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
+            Route::post('/mensajes/{id}/responder', [ContactController::class, 'respond'])->name('mensajes.respond');
         });
 
         // Dashboard Exclusivo Empresas Tercerizadas

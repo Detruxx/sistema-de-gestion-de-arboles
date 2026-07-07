@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->text('message');
             $table->enum('status', ['unread', 'read'])->default('unread');
+            $table->text('inspector_response')->nullable(); // Respuesta del inspector (arranca vacío)
+            $table->boolean('is_new_for_user')->default(false); // Puntito rojo de notificación para el vecino
             $table->timestamps();
         });
     }
