@@ -130,8 +130,10 @@
     max-height: calc(100vh - 195px) !important;
     padding: 12px !important;
     box-sizing: border-box !important;
-    border: 1px solid #e5e7eb !important;
+    border: 1px solid rgba(16, 185, 129, 0.18) !important;
+    border-top: 3px solid #10b981 !important;
     border-radius: 8px !important;
+    background-color: #f0fdf4 !important;
 }
 
 
@@ -177,8 +179,8 @@
 }
 
 #claim-detail-modal .detail-box {
-    background: #f9fafb !important;
-    border: 1px solid #e5e7eb !important;
+    background: #ffffff !important;
+    border: 1px solid rgba(16, 185, 129, 0.22) !important;
     border-radius: 8px !important;
     padding: 8px !important;
 }
@@ -193,7 +195,7 @@
 #claim-detail-modal .response-textarea {
     background: #ffffff !important;
     color: #1f2937 !important;
-    border: 1px solid #d1d5db !important;
+    border: 1px solid rgba(16, 185, 129, 0.35) !important;
     border-radius: 8px !important;
     font-family: inherit !important;
     padding: 10px !important;
@@ -209,7 +211,7 @@
 #claim-detail-modal input {
     background-color: #ffffff !important;
     color: #1f2937 !important;
-    border: 1px solid #d1d5db !important;
+    border: 1px solid rgba(16, 185, 129, 0.35) !important;
     border-radius: 8px !important;
     height: 38px !important;
     padding: 8px 12px !important;
@@ -240,7 +242,7 @@
 
 /* Sección de Trabajos Derivados */
 #claim-detail-modal .assigned-jobs-section {
-    border: 1px solid #e5e7eb !important;
+    border: 1px solid rgba(16, 185, 129, 0.25) !important;
     border-radius: 10px !important;
     padding: 16px !important;
     background: #ffffff !important;
@@ -345,7 +347,7 @@
 .template-btn.vinculated { background-color: #fdf4ff; color: #86198f; border-color: #f0abfc; }
 
 /* Columna Tercera (Tareas) */
-.third-col-section { margin-top: 0px; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; }
+.third-col-section { margin-top: 0px; background-color: #f8fafc; border: 1px solid rgba(16, 185, 129, 0.25); padding: 15px; border-radius: 8px; }
 .third-col-desc { font-size: 0.8rem; color: var(--admin-text-secondary); margin-bottom: 10px; }
 .task-form-group { margin-bottom: 5px; }
 .task-form-label { font-size: 0.85rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 2px; }
