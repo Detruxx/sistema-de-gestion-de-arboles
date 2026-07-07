@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
@@ -14,7 +14,9 @@ use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\CompanyPanelController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\RequestCancellationController;use App\Http\Controllers\AnalyticsController;`nuse Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\RequestCancellationController;
+use App\Http\Controllers\AnalyticsController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
 Route::get('/', function () {
@@ -107,7 +109,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Cancelación del Vecino
         // Al ser un controlador Invocable, no hace falta especificar el nombre del método en un string
-        Route::patch('/api/reclamos/{id}/cancelar', RequestCancellationController::class)->name('requests.cancelar');>>>>>>> testing-tommy2
+        Route::patch('/api/reclamos/{id}/cancelar', RequestCancellationController::class)->name('requests.cancelar');
 
         // Dashboard Exclusivo Admin
         Route::middleware(['role:admin'])->group(function () {
@@ -199,14 +201,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // Modificar el rol de un usuario específico (PATCH)
     Route::patch('/api/admin/users/{user}/role', [UserController::class, 'updateRole'])->name('api.admin.users.updateRole');
 
-<<<<<<< HEAD
     // Listado global de empresas en formato JSON
     Route::get('/api/admin/companies', [CompanyController::class, 'indexAdmin'])->name('api.admin.companies.index');
     
     // Estadísticas del dashboard admin
     Route::get('/api/admin/stats', [UserController::class, 'adminStats'])->name('api.admin.stats');
-=======
+
     // Analíticas y Estadísticas (Actionable Intelligence)
     Route::get('/api/admin/analytics', [AnalyticsController::class, 'getDashboardAnalytics'])->name('api.admin.analytics');
-    Route::post('/api/admin/analytics/custom', [AnalyticsController::class, 'generateCustomReport'])->name('api.admin.analytics.custom');`n});
-
+    Route::post('/api/admin/analytics/custom', [AnalyticsController::class, 'generateCustomReport'])->name('api.admin.analytics.custom');
+});

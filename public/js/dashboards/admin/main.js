@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Principal (Dashboard Administrador): Punto de entrada y configuración general para el panel de administración.
  */
 
@@ -14,8 +14,10 @@ window.showModule = function(moduleName) {
     if (moduleName === 'estadisticas') {
         analytics.loadAnalyticsModule();
     }
-};`nwindow.showModule = showModule;
-window.showAdminModule = api.showAdminModule;`nwindow.toggleAdminSidebar = toggleAdminSidebar;
+};
+window.showModule = showModule;
+window.showAdminModule = api.showAdminModule;
+window.toggleAdminSidebar = toggleAdminSidebar;
 window.getCsrfToken = getCsrfToken;
 
 Object.assign(window, residents);

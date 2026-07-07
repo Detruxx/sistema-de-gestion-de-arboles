@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Bandeja de Mensajes | TreeBA')
 
@@ -56,7 +56,8 @@
                             $statusText = $status === 'unread' ? 'Nuevo' : ($status === 'answered' ? 'Respondido' : 'Leído');
                         @endphp
 
-                        <details class="reclamo-card {{ $statusClass }}" style="margin-bottom: 15px;" data-timestamp="{{ strtotime($createdAt) }}" data-is-new="{{ $status === 'unread' ? 'true' : 'false' }}">`n                            <summary class="reclamo-card-summary">
+                        <details class="reclamo-card {{ $statusClass }}" style="margin-bottom: 15px;" data-timestamp="{{ strtotime($createdAt) }}" data-is-new="{{ $status === 'unread' ? 'true' : 'false' }}">
+                            <summary class="reclamo-card-summary">
                                 <div class="card-summary-left">
                                     <span class="reclamo-id" style="background-color: transparent; border: 1px solid var(--admin-border); padding: 8px; border-radius: 12px;">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
