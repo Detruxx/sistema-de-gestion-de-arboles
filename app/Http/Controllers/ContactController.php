@@ -73,9 +73,8 @@ class ContactController extends Controller
         $msg = ContactMessage::findOrFail($id);
         
         // 1. Guardar la respuesta y cambiar estado
-        // TODO (BACKEND): Agregar estas columnas en la migración de contact_messages
-        // $msg->inspector_response = $request->reply_message;
-        // $msg->is_new_for_user = true; // Activa el punto rojo en la campana del vecino
+        $msg->inspector_response = $request->reply_message;
+        $msg->is_new_for_user = true; // Activa el punto rojo en la campana del vecino
         
         $msg->status = 'answered';
         $msg->save();
