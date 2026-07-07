@@ -264,7 +264,7 @@ class RequestController extends Controller
         
         $userId = auth()->id() ?? 1;
 
-        DB::transaction(function () use ($userRequest, $statusId, $userId, $justification, $linkedTo, $suggestedDuplicateId) {
+        DB::transaction(function () use ($userRequest, $statusId, $userId, $justification, $linkedTo, $suggestedDuplicateId, $request) {
             $userRequest->update([
                 'request_status_id' => $statusId,
                 'linked_to' => $linkedTo,
@@ -277,6 +277,14 @@ class RequestController extends Controller
                     'user_id'           => $userId,
                     'justification'     => $justification,
                 ]);
+            }
+
+            // Si el reclamo pasa a estar certificado, marcamos las tareas finalizadas como aptas para cobro
+            if ($request->estado === 'certified') {
+                \App\Models\WorkOrder::where('request_id', $userRequest->id)
+                    ->where('work_status', 'Finalizado')
+                    ->where('payment_status', 'Pendiente')
+                    ->update(['payment_status' => 'Apto para Cobro']);
             }
         });
 

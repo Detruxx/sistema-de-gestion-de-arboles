@@ -2,6 +2,8 @@
  * Template (Dashboard Inspector): Funciones para generar HTML modular de los reclamos.
  */
 
+import { getProgressTrackerHtml } from '../shared/ui-components.js';
+
 export function getClaimListCardHtml(c, isSelected, statusObj) {
     const statusLabel = statusObj ? statusObj.status_name : c.estado.toUpperCase();
     const statusHex = statusObj ? statusObj.color : '#6b7280';
@@ -107,30 +109,33 @@ export function getClaimModalHtml(claim, state) {
 
     // --- COLUMNA DERECHA: GESTIÓN ---
     html += `<div class="claim-modal-col-right">
-        <div class="status-tracker-container">
-            <div class="status-tracker-title">Progreso del Reclamo actual:</div>
-            <div class="status-steps">`;
+        <div class="status-tracker-title" style="margin-bottom: 10px;">Progreso del Reclamo actual:</div>`;
 
-    state.requestStatuses.forEach(s => {
-        const isCompleted = s.sequence && s.sequence <= currentSeq;
-        const isActive = claim.estado === s.slug;
-        if (s.sequence || isActive) {
-            html += `
-                <div class="status-step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}">
-                    <div class="step-circle" style="background-color: ${isActive ? s.color : ''}; border-color: ${isActive ? s.color : ''}">${s.sequence || '!'}</div>
-                    <div class="step-label">${s.status_name}</div>
-                </div>`;
-        }
-    });
+    const mappedSteps = state.requestStatuses.map(s => ({
+        label: s.status_name,
+        sequence: s.sequence,
+        color: s.color,
+        slug: s.slug
+    }));
 
-    html += `</div>
-        </div>
+    html += getProgressTrackerHtml(mappedSteps, currentSeq, claim.estado);
+
+    let rawPriority = claim.priority?.priority_name || claim.priority || 'Baja';
+    if (typeof rawPriority === 'string') {
+        const lowerP = rawPriority.toLowerCase();
+        if (lowerP === 'low') rawPriority = 'Baja';
+        if (lowerP === 'medium') rawPriority = 'Media';
+        if (lowerP === 'high') rawPriority = 'Alta';
+        if (lowerP === 'urgent') rawPriority = 'Urgente';
+    }
+
+    html += `
         <div class="status-tracker-container" style="margin-top: 8px;">
             <div class="right-panel-header">
                 <h4 class="detail-title" style="font-size: 1.05rem; margin-bottom: 0;">Actualizar Trámite</h4>
                 <div class="priority-selector-wrapper">
                     <label class="priority-selector-label">Prioridad:</label>
-                    <input type="text" id="new-priority-select" list="priority-options" class="priority-selector-input" value="${claim.priority?.priority_name || claim.priority || 'Baja'}" placeholder="Escribir...">
+                    <input type="text" id="new-priority-select" list="priority-options" class="priority-selector-input" value="${rawPriority}" placeholder="Escribir...">
                     <datalist id="priority-options">
                         <option value="Baja">
                         <option value="Media">

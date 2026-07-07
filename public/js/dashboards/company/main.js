@@ -4,28 +4,35 @@
 
 import { fetchCompanyData } from './api.js';
 import { updateCompanyStats } from './ui.js';
-import { loadCompanyJobsList } from './jobs.js';
+import { initJobs, reloadJobsList, state as jobsState } from './jobs.js';
 import { loadCompanyPaymentsList } from './payments.js';
-import { showModule, toggleAdminSidebar } from '../shared/layout.js';
+import { showModule, toggleAdminSidebar, getCsrfToken } from '../shared/layout.js';
 
-window.showModule = showModule;
+window.showModule = (moduleName) => {
+    showModule(moduleName);
+    if (moduleName === 'trabajos') {
+        import('./jobs.js').then(module => {
+            if (typeof module.triggerMapResize === 'function') {
+                module.triggerMapResize();
+            }
+        });
+    }
+};
 window.toggleAdminSidebar = toggleAdminSidebar;
+window.getCsrfToken = getCsrfToken;
 
-let companyJobs = [];
-
-export function getCompanyJobs() { return companyJobs; }
-export function setCompanyJobs(val) { companyJobs = val; }
+export function getCompanyJobs() { return jobsState.jobs; }
 
 async function loadCompanyData() {
+    let jobs = [];
     try {
         const data = await fetchCompanyData();
-        setCompanyJobs(data.jobs || []);
+        jobs = data.jobs || [];
     } catch (err) {
         console.error("Error al cargar datos de empresa:", err);
-        setCompanyJobs([]);
     }
 
-    loadCompanyJobsList();
+    initJobs(jobs);
     loadCompanyPaymentsList();
     updateCompanyStats();
 }

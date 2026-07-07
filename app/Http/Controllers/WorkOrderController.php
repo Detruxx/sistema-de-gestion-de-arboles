@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\WorkOrder;
 use App\Models\Request as TreeRequest;
+use App\Models\RequestStatus;
+use App\Models\RequestStatusHistory;
 
 class WorkOrderController extends Controller
 {
@@ -87,35 +89,95 @@ class WorkOrderController extends Controller
 
         // Validamos el estado
         $request->validate([
-            'work_status' => 'required|in:Asignado,En espera,En Proceso,Finalizado'
+            'work_status' => 'nullable|in:Asignado,En espera,En Proceso,Finalizado',
+            'payment_status' => 'nullable|in:Pendiente,Apto para Cobro,Pagado',
+            'scheduled_date' => 'nullable|date'
         ]);
         
-        // Actualizamos el estado
-        $workOrder->update([
-            'work_status' => $request->work_status
-        ]);
+        if ($request->has('payment_status')) {
+            $workOrder->update(['payment_status' => $request->payment_status]);
+            // Si solo enviaron el estado de pago, retornamos éxito
+            if (!$request->has('work_status')) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Estado de pago actualizado exitosamente.'
+                ]);
+            }
+        }
+
+        if (!$request->has('work_status')) {
+            return response()->json(['status' => 'success']);
+        }
+
+        $newStatus = $request->work_status;
+
+        // 1. Validar bloqueo secuencial al avanzar
+        if (in_array($newStatus, ['Asignado', 'En Proceso', 'Finalizado'])) {
+            $previousPending = WorkOrder::where('request_id', $workOrder->request_id)
+                ->where('execution_order', '<', $workOrder->execution_order)
+                ->where('work_status', '!=', 'Finalizado')
+                ->exists();
+
+            if ($previousPending) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No puedes avanzar esta tarea porque hay trabajos previos (con orden menor) pendientes de finalizar.'
+                ], 400);
+            }
+        }
+
+        // Guardar la fecha anterior para comparar
+        $oldScheduledDate = $workOrder->scheduled_date ? \Carbon\Carbon::parse($workOrder->scheduled_date)->format('Y-m-d') : null;
+
+        // 2. Actualizamos el estado y la fecha de programación
+        $updateData = ['work_status' => $newStatus];
         
-        // Sincronizamos con el reclamo
+        if ($newStatus === 'En Proceso') {
+            // Si inicia la tarea, la fecha de programación se fija al día de hoy automáticamente
+            $updateData['scheduled_date'] = now()->format('Y-m-d');
+        } elseif ($request->has('scheduled_date')) {
+            // Si solo está guardando la fecha estando Asignado
+            $updateData['scheduled_date'] = $request->scheduled_date;
+        }
+
+        $workOrder->update($updateData);
+        
+        // 3. Sincronizamos con el reclamo y la siguiente tarea
         $claim = $workOrder->request;
         if($claim){
             $newRequestStatusSlug = null;
             $justification = '';
 
-            // Cambiamos según el estado
-            if($request->work_status === 'En Proceso'){
+            if($newStatus === 'En Proceso'){
                 $newRequestStatusSlug = 'in_progress';
                 $justification = 'Trabajo en curso iniciado por la contratista.';
 
-            // Si finaliza
-            }elseif($request->work_status === 'Finalizado'){
-                $newRequestStatusSlug = 'resolved';
-                $justification = 'Trabajo finalizado por la contratista.';
+            }elseif($newStatus === 'Finalizado'){
+                // a. Propagar a la siguiente tarea
+                $nextWorkOrder = WorkOrder::where('request_id', $claim->id)
+                    ->where('execution_order', '>', $workOrder->execution_order)
+                    ->orderBy('execution_order', 'asc')
+                    ->first();
+
+                if ($nextWorkOrder && $nextWorkOrder->work_status === 'En espera') {
+                    $nextWorkOrder->update(['work_status' => 'Asignado']);
+                }
+
+                // b. Verificar si TODAS las tareas están finalizadas
+                $allFinished = WorkOrder::where('request_id', $claim->id)
+                    ->where('work_status', '!=', 'Finalizado')
+                    ->doesntExist();
+
+                if ($allFinished) {
+                    $newRequestStatusSlug = 'resolved';
+                    $justification = 'Todas las tareas asociadas han sido finalizadas por la(s) contratista(s).';
+                }
             }
 
-            // Verificamos que se haya establecido un nuevo estado
+            // Actualizar el estado global del reclamo si hubo cambio
             if($newRequestStatusSlug){
                 $statusObj = RequestStatus::where('slug', $newRequestStatusSlug)->first();
-                if($statusObj){
+                if($statusObj && $claim->request_status_id !== $statusObj->id){
                     $claim->update([
                         'request_status_id' => $statusObj->id,
                     ]);
@@ -128,9 +190,22 @@ class WorkOrderController extends Controller
                     ]);
                 }
             }
+
+            // Registrar en el historial si la empresa actualizó la fecha programada (sin cambiar de estado general)
+            if ($request->has('scheduled_date') && $newStatus === 'Asignado') {
+                $newDateStr = \Carbon\Carbon::parse($request->scheduled_date)->format('Y-m-d');
+                if ($newDateStr !== $oldScheduledDate) {
+                    RequestStatusHistory::create([
+                        'request_id' => $claim->id,
+                        'request_status_id' => $claim->request_status_id, // Mantiene el estado actual del reclamo
+                        'user_id' => auth()->id() ?? 1,
+                        'justification' => 'La empresa contratista ha programado la ejecución de esta orden de trabajo para la fecha: ' . \Carbon\Carbon::parse($request->scheduled_date)->format('d/m/Y') . '.',
+                    ]);
+                }
+            }
         }
 
-        return response->json([
+        return response()->json([
             'status'  => 'success',
             'message' => 'Estado de la orden de trabajo actualizado y reclamo sincronizado.'
         ], 200);

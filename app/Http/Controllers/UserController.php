@@ -11,15 +11,30 @@ class UserController extends Controller
     /**
      * Muestra el listado de usuarios para la administracion
      */
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     { 
-        // Traemos todos los usuarios ordenados por id descendente
-        $users = User::orderBy('id','desc')->get();
+        $query = User::orderBy('id','desc');
+        
+        if ($request->has('role')) {
+            $query->where('role', $request->role);
+        }
+
+        $users = $query->get();
 
         // Retornamos los usuarios en formato JSON con estado de éxito
         return response()->json([
             'status' => 'success',
             'data'   => $users,
+        ], 200);
+    }
+
+    public function adminStats()
+    {
+        return response()->json([
+            'residents' => User::where('role', 'vecino')->count(),
+            'inspectors' => User::where('role', 'inspector')->count(),
+            'companies' => \App\Models\Company::count(),
+            'pendingCompanies' => \App\Models\Company::where('status', 'Pendiente')->count()
         ], 200);
     }
 

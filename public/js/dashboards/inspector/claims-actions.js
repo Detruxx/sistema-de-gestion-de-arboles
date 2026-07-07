@@ -54,11 +54,27 @@ export async function smartUpdateClaim() {
     const responseText = document.getElementById('response-text').value.trim();
     const newStatus = document.getElementById('new-status-select').value;
     const newPriorityId = document.getElementById('new-priority-select')?.value;
-    
+
+    const currentStatusSlug = claim.estado;
+    // Bloqueamos el avance o retroceso del estado segun ciertos momentos del reclamo
+    if (currentStatusSlug === 'scheduled' || currentStatusSlug === 'in_progress') {
+        if (newStatus !== currentStatusSlug) {
+            alert('No puedes avanzar o retroceder el estado de un reclamo que está Programado o En Proceso. La contratista actualizará el estado al trabajar.');
+            return;
+        }
+    }
+
+    if (currentStatusSlug === 'resolved') {
+        if (newStatus !== currentStatusSlug && newStatus !== 'certified') {
+            alert('Un reclamo Completado solo puede avanzar al estado Certificado.');
+            return;
+        }
+    }
+
     // Validar asignación de trabajos si se pasa a programado o superior
     const newStatusObj = state.requestStatuses.find(rs => rs.slug === newStatus);
     const scheduledObj = state.requestStatuses.find(rs => rs.slug === 'scheduled');
-    
+
     if (newStatusObj && scheduledObj && newStatusObj.sequence >= scheduledObj.sequence) {
         const totalWorkOrders = (claim.work_orders ? claim.work_orders.length : 0) + (claim.pending_work_orders ? claim.pending_work_orders.length : 0);
         if (totalWorkOrders === 0) {

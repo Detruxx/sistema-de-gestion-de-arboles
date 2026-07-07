@@ -9,6 +9,7 @@ import * as companies from './companies.js';
 import * as api from './api.js';
 
 window.showModule = showModule;
+window.showAdminModule = api.showAdminModule;
 window.toggleAdminSidebar = toggleAdminSidebar;
 window.getCsrfToken = getCsrfToken;
 

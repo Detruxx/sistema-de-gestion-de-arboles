@@ -93,7 +93,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['verified'])->group(function () {
 
         // Perfil del vecino
-        Route::get('/configuracion', [ProfileController::class, 'configuracion'])->name('profile.configuracion');
+        Route::get('/configuracion', [ProfileController::class, 'configuration'])->name('profile.configuracion');
         Route::post('/configuracion/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
         Route::post('/configuracion/photo', [ProfileController::class, 'updateProfilePhoto'])->name('profile.photo.update');
         Route::get('/mis-reclamos', [ProfileController::class, 'myRequests'])->name('profile.mis-reclamos');
@@ -155,8 +155,9 @@ Route::get('/api/request-statuses', [RequestController::class, 'getStatuses']);
 // Datos para el Panel de la Empresa Contratista 
 Route::get('/company/dashboard-data', [CompanyPanelController::class, 'getDashboardData']);
 
-// Postulación de Empresas 
+// Postulación y Gestión de Órdenes de Trabajo por Empresa
 Route::post('/work-orders/{id}/apply', [WorkOrderController::class, 'applyForTender']);
+Route::put('/work-orders/{id}/status', [WorkOrderController::class, 'updateWorkOrderStatus']);
 
 // Rutas de Administración protegidas
 Route::prefix('admin')->group(function () {
@@ -165,7 +166,7 @@ Route::prefix('admin')->group(function () {
 });
 
 // Grupo de Administración Protegido
-Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     
     // 1. CONTROLADOR DE USUARIOS (UserController)
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -185,16 +186,22 @@ Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')
 });
 
 // Grupo compartido: Accesible por Admin e Inspector
-Route::middleware(['auth', 'check.role:admin,inspector'])->group(function () {
+Route::middleware(['auth', 'role:admin,inspector'])->group(function () {
     // Traer todos los árboles formateados para el AJAX del front
     Route::get('/api/admin/arboles', [TreeController::class, 'getAdminTrees'])->name('api.admin.trees');
 });
 
 // Grupo exclusivo: Solo el Administrador puede entrar
-Route::middleware(['auth', 'check.role:admin'])->group(function () {
+Route::middleware(['auth', 'role:admin'])->group(function () {
     // Listado global de usuarios en formato JSON
     Route::get('/api/admin/users', [UserController::class, 'index'])->name('api.admin.users.index');
     
     // Modificar el rol de un usuario específico (PATCH)
     Route::patch('/api/admin/users/{user}/role', [UserController::class, 'updateRole'])->name('api.admin.users.updateRole');
+
+    // Listado global de empresas en formato JSON
+    Route::get('/api/admin/companies', [CompanyController::class, 'indexAdmin'])->name('api.admin.companies.index');
+    
+    // Estadísticas del dashboard admin
+    Route::get('/api/admin/stats', [UserController::class, 'adminStats'])->name('api.admin.stats');
 });

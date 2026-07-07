@@ -3,46 +3,27 @@
  */
 
 import { state } from './state.js';
+import { initGenericMap, triggerMapResize as genericTriggerMapResize, updateMapMarkers } from '../shared/map-module.js';
 
-let claimsMapInstance = null;
-let claimsMarkersGroup = null;
+let claimsMapObj = null;
 
 export function initClaimsMap() {
     const mapContainer = document.getElementById('claims-map');
-    if (!mapContainer || claimsMapInstance) return;
+    if (!mapContainer || claimsMapObj) return;
 
-    claimsMapInstance = L.map('claims-map', {
-        zoomControl: false
-    }).setView([-34.5888, -58.4285], 14);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap'
-    }).addTo(claimsMapInstance);
-
-    L.control.zoom({ position: 'bottomright' }).addTo(claimsMapInstance);
-    claimsMarkersGroup = L.layerGroup().addTo(claimsMapInstance);
-
-    setTimeout(() => {
-        claimsMapInstance.invalidateSize();
-    }, 200);
+    claimsMapObj = initGenericMap('claims-map');
 }
 
 export function triggerMapResize() {
-    if (claimsMapInstance) {
-        setTimeout(() => {
-            claimsMapInstance.invalidateSize();
-        }, 150);
+    if (claimsMapObj && claimsMapObj.mapInstance) {
+        genericTriggerMapResize(claimsMapObj.mapInstance);
     }
 }
 
 export function updateClaimsMapMarkers() {
-    if (!claimsMapInstance || !claimsMarkersGroup) return;
+    if (!claimsMapObj) return;
 
-    claimsMarkersGroup.clearLayers();
-    const bounds = [];
-
-    state.claims.forEach(claim => {
+    updateMapMarkers(claimsMapObj, state.claims, (claim) => {
         let lat = claim.lat || claim.latitude;
         let lng = claim.lng || claim.longitude;
         if (!lat || !lng) {
@@ -54,29 +35,10 @@ export function updateClaimsMapMarkers() {
         const statusObj = state.requestStatuses.find(rs => rs.slug === claim.estado);
         const color = statusObj ? statusObj.color : '#6b7280';
 
-        const markerHtml = `
-            <div style="background-color: ${color}; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>
-        `;
-
-        const customIcon = L.divIcon({
-            html: markerHtml,
-            className: 'custom-claim-marker',
-            iconSize: [20, 20],
-            iconAnchor: [10, 10]
-        });
-
-        const marker = L.marker([lat, lng], { icon: customIcon }).addTo(claimsMarkersGroup);
-
-        marker.on('click', () => {
-            if (typeof window.selectClaim === 'function') {
-                window.selectClaim(claim.id);
-            }
-        });
-
-        bounds.push([lat, lng]);
+        return { lat, lng, color, id: claim.id };
+    }, (id) => {
+        if (typeof window.selectClaim === 'function') {
+            window.selectClaim(id);
+        }
     });
-
-    if (bounds.length > 0) {
-        claimsMapInstance.fitBounds(bounds, { padding: [30, 30] });
-    }
 }
