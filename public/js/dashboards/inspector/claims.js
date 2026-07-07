@@ -1,5 +1,5 @@
 /**
- * Componente (Dashboard Inspector): Lógica para la visualización, revisión y auditoría de reclamos.
+ * Componente (Dashboard Inspector): LÃ³gica para la visualizaciÃ³n, revisiÃ³n y auditorÃ­a de reclamos.
  */
 
 import { getCsrfToken, showNotification } from '../shared/layout.js';
@@ -19,10 +19,20 @@ export function loadClaimsList() {
         const statusObj = state.requestStatuses.find(rs => rs.slug === c.estado);
         let statusLabel = statusObj ? statusObj.status_name : c.estado.toUpperCase();
         let statusHex = statusObj ? statusObj.color : '#6b7280';
+        let priorityBadge = '';
+        if (c.priority === 'auto-alta') {
+            priorityBadge = `<span style="background-color: #fef2f2; color: #dc2626; border: 1px solid #dc2626; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; white-space: nowrap;">URGENTE</span>`;
+        } else if (c.priority === 'auto-media') {
+            priorityBadge = `<span style="background-color: #fffbeb; color: #d97706; border: 1px solid #d97706; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; white-space: nowrap;">PRECAUCIÓN</span>`;
+        }
+
         card.innerHTML = `
-            <div class="list-item-header">
-                <span class="list-item-id">${c.id}</span>
-                <span class="badge-status" style="background-color: ${statusHex}20; color: ${statusHex}; border: 1px solid ${statusHex};">${statusLabel}</span>
+            <div class="list-item-header" style="align-items: flex-start;">
+                <span class="list-item-id" style="margin-right: 5px; word-break: break-all;">${c.id}</span>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
+                    <span class="badge-status" style="background-color: ${statusHex}20; color: ${statusHex}; border: 1px solid ${statusHex}; white-space: nowrap;">${statusLabel}</span>
+                    ${priorityBadge}
+                </div>
             </div>
             <div class="list-item-title">${c.categoria}</div>
             <div class="list-item-subtitle">${c.direccion}</div>
@@ -53,20 +63,20 @@ export function selectClaim(id) {
                 ${claim.suggested_duplicate_id ? `
                 <div style="background-color: #fef08a; border-left: 4px solid #eab308; padding: 12px; margin-bottom: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between;">
                     <div>
-                        <strong style="color: #854d0e; display: block; margin-bottom: 4px;">⚠️ Alerta de Sistema Inteligente</strong>
-                        <span style="color: #a16207; font-size: 0.9rem;">Este reclamo podría ser un duplicado del reclamo <strong>#${claim.suggested_duplicate_id}</strong> (misma cuadra y tipo de problema).</span>
+                        <strong style="color: #854d0e; display: block; margin-bottom: 4px;">âš ï¸ Alerta de Sistema Inteligente</strong>
+                        <span style="color: #a16207; font-size: 0.9rem;">Este reclamo podrÃ­a ser un duplicado del reclamo <strong>#${claim.suggested_duplicate_id}</strong> (misma cuadra y tipo de problema).</span>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button onclick="resolveDuplicate(true, ${claim.suggested_duplicate_id})" style="background: #eab308; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold;">✅ Vincular Automáticamente</button>
-                        <button onclick="resolveDuplicate(false)" style="background: transparent; color: #a16207; border: 1px solid #a16207; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">❌ Ignorar</button>
+                        <button onclick="resolveDuplicate(true, ${claim.suggested_duplicate_id})" style="background: #eab308; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold;">âœ… Vincular AutomÃ¡ticamente</button>
+                        <button onclick="resolveDuplicate(false)" style="background: transparent; color: #a16207; border: 1px solid #a16207; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">âŒ Ignorar</button>
                     </div>
                 </div>
                 ` : ''}
 
                 ${claim.linked_to ? `
                 <div style="background-color: #fce7f3; border-left: 4px solid #db2777; padding: 12px; margin-bottom: 20px; border-radius: 4px;">
-                    <strong style="color: #9d174d;">🔗 Reclamo Vinculado</strong>
-                    <span style="color: #be185d; font-size: 0.9rem; margin-left: 8px;">Este trámite es un duplicado y está anexado al reclamo principal <strong>#${claim.linked_to}</strong>.</span>
+                    <strong style="color: #9d174d;">ðŸ”— Reclamo Vinculado</strong>
+                    <span style="color: #be185d; font-size: 0.9rem; margin-left: 8px;">Este trÃ¡mite es un duplicado y estÃ¡ anexado al reclamo principal <strong>#${claim.linked_to}</strong>.</span>
                 </div>
                 ` : ''}
 
@@ -74,6 +84,18 @@ export function selectClaim(id) {
             <div>
                 <h3 class="detail-title">${claim.categoria}</h3>
                 <p class="detail-subtitle">Reclamo ID: <strong style="color:var(--admin-text-primary);">${claim.id}</strong> | Enviado el ${claim.fecha}</p>
+                
+                ${claim.priority === 'auto-alta' || claim.priority === 'auto-media' ? `
+                <div style="margin-top: 10px; margin-bottom: 15px; background-color: #f3f4f6; border-left: 4px solid ${claim.priority === 'auto-alta' ? '#dc2626' : '#d97706'}; padding: 10px; border-radius: 8px;">
+                    <strong style="color: ${claim.priority === 'auto-alta' ? '#991b1b' : '#92400e'}; display: flex; align-items: center; gap: 5px; font-size: 0.85rem;">
+                        Elevado automáticamente por el Sistema Inteligente
+                    </strong>
+                    <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: #4b5563;">
+                        El algoritmo de Procesamiento de Lenguaje detectó palabras clave en la solicitud.<br>
+                        Score de Riesgo Calculado: <strong>${claim.risk_score || 'Pendiente'}/100</strong>
+                    </p>
+                </div>
+                ` : ''}
             </div>
             <span class="badge-status" id="detail-badge-status" style="background-color: ${statusHex}20; color: ${statusHex}; border: 1px solid ${statusHex};">${statusLabel}</span>
         </div>
@@ -84,17 +106,17 @@ export function selectClaim(id) {
         </div>
 
         <div class="detail-section">
-            <p class="detail-label">Dirección / Especie</p>
-            <p class="detail-value">${claim.direccion} — Especie involucrada: ${claim.especie}</p>
+            <p class="detail-label">DirecciÃ³n / Especie</p>
+            <p class="detail-value">${claim.direccion} â€” Especie involucrada: ${claim.especie}</p>
         </div>
 
         <div class="detail-box">
-            <p class="detail-label">Mensaje / Descripción del problema</p>
+            <p class="detail-label">Mensaje / DescripciÃ³n del problema</p>
             <p class="detail-box-desc">${claim.descripcion}</p>
         </div>
     </div> <!-- FIN COLUMNA IZQUIERDA -->
 
-    <!-- COLUMNA DERECHA: GESTIÓN -->
+    <!-- COLUMNA DERECHA: GESTIÃ“N -->
     <div class="claim-modal-col-right">
         <div class="status-tracker-container">
             <div class="status-tracker-title">Progreso del Reclamo actual:</div>
@@ -116,11 +138,11 @@ export function selectClaim(id) {
         </div>
 
         <div class="response-section" style="margin-top: 10px;">
-            <h4 class="detail-title" style="font-size: 1.05rem; margin-bottom: 8px;">Actualizar Trámite y Responder al Vecino</h4>
+            <h4 class="detail-title" style="font-size: 1.05rem; margin-bottom: 8px;">Actualizar TrÃ¡mite y Responder al Vecino</h4>
             
             <div style="margin-bottom: 10px;">
                 <label style="font-size: 0.85rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 4px;">Cambiar estado a:</label>
-                <select id="new-status-select" style="width: 100%; background: #fff; border: 1px solid var(--admin-border); border-radius: 8px; padding: 6px; color: var(--admin-text-primary); font-family: var(--font-body); font-size: 0.85rem;" onchange="if(this.value === 'vinculated') alert('Se te pedirá el ID a vincular al guardar.')">
+                <select id="new-status-select" style="width: 100%; background: #fff; border: 1px solid var(--admin-border); border-radius: 8px; padding: 6px; color: var(--admin-text-primary); font-family: var(--font-body); font-size: 0.85rem;" onchange="if(this.value === 'vinculated') alert('Se te pedirÃ¡ el ID a vincular al guardar.')">
                     ${state.requestStatuses.map(s => `
                         <option value="${s.slug}" ${claim.estado === s.slug ? 'selected' : ''}>${s.status_name}</option>
                     `).join('')}
@@ -129,13 +151,13 @@ export function selectClaim(id) {
 
             <label style="font-size: 0.85rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 4px;">Mensaje / Respuesta (Opcional):</label>
             <div class="template-selector">
-                <button class="template-btn" onclick="applyTemplate('info')">Pedir más info</button>
-                <button class="template-btn" onclick="applyTemplate('relevated')">Avisar Inspección</button>
+                <button class="template-btn" onclick="applyTemplate('info')">Pedir mÃ¡s info</button>
+                <button class="template-btn" onclick="applyTemplate('relevated')">Avisar InspecciÃ³n</button>
                 <button class="template-btn" onclick="applyTemplate('scheduled')">Avisar Poda</button>
-                <button class="template-btn" onclick="applyTemplate('resolved')">Informar Resolución</button>
+                <button class="template-btn" onclick="applyTemplate('resolved')">Informar ResoluciÃ³n</button>
                 <button class="template-btn" onclick="applyTemplate('denied')">Rechazar</button>
             </div>
-            <textarea id="response-text" class="response-textarea" rows="3" style="min-height: 60px;" placeholder="Escribe un correo de respuesta al vecino (Si se deja vacío, solo se actualizará el estado interno)..."></textarea>
+            <textarea id="response-text" class="response-textarea" rows="3" style="min-height: 60px;" placeholder="Escribe un correo de respuesta al vecino (Si se deja vacÃ­o, solo se actualizarÃ¡ el estado interno)..."></textarea>
             
             <div class="action-row" style="display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
                 <button class="btn-secondary" onclick="clearResponse()">Limpiar</button>
@@ -147,8 +169,8 @@ export function selectClaim(id) {
     <!-- COLUMNA TERCERA: TAREAS Y EMPRESAS -->
     <div class="claim-modal-col-third">
         <div class="response-section" style="margin-top: 10px; background-color: #f8fafc; border: 1px solid #e2e8f0;">
-            <h4 class="detail-title" style="font-size: 1.05rem; margin-bottom: 8px;">Asignación de Tareas Externas</h4>
-            <p style="font-size: 0.8rem; color: var(--admin-text-secondary); margin-bottom: 15px;">Genera órdenes de trabajo (Poda, Extracción, etc.) para las empresas contratistas.</p>
+            <h4 class="detail-title" style="font-size: 1.05rem; margin-bottom: 8px;">AsignaciÃ³n de Tareas Externas</h4>
+            <p style="font-size: 0.8rem; color: var(--admin-text-secondary); margin-bottom: 15px;">Genera Ã³rdenes de trabajo (Poda, ExtracciÃ³n, etc.) para las empresas contratistas.</p>
             
             <div style="margin-bottom: 10px;">
                 <label style="font-size: 0.85rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 4px;">Tipo de Tarea:</label>
@@ -185,8 +207,8 @@ export function selectClaim(id) {
                             <strong style="font-size: 0.85rem; color: var(--admin-text-primary);">${wo.task_description}</strong>
                             <span style="font-size: 0.7rem; background: #e2e8f0; padding: 2px 6px; border-radius: 10px; color: #475569;">Orden #${wo.execution_order}</span>
                         </div>
-                        <div style="font-size: 0.8rem; color: var(--admin-text-secondary); margin-bottom: 4px;">🏢 Empresa: <span style="color: var(--admin-text-primary);">${wo.company || 'Sin Asignar'}</span></div>
-                        <div style="font-size: 0.8rem; color: var(--admin-text-secondary);">⚙️ Estado: <strong style="color: var(--admin-primary);">${wo.status}</strong></div>
+                        <div style="font-size: 0.8rem; color: var(--admin-text-secondary); margin-bottom: 4px;">ðŸ¢ Empresa: <span style="color: var(--admin-text-primary);">${wo.company || 'Sin Asignar'}</span></div>
+                        <div style="font-size: 0.8rem; color: var(--admin-text-secondary);">âš™ï¸ Estado: <strong style="color: var(--admin-primary);">${wo.status}</strong></div>
                     </div>
                 `).join('') : '<p style="font-size: 0.8rem; color: var(--admin-text-secondary); font-style: italic;">No hay tareas asignadas para este reclamo.</p>'}
             </div>
@@ -205,17 +227,17 @@ export function applyTemplate(type) {
 
     let text = '';
     if (type === 'open' || type === 'info') {
-        text = `Estimado/a ${claim.vecino},\n\nHemos recibido su solicitud ID ${claim.id} sobre "${claim.categoria}". Un inspector del área técnica estará evaluando la situación a la brevedad. Si posee más imágenes del estado actual del ejemplar, por favor adjúntelas respondiendo a este correo.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
+        text = `Estimado/a ${claim.vecino},\n\nHemos recibido su solicitud ID ${claim.id} sobre "${claim.categoria}". Un inspector del Ã¡rea tÃ©cnica estarÃ¡ evaluando la situaciÃ³n a la brevedad. Si posee mÃ¡s imÃ¡genes del estado actual del ejemplar, por favor adjÃºntelas respondiendo a este correo.\n\nAtentamente,\nEquipo de GestiÃ³n de Arbolado - Comuna 13.`;
     } else if (type === 'relevated') {
-        text = `Estimado/a ${claim.vecino},\n\nLe informamos que su solicitud ID ${claim.id} se encuentra en etapa de Inspección Técnica. Personal calificado visitará la dirección ${claim.direccion} dentro de los próximos 3 días hábiles para diagnosticar el árbol (${claim.especie}) y planificar el plan de acción.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
+        text = `Estimado/a ${claim.vecino},\n\nLe informamos que su solicitud ID ${claim.id} se encuentra en etapa de InspecciÃ³n TÃ©cnica. Personal calificado visitarÃ¡ la direcciÃ³n ${claim.direccion} dentro de los prÃ³ximos 3 dÃ­as hÃ¡biles para diagnosticar el Ã¡rbol (${claim.especie}) y planificar el plan de acciÃ³n.\n\nAtentamente,\nEquipo de GestiÃ³n de Arbolado - Comuna 13.`;
     } else if (type === 'scheduled' || type === 'in_progress') {
-        text = `Estimado/a ${claim.vecino},\n\nTras la inspección realizada en ${claim.direccion}, se ha planificado la intervención correspondiente para el día [Fecha]. Se realizará un saneamiento/poda de despeje preventivo para resguardar la seguridad pública.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
+        text = `Estimado/a ${claim.vecino},\n\nTras la inspecciÃ³n realizada en ${claim.direccion}, se ha planificado la intervenciÃ³n correspondiente para el dÃ­a [Fecha]. Se realizarÃ¡ un saneamiento/poda de despeje preventivo para resguardar la seguridad pÃºblica.\n\nAtentamente,\nEquipo de GestiÃ³n de Arbolado - Comuna 13.`;
     } else if (type === 'resolved') {
         text = `Estimado/a ${claim.vecino},\n\nNos complace informarle que la solicitud ID ${claim.id} ha sido completada de manera exitosa. Las tareas operativas y el despeje final en la zona han concluido.\n\nMuchas gracias por colaborar con el mantenimiento del arbolado de la Ciudad.\n\nAtentamente,\nGobierno de la Ciudad de Buenos Aires - Comuna 13.`;
     } else if (type === 'denied') {
-        text = `Estimado/a ${claim.vecino},\n\nTras la evaluación técnica de su solicitud ID ${claim.id}, lamentamos informarle que la misma ha sido rechazada por no cumplir con los criterios de intervención de la Ley de Arbolado.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
+        text = `Estimado/a ${claim.vecino},\n\nTras la evaluaciÃ³n tÃ©cnica de su solicitud ID ${claim.id}, lamentamos informarle que la misma ha sido rechazada por no cumplir con los criterios de intervenciÃ³n de la Ley de Arbolado.\n\nAtentamente,\nEquipo de GestiÃ³n de Arbolado - Comuna 13.`;
     } else if (type === 'vinculated') {
-        text = `Estimado/a ${claim.vecino},\n\nLe informamos que su solicitud ID ${claim.id} ha sido vinculada a un trámite preexistente sobre el mismo ejemplar o incidencia.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
+        text = `Estimado/a ${claim.vecino},\n\nLe informamos que su solicitud ID ${claim.id} ha sido vinculada a un trÃ¡mite preexistente sobre el mismo ejemplar o incidencia.\n\nAtentamente,\nEquipo de GestiÃ³n de Arbolado - Comuna 13.`;
     }
 
     if (textarea) textarea.value = text;
@@ -239,8 +261,8 @@ export async function smartUpdateClaim() {
     }
 
     if (newStatus === 'vinculated') {
-        const manualId = prompt('Ingrese el ID numérico del reclamo original al que desea vincularlo (Ej: 18):');
-        if (!manualId) return; // Canceló
+        const manualId = prompt('Ingrese el ID numÃ©rico del reclamo original al que desea vincularlo (Ej: 18):');
+        if (!manualId) return; // CancelÃ³
         payload.linked_to = parseInt(manualId);
     }
 
@@ -270,7 +292,7 @@ export async function smartUpdateClaim() {
 
             const banner = document.getElementById('notification-banner');
             const text = document.getElementById('notification-text');
-            if (text) text.innerText = `El estado se actualizó a '${newStatus}' y los cambios fueron guardados.`;
+            if (text) text.innerText = `El estado se actualizÃ³ a '${newStatus}' y los cambios fueron guardados.`;
             if (banner) banner.style.display = 'flex';
 
             setTimeout(() => {
@@ -285,7 +307,7 @@ export async function smartUpdateClaim() {
         }
     } catch (err) {
         console.error("Error updating claim:", err);
-        alert('Error de conexión.');
+        alert('Error de conexiÃ³n.');
     }
 };
 
@@ -341,7 +363,7 @@ export async function setClaimStatus(newStatus) {
     let payload = { estado: newStatus };
 
     if (newStatus === 'vinculated') {
-        const manualId = prompt('Ingrese el ID numérico del reclamo original al que desea vincularlo:');
+        const manualId = prompt('Ingrese el ID numÃ©rico del reclamo original al que desea vincularlo:');
         if (!manualId) return;
         payload.linked_to = parseInt(manualId);
     }
@@ -431,7 +453,7 @@ export async function loadClaimsFromServer() {
         await loadStatusesFromServer();
     }
 
-    // Poblar el selector de estados dinámicamente desde la BD
+    // Poblar el selector de estados dinÃ¡micamente desde la BD
     const statusSelect = document.getElementById('filter-claim-status');
     if (statusSelect && statusSelect.options.length <= 1) {
         state.requestStatuses.forEach(s => {
@@ -456,7 +478,7 @@ export async function loadClaimsFromServer() {
             initClaimsMap();
             updateClaimsMapMarkers();
 
-            // Poblar el selector de categorías dinámicamente desde los reclamos cargados
+            // Poblar el selector de categorÃ­as dinÃ¡micamente desde los reclamos cargados
             const catSelect = document.getElementById('filter-claim-category');
             if (catSelect && catSelect.options.length <= 1) {
                 const uniqueCategories = [...new Set(state.claims.map(c => c.categoria))];
@@ -612,7 +634,3 @@ export function updateClaimsMapMarkers() {
         claimsMapInstance.fitBounds(bounds, { padding: [30, 30] });
     }
 }
-
-
-
-
