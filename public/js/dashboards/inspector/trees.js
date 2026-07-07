@@ -13,6 +13,17 @@ export function loadTreesList() {
         card.className = `list-item-card ${state.selectedTreeId === t.id ? 'active' : ''}`;
         card.onclick = () => selectTree(t.id);
 
+        let stateColor = '#94a3b8';
+        const estadoLower = t.estado.toLowerCase();
+        if (estadoLower.includes('saludable')) {
+            stateColor = '#10b981';
+        } else if (estadoLower.includes('enfermo')) {
+            stateColor = '#ea580c';
+        } else if (estadoLower.includes('dañado') || estadoLower.includes('muerto') || estadoLower.includes('urgente')) {
+            stateColor = '#ef4444';
+        }
+        card.style.setProperty('border-left', `5px solid ${stateColor}`, 'important');
+
         card.innerHTML = `
             <div class="list-item-header">
                 <span class="list-item-id">#ID ${t.id}</span>
@@ -128,6 +139,17 @@ export function filterTrees() {
         const card = document.createElement('div');
         card.className = `list-item-card ${state.selectedTreeId === t.id ? 'active' : ''}`;
         card.onclick = () => selectTree(t.id);
+
+        let stateColor = '#94a3b8';
+        const estadoLower = t.estado.toLowerCase();
+        if (estadoLower.includes('saludable')) {
+            stateColor = '#10b981';
+        } else if (estadoLower.includes('enfermo')) {
+            stateColor = '#ea580c';
+        } else if (estadoLower.includes('dañado') || estadoLower.includes('muerto') || estadoLower.includes('urgente')) {
+            stateColor = '#ef4444';
+        }
+        card.style.setProperty('border-left', `5px solid ${stateColor}`, 'important');
 
         card.innerHTML = `
             <div class="list-item-header">

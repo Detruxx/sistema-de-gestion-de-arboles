@@ -5,6 +5,15 @@
 @endsection
 
 @section('content')
+    @auth
+        @if(auth()->user()->role === 'inspector')
+            <script>window.location.href = '/dashboard/inspector';</script>
+        @elseif(auth()->user()->role === 'admin')
+            <script>window.location.href = '/dashboard/admin';</script>
+        @elseif(auth()->user()->role === 'empresa')
+            <script>window.location.href = '/dashboard/empresa';</script>
+        @endif
+    @endauth
     <main>
         <!-- Seccion hero -->
         <section class="hero">
