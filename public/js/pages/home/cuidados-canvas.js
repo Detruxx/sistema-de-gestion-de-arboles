@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const numLines = 25; 
             const spacing = canvas.height / (numLines - 5);
             
-            ctx.lineWidth = 1.2;
+            ctx.lineWidth = 2.8;
             // Verde pálido un poco más intenso (Opacidad 0.35)
             ctx.strokeStyle = 'rgba(91, 191, 140, 0.35)'; 
 

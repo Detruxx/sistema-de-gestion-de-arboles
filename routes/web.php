@@ -14,6 +14,7 @@ use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\CompanyPanelController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\RequestCancellationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
@@ -55,7 +56,7 @@ Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->na
 Route::post('/register', [RegisterController::class, 'register']);
 
 // PARTE DE RECLAMOS
-Route::resource('requests', RequestController::class)->except(['create', 'edit']);
+Route::resource('requests', RequestController::class);
 
 Route::patch('/requests/{request}/update-status', [RequestController::class, 'updateStatus'])->name('requests.updateStatus');
 Route::post('/requests', [RequestController::class, 'store']);

@@ -56,7 +56,7 @@
 }
 
 .tip-card {
-    background-color: rgba(26, 61, 40, 0.25);
+    background-color: #babdac;
     border: 2px solid var(--deep-canopy);
     border-radius: 16px;
     padding: 35px;
@@ -74,7 +74,7 @@
     transform: translateY(-8px);
     border-color: var(--spring-leaf);
     box-shadow: 0 15px 35px rgba(91, 191, 140, 0.15);
-    background-color: rgba(26, 61, 40, 0.4);
+    background-color: #9aa492;
 }
 
 .tip-card-header {

@@ -4,7 +4,7 @@
 
 /* Contenedor principal del formulario de Plantación */
 .plantacion-form-container {
-    max-width: 800px;
+    max-width: 650px;
     margin: 0 auto;
     position: relative;
     z-index: 10;

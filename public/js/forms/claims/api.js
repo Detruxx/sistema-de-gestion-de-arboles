@@ -12,12 +12,28 @@ export async function submitClaim(formData, csrfToken) {
     const response = await fetch('/requests', {
         method: 'POST',
         headers: {
-            'X-CSRF-TOKEN': csrfToken
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
         },
         body: formData
     });
     
-    if (!response.ok) throw new Error('Error al registrar el reclamo en el servidor.');
+    if (!response.ok) {
+        let errorMessage = 'Error al registrar el reclamo en el servidor.';
+        try {
+            const errorData = await response.json();
+            if (errorData.errors) {
+                // Extraer el primer error de validación
+                const firstKey = Object.keys(errorData.errors)[0];
+                errorMessage = errorData.errors[firstKey][0];
+            } else if (errorData.message) {
+                errorMessage = errorData.message;
+            }
+        } catch (e) {
+            console.error("No se pudo parsear el error:", e);
+        }
+        throw new Error(errorMessage);
+    }
     return await response.json();
 }
 

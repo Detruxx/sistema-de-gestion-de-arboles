@@ -43,8 +43,10 @@ export async function selectTree(id) {
         let estadoStr = 'Saludable';
         if (Array.isArray(tree.vitality)) {
             estadoStr = tree.vitality.join(', ');
+        } else if (typeof tree.vitality === 'object' && tree.vitality !== null) {
+            estadoStr = Object.values(tree.vitality).join(', ');
         } else if (tree.vitality) {
-            estadoStr = tree.vitality;
+            estadoStr = String(tree.vitality);
         }
 
         let especieStr = tree.specie ? tree.specie.common_name : 'Desconocida';

@@ -7,6 +7,7 @@
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/forms/plantacion.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/shared/autocomplete.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 @endsection
 
@@ -27,7 +28,7 @@
 
                     <div class="form-group">
                         <label for="cazuela-estado">¿La plantera (espacio de tierra) está disponible?</label>
-                        <select id="cazuela-estado" class="form-control" required>
+                        <select id="cazuela-estado" name="cazuela_estado" class="form-control" required>
                             <option value="">Selecciona una opción...</option>
                             <option value="si">Sí, está abierta y con tierra suelta</option>
                             <option value="cemento">No, la vereda está completamente cementada</option>
@@ -38,7 +39,7 @@
                     <div class="form-group">
                         <label for="direccion-solicitud">Dirección Exacta</label>
                         <div class="input-with-button">
-                            <input type="text" id="direccion-solicitud" class="form-control" placeholder="Ej: Av. Rivadavia 4800, Caballito" required>
+                            <input type="text" id="direccion-solicitud" name="address" class="form-control" placeholder="Ej: Av. Rivadavia 4800, Caballito" required>
                             <button type="button" id="btn-select-map" class="btn-main-cta">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--spring-leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
@@ -51,7 +52,7 @@
 
                     <div class="form-group">
                         <label for="descripcion-plantacion">Descripción / Motivo (Opcional)</label>
-                        <textarea id="descripcion-plantacion" class="form-control" rows="3" placeholder="Explica brevemente por qué solicitas la plantación (ej. sombra, reemplazo de árbol seco, etc.)."></textarea>
+                        <textarea id="descripcion-plantacion" name="description" class="form-control" rows="3" placeholder="Explica brevemente por qué solicitas la plantación (ej. sombra, reemplazo de árbol seco, etc.)."></textarea>
                     </div>
 
                     <div class="form-group">
@@ -61,14 +62,14 @@
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-paperclip"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
                                 <span>Seleccionar archivo</span>
                             </label>
-                            <input type="file" id="foto-plantacion" accept="image/*" class="foto-input" style="display: none;" onchange="document.getElementById('foto-plantacion-name').textContent = this.files[0] ? this.files[0].name : 'Ningún archivo seleccionado'">
+                            <input type="file" id="foto-plantacion" name="foto" accept="image/*" class="foto-input" style="display: none;" onchange="document.getElementById('foto-plantacion-name').textContent = this.files[0] ? this.files[0].name : 'Ningún archivo seleccionado'">
                             <span class="file-name" id="foto-plantacion-name">Ningún archivo seleccionado</span>
                         </div>
                         <small class="foto-help-text">Formatos soportados: JPG, PNG. Tamaño máximo: 5MB.</small>
                     </div>
 
                     <div class="form-group checkbox-group">
-                        <input type="checkbox" id="compromiso" required oninvalid="this.setCustomValidity('Es un campo obligatorio.')" oninput="this.setCustomValidity('')">
+                        <input type="checkbox" id="compromiso" name="compromiso" required oninvalid="this.setCustomValidity('Es un campo obligatorio.')" oninput="this.setCustomValidity('')">
                         <label for="compromiso">
                             Me comprometo a cuidar y regar el árbol regularmente durante sus primeros 3 años de vida para asegurar su crecimiento saludable.
                         </label>
@@ -126,7 +127,15 @@
 @section('scripts')
     @auth
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="{{ asset('js/shared/address-autocomplete.js') }}"></script>
     <script src="{{ asset('js/forms/planting.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof initAddressAutocomplete === 'function') {
+                initAddressAutocomplete('direccion-solicitud');
+            }
+        });
+    </script>
     @endauth
 @endsection
 

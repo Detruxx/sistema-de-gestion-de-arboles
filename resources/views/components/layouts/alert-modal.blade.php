@@ -4,12 +4,17 @@
     'message' => '',
     'image' => '',
     'show' => false, // Para mostrarlo por defecto si viene de un redirect
-    'hideActions' => false // Para ocultar los botones por defecto y usar el slot
+    'hideActions' => false, // Para ocultar los botones por defecto y usar el slot
+    'closeRoute' => '' // Ruta para redirigir al cerrar
 ])
 
 <div class="alert-modal-overlay {{ $show ? 'active' : '' }}" id="alert-modal-{{ $type }}">
     <div class="alert-modal-box alert-modal-{{ $type }}">
-        <button type="button" class="alert-modal-close" onclick="closeAlertModal('alert-modal-{{ $type }}')">&times;</button>
+        @if($closeRoute)
+            <a href="{{ $closeRoute }}" class="alert-modal-close" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">&times;</a>
+        @else
+            <button type="button" class="alert-modal-close" onclick="closeAlertModal('alert-modal-{{ $type }}')">&times;</button>
+        @endif
         
         @if($image)
             <div class="alert-modal-image">
