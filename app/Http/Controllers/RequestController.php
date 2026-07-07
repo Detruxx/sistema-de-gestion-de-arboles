@@ -45,8 +45,8 @@ class RequestController extends Controller
                         'status' => $wo->work_status
                     ];
                 }),
-                'priority' => $req->priority ? $req->priority->slug : 'low', // Lee el slug de prioridad real de la base de datos
-                'risk_score' => $req->risk_score // Devuelve el score real calculado por el algoritmo
+                'priority' => $req->priority ? $req->priority->slug : 'low', 
+                'risk_score' => $req->risk_score 
             ];
         });
 
@@ -57,7 +57,7 @@ class RequestController extends Controller
     }
 
     /**
-     * Guarda un reclamo recién creado en la base de datos con algoritmo de scoring inteligente.
+     * Guarda un reclamo recién creado en la base de datos con algoritmo de scoring inteligente (TAREA 1).
      */
     public function store(Request $request, \App\Services\StreetService $streetService)
     {
@@ -99,17 +99,13 @@ class RequestController extends Controller
                                 ->whereNotIn('request_status_id', $estadosTerminalesIds)
                                 ->first();
 
-        // =========================================================================
-        // INICIO DEL ALGORITMO DE SCORING (PROCESAMIENTO DE LENGUAJE)
-        // =========================================================================
+        // 🤖 ALGORITMO DE SCORING (TAREA 1 COMPLETADA)
         $descripcion = mb_strtolower($request->input('description', ''));
         $riskScore = 0;
 
-        // Diccionario estructurado de palabras clave y su peso matemático
         $palabrasCriticas = ['cable', 'fuego', 'caer', 'peligro', 'escuela', 'urgente', 'derrumba', 'electrocu'];
         $palabrasMedias   = ['rama', 'apoyado', 'tapando', 'luz', 'vereda', 'raiz', 'viento'];
 
-        // Procesar palabras críticas (+50 puntos por cada una encontrada)
         foreach ($palabrasCriticas as $critica) {
             if (str_contains($descripcion, $critica)) {
                 $apariciones = substr_count($descripcion, $critica);
@@ -117,7 +113,6 @@ class RequestController extends Controller
             }
         }
 
-        // Procesar palabras medias (+20 puntos por cada una encontrada)
         foreach ($palabrasMedias as $media) {
             if (str_contains($descripcion, $media)) {
                 $apariciones = substr_count($descripcion, $media);
@@ -125,43 +120,32 @@ class RequestController extends Controller
             }
         }
 
-        // Forzar límite máximo de 100 puntos
         if ($riskScore > 100) {
             $riskScore = 100;
         }
 
-        // Valor por defecto: Prioridad de respaldo o baja (Slug 'low')
         $defaultPriority = Priority::where('slug', 'low')->first();
         $calculatedPriorityId = $defaultPriority ? $defaultPriority->id : 1;
 
-        // Clasificación basada en los umbrales matemáticos requeridos
         if ($riskScore > 60) {
-            // Prioridad auto-alta
             $prioridadAuto = Priority::where('slug', 'auto-alta')->first();
-            if ($prioridadAuto) {
-                $calculatedPriorityId = $prioridadAuto->id;
-            }
+            if ($prioridadAuto) { $calculatedPriorityId = $prioridadAuto->id; }
         } elseif ($riskScore > 30) {
-            // Prioridad auto-media
             $prioridadAuto = Priority::where('slug', 'auto-media')->first();
-            if ($prioridadAuto) {
-                $calculatedPriorityId = $prioridadAuto->id;
-            }
+            if ($prioridadAuto) { $calculatedPriorityId = $prioridadAuto->id; }
         }
-        // =========================================================================
 
-        // Crear el reclamo en la base de datos real
         $incident = \App\Models\Request::create([
             'user_id'                => $userId,
             'tree_id'                => $request->tree_id,
             'request_type_id'        => $request->request_type_id,
             'street_id'              => $street->id,
             'description'            => $request->description,
-            'path'                   => $photoPaths, // Guardamos la colección de rutas completa
+            'path'                   => $photoPaths,
             'request_status_id'      => 1,
             'suggested_duplicate_id' => $posibleDuplicado ? $posibleDuplicado->id : null,
-            'priority_id'            => $calculatedPriorityId, // Prioridad calculada por el algoritmo
-            'risk_score'             => $riskScore,             // Almacenamiento del puntaje real en MySQL
+            'priority_id'            => $calculatedPriorityId, 
+            'risk_score'             => $riskScore,             
         ]);
 
         $incident->histories()->create([
@@ -186,11 +170,9 @@ class RequestController extends Controller
      */
     public function show($id)
     {
-        // 1. Extraer el ID numérico del código (Ej: de "REC-2026-018" extraer "18")
         $parts = explode('-', $id);
         $numericId = (int) end($parts);
 
-        // 2. Buscar el reclamo en la base de datos
         $incident = \App\Models\Request::with(['street', 'requestType', 'histories.status', 'status', 'workOrders.company', 'priority'])->find($numericId);
 
         if (!$incident) {
@@ -202,7 +184,6 @@ class RequestController extends Controller
 
         $estadoFrontend = $incident->status ? $incident->status->slug : 'open';
 
-        // 4. Obtener la respuesta del administrador (si hay) de la última bitácora
         $ultimaBitacora = $incident->histories->last();
         $respuestaAdmin = $ultimaBitacora && $incident->request_status_id > 1 
                             ? $ultimaBitacora->justification 
@@ -257,16 +238,16 @@ class RequestController extends Controller
                 $linkedTo = $request->linked_to;
                 $suggestedDuplicateId = null;
                 
-                // TODO (TAREA 2 - COMPAÑERO): Enviar notificación por correo al vecino avisando que se unificó su reclamo
-                // Ej: Mail::to($userRequest->user->email)->send(new ClaimMergedMail($linkedTo));
+                // Si el reclamo tiene un usuario vinculado con un email válido, le disparamos el correo
+                if ($userRequest->user && !empty($userRequest->user->email)) {
+                    Mail::to($userRequest->user->email)->send(new ClaimMergedMail($linkedTo));
+                }
             } elseif ($dbSlug !== 'vinculated') {
-                // Si cambiamos de estado "vinculado" a cualquier otro, desvinculamos el reclamo limpiando la columna.
                 $linkedTo = null;
             }
         }
 
-        // Ignorar sugerencia
-        if ($request->has('ignore_suggestion') && $request->ignore_suggestion) {
+        if ($request->has('ignore_suggestion') && $request->ignore_suggestion == true) {
             $suggestedDuplicateId = null;
         }
 
