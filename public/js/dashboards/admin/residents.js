@@ -96,7 +96,9 @@ export function selectresident (id) {
     `;
 };
 
-export function filterresidents () {
+export async function filterresidents () {
+    const searchVal = document.getElementById('search-residents')?.value || '';
+    await api.loadAdminData(searchVal);
     loadresidentsList();
 };
 

@@ -73,7 +73,9 @@ export function selectInspector (id) {
     `;
 };
 
-export function filterInspectors () {
+export async function filterInspectors () {
+    const searchVal = document.getElementById('search-inspectors')?.value || '';
+    await api.loadAdminData(searchVal);
     loadInspectorsList();
 };
 

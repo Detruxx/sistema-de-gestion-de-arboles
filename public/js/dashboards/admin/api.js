@@ -114,12 +114,13 @@ export function updateAdminStats () {
     if (elC) elC.innerText = companiesCount;
     if (elP) elP.innerText = pendingPostulations;
 };
-export async function loadAdminData () {
+export async function loadAdminData (searchQuery = '') {
     try {
-        const userRes = await fetch('/api/admin/users');
+        const url = searchQuery ? `/api/admin/users?search=${encodeURIComponent(searchQuery)}` : '/api/admin/users';
+        const userRes = await fetch(url);
         if (userRes.ok) {
             const data = await userRes.json();
-            state.users = data.data;
+            state.users = data.data || [];
         } else {
             state.users = [];
         }

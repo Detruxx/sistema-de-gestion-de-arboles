@@ -86,7 +86,7 @@ export function updateClaimsMapMarkers() {
                         </button>
                     </div>
                 `);
-            
+
             claimsMarkersGroup.addLayer(marker);
             bounds.push([lat, lng]);
         }
@@ -124,7 +124,7 @@ export function loadClaimsList() {
 }
 
 // Cerrar el modal de reclamo
-window.closeClaimDetailModal = function() {
+window.closeClaimDetailModal = function () {
     const modal = document.getElementById('claim-detail-modal');
     if (modal) {
         modal.style.display = 'none';
@@ -164,7 +164,7 @@ export function selectClaim(id) {
             <div class="claim-modal-col-left">
                 ${claim.suggested_duplicate_id ? `
                 <div style="background-color: #fef08a; border-left: 4px solid #eab308; padding: 12px; border-radius: 8px;">
-                    <strong style="color: #854d0e; display: block; margin-bottom: 4px; font-size: 0.85rem;">⚠️ Alerta de Duplicado Inteligente</strong>
+                    <strong style="color: #854d0e; display: block; margin-bottom: 4px; font-size: 0.85rem;">Alerta de Duplicado Inteligente</strong>
                     <span style="color: #a16207; font-size: 0.8rem; display: block; margin-bottom: 8px;">Podría ser duplicado de #${claim.suggested_duplicate_id}.</span>
                     <div style="display: flex; gap: 6px;">
                         <button onclick="resolveDuplicate(true, ${claim.suggested_duplicate_id})" style="background: #eab308; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold;">Vincular</button>
@@ -175,7 +175,7 @@ export function selectClaim(id) {
 
                 ${claim.linked_to ? `
                 <div style="background-color: #fce7f3; border-left: 4px solid #db2777; padding: 10px; border-radius: 8px;">
-                    <strong style="color: #9d174d; font-size: 0.85rem;">🔗 Reclamo Vinculado</strong>
+                    <strong style="color: #9d174d; font-size: 0.85rem;">Reclamo Vinculado</strong>
                     <span style="color: #be185d; font-size: 0.8rem; display: block;">Anexado al trámite principal #${claim.linked_to}.</span>
                 </div>
                 ` : ''}
@@ -204,114 +204,157 @@ export function selectClaim(id) {
                     </div>
                 </div>
             </div>
-
+            
             <!-- COLUMNA DERECHA: GESTIÓN Y TRABAJOS -->
             <div class="claim-modal-col-right">
-                <!-- Progress Tracker dots (Actualización visual temporal) -->
-                <div class="status-tracker-container">
-                    <div style="font-size: 0.8rem; font-weight: bold; color: var(--admin-text-primary);">Paso de Progreso a Asignar:</div>
-                    <div class="status-steps">
-                        ${state.requestStatuses.map(s => {
-                            const currentSeq = state.requestStatuses.find(rs => rs.slug === state.tempSelectedStatus)?.sequence || 0;
-                            const isCompleted = s.sequence && s.sequence <= currentSeq;
-                            const isActive = state.tempSelectedStatus === s.slug;
-                            if (s.sequence || isActive) {
-                                return `
-                                <div class="status-step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}" onclick="selectTempStatus('${s.slug}')" style="cursor: pointer;">
-                                    <div class="step-circle" style="background-color: ${isActive ? s.color : ''}; border-color: ${isActive ? s.color : ''}">${s.sequence || '!'}</div>
-                                    <div class="step-label">${s.status_name}</div>
-                                </div>`;
-                            }
-                            return '';
-                        }).join('')}
-                    </div>
-                    
-                    <div style="display: flex; gap: 8px; justify-content: center; margin-top: 8px;">
-                        ${state.requestStatuses.filter(s => s.sequence === null).map(s => `
-                            <button class="btn-secondary" style="font-size: 0.75rem; padding: 4px 8px; border: 1px solid ${s.color}; color: ${s.color}; background: ${isActiveStatus(s.slug) ? s.color + '25' : 'transparent'}; border-radius: 6px; cursor: pointer;" onclick="selectTempStatus('${s.slug}')">
-                                ${s.slug === 'denied' ? '✖' : '∞'} ${s.status_name}
-                            </button>
-                        `).join('')}
-                    </div>
-                </div>
+                ${(() => {
+            const isCompanyHandling = ['scheduled', 'in_progress'].includes(claim.estado);
+            const isResolved = claim.estado === 'resolved';
+            const isReadOnly = ['certified', 'denied', 'vinculated', 'cancelled'].includes(claim.estado);
 
-                <!-- Listado de Trabajos Asignados (Debajo de las bolitas) -->
-                <div class="assigned-jobs-section">
-                    <h4 class="assigned-jobs-title" style="margin-top: 0; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-                        <span>🔨 Trabajos y Ordenes Derivadas</span>
-                        <span style="font-size: 0.8rem; background: var(--admin-accent); color: #fff; padding: 2px 6px; border-radius: 4px;">${jobs.length}</span>
-                    </h4>
-                    <div class="jobs-list-container">
-                        ${jobs.length === 0 ? `
-                            <div style="padding: 10px; text-align: center; color: var(--admin-text-secondary); font-size: 0.8rem;">
-                                No se han derivado órdenes de trabajo para este reclamo.
+            // Determinar el siguiente estado secuencial para el botón "Avanzar"
+            const currentStatusObj = state.requestStatuses.find(rs => rs.slug === state.tempSelectedStatus);
+            const currentSeq = currentStatusObj ? currentStatusObj.sequence : null;
+            let nextStatusObj = null;
+            if (currentSeq !== null) {
+                const sequentialStatuses = state.requestStatuses.filter(rs => rs.sequence !== null).sort((a, b) => a.sequence - b.sequence);
+                const currentIndex = sequentialStatuses.findIndex(rs => rs.slug === state.tempSelectedStatus);
+                if (currentIndex !== -1 && currentIndex < sequentialStatuses.length - 1) {
+                    nextStatusObj = sequentialStatuses[currentIndex + 1];
+                }
+            }
+
+            let statusAlertHTML = '';
+            if (isCompanyHandling) {
+                statusAlertHTML = `
+                            <div style="background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 12px; border-radius: 8px; margin-bottom: 12px; color: #1e3a8a; font-size: 0.85rem; line-height: 1.4;">
+                                <strong>🔒 Gestión de Contratista:</strong> Este reclamo está a cargo de la empresa contratista asignada. No es posible editar ni cambiar el estado hasta que la empresa finalice la tarea.
+                            </div>`;
+            } else if (isReadOnly) {
+                statusAlertHTML = `
+                            <div style="background-color: #f0fdf4; border-left: 4px solid #22c55e; padding: 12px; border-radius: 8px; margin-bottom: 12px; color: #14532d; font-size: 0.85rem; line-height: 1.4;">
+                                <strong>✔ Trámite Concluido:</strong> Este reclamo ya se encuentra finalizado y certificado por la comuna.
+                            </div>`;
+            } else if (isResolved) {
+                statusAlertHTML = `
+                            <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px; border-radius: 8px; margin-bottom: 12px; color: #78350f; font-size: 0.85rem; line-height: 1.4;">
+                                <strong>📋 Control Retornado:</strong> La empresa ha marcado el trabajo como Completado. Por favor, revisa y procede a <strong>Certificar</strong> el reclamo para dar respuesta final al vecino.
+                            </div>`;
+            }
+
+            return `
+                        ${statusAlertHTML}
+
+                        <!-- Progress Tracker dots (Solo lectura) -->
+                        <div class="status-tracker-container">
+                            <div style="font-size: 0.8rem; font-weight: bold; color: var(--admin-text-primary); margin-bottom: 6px;">Estado del Progreso:</div>
+                            <div class="status-steps">
+                                ${state.requestStatuses.map(s => {
+                const tempSeq = state.requestStatuses.find(rs => rs.slug === state.tempSelectedStatus)?.sequence || 0;
+                const isCompleted = s.sequence && s.sequence <= tempSeq;
+                const isActive = state.tempSelectedStatus === s.slug;
+                if (s.sequence || isActive) {
+                    return `
+                                        <div class="status-step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}">
+                                            <div class="step-circle" style="background-color: ${isActive ? s.color : ''}; border-color: ${isActive ? s.color : ''}; cursor: default;">${s.sequence || '!'}</div>
+                                            <div class="step-label">${s.status_name}</div>
+                                        </div>`;
+                }
+                return '';
+            }).join('')}
                             </div>
-                        ` : jobs.map(j => `
-                            <div class="job-item-card" style="display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <span class="job-item-card-title">${j.task_description}</span>
-                                    <div class="job-item-card-company">Empresa: ${j.company ? (j.company.name || j.company.company_name) : (j.company_name || 'Sin especificar')}</div>
+                            
+                            <!-- Botón Avanzar Lineal (Solo si no es de contratista ni de solo lectura) -->
+                            ${!isCompanyHandling && !isReadOnly && nextStatusObj ? `
+                                <div style="margin-top: 12px; text-align: center;">
+                                    <button class="btn-primary" onclick="window.advanceTempStatus('${nextStatusObj.slug}')" style="font-size: 0.8rem; padding: 6px 12px;">
+                                        👉 Avanzar a: ${nextStatusObj.status_name}
+                                    </button>
                                 </div>
-                                <span class="badge-status" style="font-size: 0.75rem; padding: 2px 6px; background-color: ${getJobStatusColor(j.work_status)}20; color: ${getJobStatusColor(j.work_status)}; border: 1px solid ${getJobStatusColor(j.work_status)};">${j.work_status}</span>
-                            </div>
-                        `).join('')}
-                    </div>
+                            ` : ''}
 
-                    <!-- Mostrar asignación solo cuando el estado temporal es Relevado/Inspeccionado (Sequence 2) -->
-                    ${state.tempSelectedStatus === 'relevated' ? `
-                    <div style="border-top: 1px solid var(--admin-border); padding-top: 12px; margin-top: 8px;">
-                        <span style="font-size: 0.8rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 6px;">Derivar Nuevo Trabajo Técnico:</span>
-                        <div class="company-search-box">
-                            <div class="company-search-field-wrapper">
-                                <input type="text" id="company-search-input" class="company-search-input" placeholder="🔍 Buscar empresa..." oninput="filterCompaniesDropdown()">
-                            </div>
-                            <div>
-                                <select id="assign-company-select" class="company-dropdown-select" onchange="updateTasksDropdown()">
-                                    <option value="">-- Seleccionar Empresa --</option>
-                                    ${(state.activeCompanies || []).map(c => `
-                                        <option value="${c.id}">${c.name || c.company_name}</option>
+                            <!-- Botones Secundarios (Denegar, etc.) solo con control de inspector -->
+                            ${!isCompanyHandling && !isReadOnly ? `
+                                <div style="display: flex; gap: 8px; justify-content: center; margin-top: 10px; border-top: 1px dashed var(--admin-border); padding-top: 8px;">
+                                    ${state.requestStatuses.filter(s => s.sequence === null).map(s => `
+                                        <button class="btn-secondary" style="font-size: 0.72rem; padding: 4px 8px; border: 1px solid ${s.color}; color: ${s.color}; background: ${isActiveStatus(s.slug) ? s.color + '25' : 'transparent'}; border-radius: 6px; cursor: pointer;" onclick="window.selectTempStatus('${s.slug}')">
+                                            ${s.slug === 'denied' ? '✖' : '∞'} ${s.status_name}
+                                        </button>
                                     `).join('')}
-                                </select>
-                            </div>
+                                </div>
+                            ` : ''}
                         </div>
-                        <div class="company-search-box" style="margin-top: 8px;">
-                            <div>
-                                <select id="assign-task-select" class="company-dropdown-select">
-                                    <option value="">-- Seleccionar Tarea --</option>
-                                </select>
-                            </div>
-                            <div>
-                                <button class="btn-primary" onclick="createWorkOrderJob(${claim.id})" style="width: 100%; padding: 8px 12px; font-size: 0.85rem; height: 36px; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                                    ➕ Agregar Trabajo
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    ` : ''}
-                </div>
 
-                <!-- Sección de Respuestas y Acciones -->
-                <div style="border-top: 1px solid var(--admin-border); padding-top: 10px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <span style="font-size: 0.85rem; font-weight: bold; color: var(--admin-text-primary);">Responder al Vecino:</span>
-                        <div class="template-selector" style="display: flex; gap: 4px;">
-                            <button class="template-btn" onclick="applyTemplate('info')" style="font-size: 0.7rem; padding: 2px 6px;">Info</button>
-                            <button class="template-btn" onclick="applyTemplate('relevated')" style="font-size: 0.7rem; padding: 2px 6px;">Inspección</button>
-                            <button class="template-btn" onclick="applyTemplate('scheduled')" style="font-size: 0.7rem; padding: 2px 6px;">Poda</button>
-                            <button class="template-btn" onclick="applyTemplate('resolved')" style="font-size: 0.7rem; padding: 2px 6px;">Resolución</button>
+                        <!-- Listado de Trabajos Asignados -->
+                        <div class="assigned-jobs-section" style="margin-top: 12px;">
+                            <h4 class="assigned-jobs-title" style="margin-top: 0; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem;">
+                                <span>🔨 Trabajos y Ordenes Derivadas</span>
+                                <span style="font-size: 0.75rem; background: var(--admin-accent); color: #fff; padding: 2px 6px; border-radius: 4px;">${jobs.length}</span>
+                            </h4>
+                            <div class="jobs-list-container">
+                                ${jobs.length === 0 ? `
+                                    <div style="padding: 10px; text-align: center; color: var(--admin-text-secondary); font-size: 0.8rem;">
+                                        No se han derivado órdenes de trabajo para este reclamo.
+                                    </div>
+                                ` : jobs.map(j => `
+                                    <div class="job-item-card" style="display: flex; justify-content: space-between; align-items: center; padding: 8px; margin-bottom: 6px; border-radius: 6px; border: 1px solid var(--admin-border);">
+                                        <div>
+                                            <span class="job-item-card-title" style="font-weight: 600; font-size: 0.8rem; display: block;">${j.task_description}</span>
+                                            <div class="job-item-card-company" style="font-size: 0.75rem; color: var(--admin-text-secondary);">Empresa: ${j.company ? (j.company.name || j.company.company_name) : (j.company_name || 'Sin especificar')}</div>
+                                        </div>
+                                        <span class="badge-status" style="font-size: 0.7rem; padding: 2px 6px; background-color: ${getJobStatusColor(j.work_status)}20; color: ${getJobStatusColor(j.work_status)}; border: 1px solid ${getJobStatusColor(j.work_status)};">${j.work_status}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                            <!-- Mostrar asignación solo cuando el estado temporal es Relevado/Inspeccionado y el inspector tiene control -->
+                            ${state.tempSelectedStatus === 'relevated' && !isCompanyHandling && !isReadOnly ? `
+                            <div style="border-top: 1px solid var(--admin-border); padding-top: 10px; margin-top: 8px;">
+                                <span style="font-size: 0.8rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 6px;">Derivar Nuevo Trabajo Técnico:</span>
+                                <div class="company-search-box" style="display: flex; gap: 4px; margin-bottom: 6px;">
+                                    <input type="text" id="company-search-input" class="company-search-input" placeholder="🔍 Buscar empresa..." oninput="filterCompaniesDropdown()" style="flex: 1; padding: 4px 8px; font-size: 0.8rem; border-radius: 6px; border: 1px solid var(--admin-border);">
+                                    <select id="assign-company-select" class="company-dropdown-select" onchange="updateTasksDropdown()" style="flex: 1; padding: 4px; font-size: 0.8rem; border-radius: 6px; border: 1px solid var(--admin-border);">
+                                        <option value="">-- Seleccionar Empresa --</option>
+                                        ${(state.activeCompanies || []).map(c => `
+                                            <option value="${c.id}">${c.name || c.company_name}</option>
+                                        `).join('')}
+                                    </select>
+                                </div>
+                                <div class="company-search-box" style="display: flex; gap: 4px;">
+                                    <select id="assign-task-select" class="company-dropdown-select" style="flex: 1; padding: 4px; font-size: 0.8rem; border-radius: 6px; border: 1px solid var(--admin-border);">
+                                        <option value="">-- Seleccionar Tarea --</option>
+                                    </select>
+                                    <button class="btn-primary" onclick="createWorkOrderJob(${claim.id})" style="padding: 6px 10px; font-size: 0.8rem; border-radius: 6px; height: 32px;">
+                                        ➕ Asignar
+                                    </button>
+                                </div>
+                            </div>
+                            ` : ''}
                         </div>
-                    </div>
-                    <textarea id="response-text" class="response-textarea" style="width: 100%; height: 60px; min-height: 60px; font-size: 0.85rem; padding: 8px; border-radius: 8px; margin-bottom: 8px;" placeholder="Escribe un correo de respuesta al vecino...">${claim.respuesta_admin || ''}</textarea>
-                    
-                    <div style="display: flex; justify-content: flex-end; gap: 8px;">
-                        <!-- Botón de vincular manual si aplica -->
-                        <button class="btn-secondary" onclick="setClaimStatus('vinculated')" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 8px;">🔗 Vincular</button>
-                        <!-- Botón de actualizar solo estado -->
-                        <button class="btn-primary" onclick="updateClaimOnlyStatus(${numericId})" style="padding: 6px 12px; font-size: 0.8rem; background-color: #4b5563; border-color: #4b5563; border-radius: 8px;">Actualizar solo estado</button>
-                        <!-- Botón enviar respuesta y actualizar estado -->
-                        <button class="btn-primary" onclick="sendResponseAndStatus(${numericId})" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 8px;">Enviar respuesta y actualizar estado</button>
-                    </div>
-                </div>
+
+                        <!-- Sección de Respuestas y Acciones (Solo si el inspector tiene control) -->
+                        ${!isCompanyHandling && !isReadOnly ? `
+                            <div style="border-top: 1px solid var(--admin-border); padding-top: 10px; margin-top: 12px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                    <span style="font-size: 0.8rem; font-weight: bold; color: var(--admin-text-primary);">Responder al Vecino:</span>
+                                    <div class="template-selector" style="display: flex; gap: 4px;">
+                                        <button class="template-btn" onclick="applyTemplate('info')" style="font-size: 0.65rem; padding: 2px 4px;">Info</button>
+                                        <button class="template-btn" onclick="applyTemplate('relevated')" style="font-size: 0.65rem; padding: 2px 4px;">Inspección</button>
+                                        <button class="template-btn" onclick="applyTemplate('scheduled')" style="font-size: 0.65rem; padding: 2px 4px;">Poda</button>
+                                        <button class="template-btn" onclick="applyTemplate('resolved')" style="font-size: 0.65rem; padding: 2px 4px;">Resolución</button>
+                                    </div>
+                                </div>
+                                <textarea id="response-text" class="response-textarea" style="width: 100%; height: 50px; min-height: 50px; font-size: 0.8rem; padding: 6px; border-radius: 6px; margin-bottom: 8px; border: 1px solid var(--admin-border);" placeholder="Escribe un correo de respuesta al vecino...">${claim.respuesta_admin || ''}</textarea>
+                                
+                                <div style="display: flex; justify-content: flex-end; gap: 6px;">
+                                    <button class="btn-secondary" onclick="setClaimStatus('vinculated')" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 6px;">🔗 Vincular</button>
+                                    <button class="btn-primary" onclick="updateClaimOnlyStatus(${numericId})" style="padding: 4px 8px; font-size: 0.75rem; background-color: #4b5563; border-color: #4b5563; border-radius: 6px;">Actualizar solo estado</button>
+                                    <button class="btn-primary" onclick="sendResponseAndStatus(${numericId})" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 6px;">Enviar respuesta y actualizar</button>
+                                </div>
+                            </div>
+                        ` : ''}
+                    `;
+        })()}
             </div>
         </div>
     `;
@@ -344,14 +387,14 @@ function getJobStatusColor(status) {
 }
 
 // Seleccionar un estado temporalmente en las bolitas
-window.selectTempStatus = function(slug) {
+window.selectTempStatus = function (slug) {
     state.tempSelectedStatus = slug;
     // Volver a renderizar el modal para actualizar el progreso visual y la visibilidad de derivación
     selectClaim(state.selectedClaimId);
 };
 
 // Filtrar dropdown de empresas por letra ingresada
-window.filterCompaniesDropdown = function() {
+window.filterCompaniesDropdown = function () {
     const searchVal = document.getElementById('company-search-input').value.toLowerCase();
     const select = document.getElementById('assign-company-select');
     if (!select) return;
@@ -360,7 +403,7 @@ window.filterCompaniesDropdown = function() {
     const currentSelected = select.value;
 
     select.innerHTML = '<option value="">-- Seleccionar Empresa --</option>';
-    
+
     const filtered = (state.activeCompanies || []).filter(c => {
         const name = (c.name || c.company_name || '').toLowerCase();
         return name.includes(searchVal);
@@ -378,7 +421,7 @@ window.filterCompaniesDropdown = function() {
 };
 
 // Actualizar las tareas que la empresa realiza en el segundo desplegable
-window.updateTasksDropdown = function() {
+window.updateTasksDropdown = function () {
     const companyId = document.getElementById('assign-company-select').value;
     const select = document.getElementById('assign-task-select');
     if (!select) return;
@@ -405,7 +448,7 @@ window.updateTasksDropdown = function() {
 };
 
 // Crear nueva orden de trabajo asignando empresa y tarea (POST /work-orders)
-window.createWorkOrderJob = async function(claimId) {
+window.createWorkOrderJob = async function (claimId) {
     const companyId = document.getElementById('assign-company-select').value;
     const task = document.getElementById('assign-task-select').value;
 
@@ -440,7 +483,7 @@ window.createWorkOrderJob = async function(claimId) {
 
         if (response.ok) {
             showNotification(`Orden de trabajo "${task}" agregada con éxito.`);
-            
+
             // Recargar datos para reflejar el nuevo trabajo asignado
             if (typeof window.loadWorkOrdersFromServer === 'function') {
                 await window.loadWorkOrdersFromServer();
@@ -458,7 +501,7 @@ window.createWorkOrderJob = async function(claimId) {
 };
 
 // Actualizar solo el estado del reclamo (PUT /requests/update-status/{id})
-window.updateClaimOnlyStatus = async function(numericId) {
+window.updateClaimOnlyStatus = async function (numericId) {
     const claim = state.claims.find(c => c.id === state.selectedClaimId);
     if (!claim) return;
 
@@ -503,7 +546,7 @@ window.updateClaimOnlyStatus = async function(numericId) {
 };
 
 // Enviar respuesta al vecino y actualizar el estado
-window.sendResponseAndStatus = async function(numericId) {
+window.sendResponseAndStatus = async function (numericId) {
     const claim = state.claims.find(c => c.id === state.selectedClaimId);
     if (!claim) return;
 
@@ -554,7 +597,7 @@ window.sendResponseAndStatus = async function(numericId) {
     }
 };
 
-export function applyTemplate (type) {
+export function applyTemplate(type) {
     const claim = state.claims.find(c => c.id === state.selectedClaimId);
     if (!claim) return;
 
@@ -578,17 +621,17 @@ export function applyTemplate (type) {
     if (textarea) textarea.value = text;
 }
 
-export function clearResponse () {
+export function clearResponse() {
     const textarea = document.getElementById('response-text');
     if (textarea) textarea.value = '';
 }
 
-export async function sendResponse () {
+export async function sendResponse() {
     // Mantener compatibilidad anterior
     sendResponseAndStatus(state.selectedClaimId);
 }
 
-export function filterClaims () {
+export function filterClaims() {
     const query = document.getElementById('search-claims').value.toLowerCase();
     const statusFilter = document.getElementById('filter-claim-status') ? document.getElementById('filter-claim-status').value : '';
     const categoryFilter = document.getElementById('filter-claim-category') ? document.getElementById('filter-claim-category').value : '';
@@ -628,7 +671,7 @@ export function filterClaims () {
     });
 }
 
-export async function setClaimStatus (newStatus) {
+export async function setClaimStatus(newStatus) {
     const claim = state.claims.find(c => c.id === state.selectedClaimId);
     if (!claim) return;
 
@@ -674,7 +717,7 @@ export async function setClaimStatus (newStatus) {
     }
 }
 
-export async function resolveDuplicate (isAccepted, duplicateId = null) {
+export async function resolveDuplicate(isAccepted, duplicateId = null) {
     const claim = state.claims.find(c => c.id === state.selectedClaimId);
     if (!claim) return;
 
@@ -709,7 +752,7 @@ export async function resolveDuplicate (isAccepted, duplicateId = null) {
     }
 }
 
-export async function loadStatusesFromServer () {
+export async function loadStatusesFromServer() {
     try {
         const response = await fetch('/api/request-statuses');
         if (response.ok) {
@@ -721,7 +764,7 @@ export async function loadStatusesFromServer () {
     }
 }
 
-export async function loadClaimsFromServer () {
+export async function loadClaimsFromServer() {
     await loadActiveCompanies();
     if (state.requestStatuses.length === 0) {
         await loadStatusesFromServer();
@@ -771,7 +814,7 @@ export async function loadClaimsFromServer () {
     }
 }
 
-export async function loadActiveCompanies () {
+export async function loadActiveCompanies() {
     try {
         const response = await fetch('/api/admin/companies');
         if (response.ok) {
@@ -787,3 +830,28 @@ export async function loadActiveCompanies () {
         ];
     }
 }
+
+window.selectTempStatus = function (slug) {
+    state.tempSelectedStatus = slug;
+    selectClaim(state.selectedClaimId);
+};
+
+window.advanceTempStatus = function (nextSlug) {
+    const claim = state.claims.find(c => c.id === state.selectedClaimId);
+    if (!claim) return;
+
+    // Validar regla de empresa si intenta avanzar a Programado (secuencia 3)
+    const numericClaimId = parseInt(claim.id.replace(/\D/g, '')) || claim.id;
+    const currentJobs = claim.work_orders || (state.workOrders || []).filter(w => w.request_id === numericClaimId);
+
+    const nextStatusObj = state.requestStatuses.find(rs => rs.slug === nextSlug);
+    const nextSeq = nextStatusObj ? nextStatusObj.sequence : null;
+
+    if (nextSeq && nextSeq > 2 && currentJobs.length === 0) {
+        alert('⚠️ No se puede avanzar del estado Relevado/Inspeccionado sin haber derivado un trabajo a una empresa contratista.');
+        return;
+    }
+
+    state.tempSelectedStatus = nextSlug;
+    selectClaim(state.selectedClaimId);
+};
