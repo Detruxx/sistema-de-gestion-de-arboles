@@ -32,4 +32,16 @@ async function loadCompanyData() {
 
 document.addEventListener('DOMContentLoaded', () => {
     loadCompanyData();
+    handleHashRouting();
 });
+
+window.addEventListener('hashchange', handleHashRouting);
+
+function handleHashRouting() {
+    if (window.location.hash) {
+        const hash = window.location.hash.substring(1);
+        if (['resumen', 'trabajos', 'pagos'].includes(hash)) {
+            window.showModule(hash);
+        }
+    }
+}

@@ -13,6 +13,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\CompanyPanelController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\AnalyticsController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
@@ -156,7 +157,7 @@ Route::prefix('admin')->group(function () {
 });
 
 // Grupo de Administración Protegido
-Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     
     // 1. CONTROLADOR DE USUARIOS (UserController)
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -176,16 +177,20 @@ Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')
 });
 
 // Grupo compartido: Accesible por Admin e Inspector
-Route::middleware(['auth', 'check.role:admin,inspector'])->group(function () {
+Route::middleware(['auth', 'role:admin,inspector'])->group(function () {
     // Traer todos los árboles formateados para el AJAX del front
     Route::get('/api/admin/arboles', [TreeController::class, 'getAdminTrees'])->name('api.admin.trees');
 });
 
 // Grupo exclusivo: Solo el Administrador puede entrar
-Route::middleware(['auth', 'check.role:admin'])->group(function () {
+Route::middleware(['auth', 'role:admin'])->group(function () {
     // Listado global de usuarios en formato JSON
     Route::get('/api/admin/users', [UserController::class, 'index'])->name('api.admin.users.index');
     
     // Modificar el rol de un usuario específico (PATCH)
     Route::patch('/api/admin/users/{user}/role', [UserController::class, 'updateRole'])->name('api.admin.users.updateRole');
+
+    // Analíticas y Estadísticas (Actionable Intelligence)
+    Route::get('/api/admin/analytics', [AnalyticsController::class, 'getDashboardAnalytics'])->name('api.admin.analytics');
+    Route::post('/api/admin/analytics/custom', [AnalyticsController::class, 'generateCustomReport'])->name('api.admin.analytics.custom');
 });

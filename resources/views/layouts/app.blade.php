@@ -50,16 +50,35 @@
                 </div>
             </div>
             
-            <a href="/#sobre-nosotros" class="nav-pill">Sobre Nosotros</a>
-            @auth
-                @if(Auth::user()->role === 'inspector' || Auth::user()->role === 'admin')
+            @guest
+                <a href="/#sobre-nosotros" class="nav-pill">Sobre Nosotros</a>
+                <a href="/#contacto" class="nav-pill">Contacto</a>
+            @else
+                @php $role = Auth::user()->role; @endphp
+                @if($role === 'inspector')
+                    <a href="/dashboard/inspector#reclamos" class="nav-pill">Mensajes de Reclamos</a>
                     <a href="/mensajes" class="nav-pill">Mensajes</a>
+                @elseif($role === 'admin')
+                    <div class="nav-dropdown">
+                        <button class="nav-pill dropdown-trigger" aria-expanded="false">
+                            Usuarios
+                            <svg class="dropdown-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="/dashboard/admin#vecinos">Gestión de Vecinos</a>
+                            <a href="/dashboard/admin#inspectores">Inspectores</a>
+                        </div>
+                    </div>
+                    <a href="/dashboard/admin#estadisticas" class="nav-pill">Estadísticas</a>
+                @elseif($role === 'empresa')
+                    <a href="/dashboard/empresa#trabajos" class="nav-pill">Trabajos</a>
+                    <a href="/dashboard/empresa#pagos" class="nav-pill">Pagos</a>
                 @else
+                    <!-- Vecino (default) -->
+                    <a href="/#sobre-nosotros" class="nav-pill">Sobre Nosotros</a>
                     <a href="/#contacto" class="nav-pill">Contacto</a>
                 @endif
-            @else
-                <a href="/#contacto" class="nav-pill">Contacto</a>
-            @endauth
+            @endguest
             @guest <!-- Si el usuario no esta logueado, se muestra el boton de login -->
                 <a href="/login" class="nav-pill btn-login @yield('active-login')">Login</a>
             @endguest

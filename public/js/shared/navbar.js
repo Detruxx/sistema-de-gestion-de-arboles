@@ -69,10 +69,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 navToggle.classList.remove('active');
                 navToggle.setAttribute('aria-expanded', 'false');
                 navLinksContainer.classList.remove('active');
+                document.body.style.overflow = '';
             } else {
                 navToggle.classList.add('active');
                 navToggle.setAttribute('aria-expanded', 'true');
                 navLinksContainer.classList.add('active');
+                document.body.style.overflow = 'hidden';
             }
         });
 
@@ -83,15 +85,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 navToggle.classList.remove('active');
                 navToggle.setAttribute('aria-expanded', 'false');
                 navLinksContainer.classList.remove('active');
+                document.body.style.overflow = '';
             });
         });
 
-        // Cerrar al hacer clic fuera del menú
         document.addEventListener('click', (e) => {
-            if (!navLinksContainer.contains(e.target) && !navToggle.contains(e.target)) {
+            if (navLinksContainer.classList.contains('active') && !navLinksContainer.contains(e.target) && !navToggle.contains(e.target)) {
                 navToggle.classList.remove('active');
                 navToggle.setAttribute('aria-expanded', 'false');
                 navLinksContainer.classList.remove('active');
+                document.body.style.overflow = '';
             }
         });
     }

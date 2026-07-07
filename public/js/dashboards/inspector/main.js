@@ -26,4 +26,17 @@ Object.assign(window, map);
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof window.loadClaimsFromServer === 'function') window.loadClaimsFromServer();
     if (typeof window.loadTreesFromServer === 'function') window.loadTreesFromServer();
+    
+    handleHashRouting();
 });
+
+window.addEventListener('hashchange', handleHashRouting);
+
+function handleHashRouting() {
+    if (window.location.hash) {
+        const hash = window.location.hash.substring(1);
+        if (['resumen', 'reclamos', 'inventario'].includes(hash)) {
+            window.showModule(hash);
+        }
+    }
+}

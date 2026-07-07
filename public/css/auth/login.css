@@ -194,6 +194,13 @@
 }
 
 @media (max-width: 768px) {
+    .login-wrapper {
+        padding: 0 15px;
+        margin: 20px auto;
+    }
+    .login-card {
+        padding: 30px 20px;
+    }
     .login-bg-branches-left, .login-bg-branches-right {
         width: 100% !important;
         opacity: 0.08 !important; /* Marca de agua sutil en mobile */
