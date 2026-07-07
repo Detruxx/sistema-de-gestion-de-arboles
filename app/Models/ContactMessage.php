@@ -15,6 +15,8 @@ class ContactMessage extends Model
         'user_id',
         'message',
         'status',
+        'inspector_response', 
+        'is_new_for_user',
     ];
 
     /**
