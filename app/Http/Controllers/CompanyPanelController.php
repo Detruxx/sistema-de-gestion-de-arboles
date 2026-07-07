@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CompanyPanelController extends Controller
 {
+    
     public function index()
     {
         // Conseguimos el ID de la empresa del usuario logueado

@@ -205,3 +205,22 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // Estadísticas del dashboard admin
     Route::get('/api/admin/stats', [UserController::class, 'adminStats'])->name('api.admin.stats');
 });
+
+// rutas/api.php
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    // 1. Alta de Empresa Contratista (Store)
+    Route::post('/companies', [CompanyController::class, 'store'])
+        ->name('companies.store');
+
+    // 2. Apagar puntito rojo de Mensajes de Contacto
+    Route::post('/mensajes/{id}/mark-seen-by-user', [ContactController::class, 'markSeenByUser'])
+        ->name('contact.markSeen');
+
+    // 3. Apagar puntito rojo de Actualización de Reclamos (En el Profile)
+    Route::post('/reclamos/{id}/mark-seen-by-user', [ProfileController::class, 'markRequestSeenByUser'])
+        ->name('profile.reclamo.markSeen');
+
+});
+

@@ -1,3 +1,29 @@
+
+<!-- Notificaciones del perfil de usuario -->
+@php
+    // 1. Inicializamos todo en cero y false por defecto (para invitados)
+    $unreadClaimsCount = 0;
+    $unreadMessagesCount = 0;
+    $hasAnyNotification = false;
+
+    // 2. Si el usuario SÍ está logueado, vamos a la base de datos a buscar la posta
+    if (auth()->check()) {
+        
+        // Notificaciones de Mis Reclamos
+        $unreadClaimsCount = \App\Models\Request::where('user_id', auth()->id())
+            ->where('is_new_for_user', true)
+            ->count();
+
+        // Notificaciones de Bandeja de Entrada (Mensajes)
+        $unreadMessagesCount = \App\Models\ContactMessage::where('user_id', auth()->id())
+            ->where('is_new_for_user', true)
+            ->count();
+            
+        // Condición para el puntito rojo del menú global
+        $hasAnyNotification = ($unreadClaimsCount > 0 || $unreadMessagesCount > 0);
+    }
+@endphp
+
 <!-- Plantilla principal de la pagina web -->
 <!DOCTYPE html>
 <html lang="es">

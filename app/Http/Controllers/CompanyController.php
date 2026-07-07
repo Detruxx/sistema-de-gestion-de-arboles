@@ -7,6 +7,39 @@ use Illuminate\Http\JsonResponse;
  
 class CompanyController extends Controller
 {
+    /**
+     * Registrar nueva empresa en la base de datos
+     */
+    public function store(Request $request)
+    {
+        // Validamos los datos recibidos
+        $validatedData = $request->validate([
+            'name'           => 'required|string|max:255|unique:companies,name',
+            'business_name'  => 'required|string|max:255', 
+            'cuit'           => 'required|string|max:20|unique:companies,cuit', 
+            'email'          => 'nullable|email|max:255',
+            'location_id'    => 'nullable|string|max:255' 
+        ]);
+
+        // Intentamos guardar la empresa
+        try {
+            $company = Company::create($validatedData);
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Empresa registrada con éxito.',
+                'company' => $company 
+            ], 201);
+
+        // Si algo falla, se retorna un error    
+        } catch (\Exception $e) { 
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No se pudo registrar la empresa.',
+                'debug'   => $e->getMessage()
+            ], 500);
+        }
+    }
 
     /**
      * Obtiene todas las empresas activas para usar en dropdowns.
