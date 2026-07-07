@@ -20,8 +20,23 @@
               "icon": "lucide-file",
               "title": "documentacion"
             }
+          },
+          {
+            "id": "e7edb11f0143091b",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "README.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "README"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -183,10 +198,14 @@
       "bases:Crear nueva base": false
     }
   },
-  "active": "a6a08d31c2a8de51",
+  "active": "e7edb11f0143091b",
   "lastOpenFiles": [
+    "public/js/dashboards/inspector/claims-map.js",
+    "public/js/dashboards/inspector/claims-actions.js",
+    "public/js/dashboards/inspector/claims-ui.js",
+    "public/js/dashboards/inspector/claims-template.js",
+    "docs/documentacion.md",
     "TODO.md",
-    "README.md",
-    "docs/documentacion.md"
+    "README.md"
   ]
 }

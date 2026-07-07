@@ -304,4 +304,62 @@
     color: #9ca3af !important;
     font-size: 1.1rem !important;
     padding: 8px !important;
-}
+}/* ==========================================================================
+   Nuevos Estilos Modulares para Modal de Reclamos (claims.js refactor)
+   ========================================================================== */
+
+/* Alertas de Sistema e Inteligentes */
+.smart-alert-box { background-color: #fef08a; border-left: 4px solid #eab308; padding: 12px; margin-bottom: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; }
+.smart-alert-title { color: #854d0e; display: block; margin-bottom: 4px; }
+.smart-alert-text { color: #a16207; font-size: 0.9rem; }
+.smart-alert-actions { display: flex; gap: 8px; }
+.btn-smart-link { background: #eab308; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+.btn-smart-ignore { background: transparent; color: #a16207; border: 1px solid #a16207; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+
+.linked-alert-box { background-color: #fce7f3; border-left: 4px solid #db2777; padding: 10px; margin-bottom: 12px; border-radius: 4px; }
+.linked-alert-title { color: #9d174d; }
+.linked-alert-text { color: #be185d; font-size: 0.9rem; margin-left: 8px; }
+
+/* Caja de Prioridad (Auto-Alta, Auto-Media) */
+.priority-box { margin-top: 6px; margin-bottom: 8px; background-color: #f3f4f6; padding: 6px 10px; border-radius: 8px; }
+.priority-box.high { border-left: 4px solid #dc2626; }
+.priority-box.medium { border-left: 4px solid #d97706; }
+.priority-title { display: flex; align-items: center; gap: 5px; font-size: 0.85rem; font-weight: bold; }
+.priority-title.high { color: #991b1b; }
+.priority-title.medium { color: #92400e; }
+.priority-text { margin: 5px 0 0 0; font-size: 0.8rem; color: #4b5563; }
+
+/* Controles de Columna Derecha */
+.right-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.priority-selector-wrapper { display: flex; align-items: center; gap: 8px; }
+.priority-selector-label { font-size: 0.75rem; font-weight: bold; color: var(--admin-text-secondary); text-transform: uppercase; }
+.priority-selector-input { background: #fef08a; color: #854d0e; border: 1px solid #eab308; border-radius: 6px; padding: 2px 6px; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; width: 100px; }
+
+.status-selector-wrapper { margin-bottom: 8px; }
+.status-selector-label { display: block; font-size: 0.75rem; font-weight: bold; color: var(--admin-text-secondary); margin-bottom: 5px; text-transform: uppercase; }
+.status-selector-select { width: 100%; background: #fff; border: 1px solid var(--admin-border); border-radius: 8px; padding: 6px; color: var(--admin-text-primary); font-family: var(--font-body); font-size: 0.85rem; }
+
+.response-label { font-size: 0.85rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 4px; }
+.template-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.template-btn.denied { background-color: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+.template-btn.vinculated { background-color: #fdf4ff; color: #86198f; border-color: #f0abfc; }
+
+/* Columna Tercera (Tareas) */
+.third-col-section { margin-top: 0px; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; }
+.third-col-desc { font-size: 0.8rem; color: var(--admin-text-secondary); margin-bottom: 10px; }
+.task-form-group { margin-bottom: 5px; }
+.task-form-label { font-size: 0.85rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 2px; }
+.task-form-select { width: 100%; background: #fff; border: 1px solid var(--admin-border); border-radius: 8px; padding: 4px; color: var(--admin-text-primary); font-family: var(--font-body); font-size: 0.85rem; }
+.btn-assign-work { width: 100%; padding: 8px 12px; font-size: 0.85rem; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 10px;}
+
+/* Lista de Tareas Asignadas */
+.assigned-tasks-header { font-size: 0.9rem; margin-bottom: 10px; border-bottom: 1px solid var(--admin-border); padding-bottom: 5px; }
+.assigned-tasks-list { display: flex; flex-direction: column; gap: 10px; }
+.assigned-task-card { background: white; border: 1px solid var(--admin-border); border-radius: 6px; padding: 6px 10px; border-left: 4px solid var(--admin-accent); }
+.assigned-task-card.pending { background: #fdf8f6; }
+.assigned-task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+.assigned-task-title { font-size: 0.85rem; color: var(--admin-text-primary); font-weight: bold;}
+.assigned-task-order { font-size: 0.7rem; background: #e2e8f0; padding: 2px 6px; border-radius: 10px; color: #475569; }
+.assigned-task-company { font-size: 0.8rem; color: var(--admin-text-secondary); margin-bottom: 2px; }
+.assigned-task-status-row { font-size: 0.8rem; color: var(--admin-text-secondary); }
+.empty-tasks-msg { font-size: 0.8rem; color: var(--admin-text-secondary); font-style: italic; }
