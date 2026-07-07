@@ -28,7 +28,10 @@ return new class extends Migration
             $table->foreignId('request_status_id')->constrained('request_statuses')->onDelete('restrict');
             $table->text('cancellation_reason')->nullable(); // Justificación de inspector o ciudadano
             $table->foreignId('priority_id')->nullable()->constrained('priorities')->onDelete('restrict');
-            
+
+            // Asignación directa de la empresa contratista al reclamo
+            $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('set null');
+
             // Relaciones de vinculación y duplicados
             $table->unsignedBigInteger('linked_to')->nullable();
             $table->unsignedBigInteger('suggested_duplicate_id')->nullable();

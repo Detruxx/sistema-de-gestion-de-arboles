@@ -134,13 +134,7 @@
     border-radius: 8px !important;
 }
 
-#claim-detail-modal .claim-modal-col-left {
-    /* ya tiene el border global */
-}
 
-#claim-detail-modal .claim-modal-col-right {
-    /* ya tiene el border global */
-}
 
 /* Ajustes de contraste para fondo blanco en el modal */
 #claim-detail-modal label {

@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('priorities', function (Blueprint $table) {
             $table->id();
             $table->string('priority_name'); // Baja, Media, Alta, Urgente, etc
-            $table->string('slug')->nullable();
             $table->timestamps();
         });
     }
