@@ -53,7 +53,6 @@ class RequestSeeder extends Seeder
             'request_type_id' => 1,
             'request_status_id' => $relevatedStatusId, // 📍 Dinámico
             'description' => 'Reclamo Original: Rama gigante a punto de caer',
-            'company_id' => $companyId, // 📍 Asignamos empresa para simular el circuito completo del PDF
         ]);
 
         $reclamoDuplicado = TreeRequest::factory()->create([
@@ -62,7 +61,6 @@ class RequestSeeder extends Seeder
             'request_status_id' => $openStatusId, // 📍 Dinámico
             'description' => 'Reclamo Duplicado: Vecino reporta la misma rama gigante',
             'suggested_duplicate_id' => $reclamoMaestro->id,
-            'company_id' => null, // Los duplicados nacen sin empresa asignada
         ]);
 
         $reclamos->push($reclamoMaestro);

@@ -51,9 +51,6 @@ class RequestFactory extends Factory
             // Ahora almacena el arreglo para cumplir con el formato JSON requerido 
             'path' => $photosArray,
 
-            // Incorporación de la relación con la empresa contratista (empieza sin asignar) [cite: 8, 9]
-            'company_id' => null,
-
             // Dejamos explícitos los campos que ya tenías en tu estructura física de la tabla por consistencia
             'cancellation_reason' => null,
             'priority_id' => null,
@@ -61,18 +58,4 @@ class RequestFactory extends Factory
             'suggested_duplicate_id' => null,
         ];
     }
-
-    /**
-    * Estado para simular reclamos que ya fueron derivados a una empresa contratista.
-    */
-    public function asignadoAEmpresa(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            // Le asigna una de tus empresas sembradas (ej: IDs entre 1 y 2)
-            'company_id' => $this->faker->numberBetween(1, 2), 
-            // Cambia el estado a 'Programado' o 'En curso' si lo requieren
-            'request_status_id' => 3, 
-        ]);
-    }
 }
-
