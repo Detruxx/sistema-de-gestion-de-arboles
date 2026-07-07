@@ -4,9 +4,11 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Request;
+use App\Models\Request as TreeRequest;
 use App\Models\RequestStatusHistory;
-use App\Models\User; // 📍 IMPORTANTE: No te olvides de importar el modelo User
+use App\Models\RequestStatus;
+use App\Models\Company; 
+use App\Models\User;
 
 class RequestSeeder extends Seeder
 {
@@ -15,7 +17,14 @@ class RequestSeeder extends Seeder
      */
     public function run(): void
     {
-        //RECOMENDACIÓN: Creamos un usuario vecino temporal para asociar al historial inicial
+        // Traemos los IDs de los estados usando sus slugs para no usar números fijos
+        $openStatusId = RequestStatus::where('slug', 'open')->first()->id ?? 1;
+        $relevatedStatusId = RequestStatus::where('slug', 'relevated')->first()->id ?? 2;
+
+        // Buscamos una empresa contratista de prueba si es que existen
+        $companyId = Company::first()->id ?? null;
+
+        // Creamos un usuario vecino temporal para asociar al historial inicial
         $vecinoTemporal = User::factory()->create([
             'name' => 'Vecino',
             'last_name' => 'Digital',
@@ -25,7 +34,7 @@ class RequestSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        //RECOMENDACIÓN: Creamos un inspector temporal para asociar a los movimientos avanzados
+        // Creamos un inspector temporal para asociar a los movimientos avanzados
         $inspectorTemporal = User::factory()->create([
             'name' => 'Inspector',
             'last_name' => 'Turno',
@@ -35,23 +44,25 @@ class RequestSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        // 1. Creamos 10 reclamos aleatorios
-        $reclamos = Request::factory()->count(10)->create();
+        // 1. Creamos 10 reclamos aleatorios utilizando el Factory (el cual ya genera el path JSON vacío o con fotos)
+        $reclamos = TreeRequest::factory()->count(10)->create();
 
         // 1.5 Creamos un caso EXPLICITO de duplicado para probar el algoritmo
-        $reclamoMaestro = Request::factory()->create([
+        $reclamoMaestro = TreeRequest::factory()->create([
             'street_id' => 1,
             'request_type_id' => 1,
-            'request_status_id' => 2, // Relevado
-            'description' => 'Reclamo Original: Rama gigante a punto de caer'
+            'request_status_id' => $relevatedStatusId, // 📍 Dinámico
+            'description' => 'Reclamo Original: Rama gigante a punto de caer',
+            'company_id' => $companyId, // 📍 Asignamos empresa para simular el circuito completo del PDF
         ]);
 
-        $reclamoDuplicado = Request::factory()->create([
+        $reclamoDuplicado = TreeRequest::factory()->create([
             'street_id' => 1,
             'request_type_id' => 1, // Misma calle y mismo tipo de reclamo
-            'request_status_id' => 1, // Nuevo reclamo pendiente
+            'request_status_id' => $openStatusId, // 📍 Dinámico
             'description' => 'Reclamo Duplicado: Vecino reporta la misma rama gigante',
-            'suggested_duplicate_id' => $reclamoMaestro->id
+            'suggested_duplicate_id' => $reclamoMaestro->id,
+            'company_id' => null, // Los duplicados nacen sin empresa asignada
         ]);
 
         $reclamos->push($reclamoMaestro);
@@ -61,18 +72,18 @@ class RequestSeeder extends Seeder
         foreach ($reclamos as $reclamo) {
             RequestStatusHistory::create([
                 'request_id'        => $reclamo->id,
-                'request_status_id' => $reclamo->request_status_id, // Usamos el mismo estado con el que nació el reclamo
-                'user_id'           => $vecinoTemporal->id, // 📍 Reemplazado el 1 fijo por el ID del vecino temporal
+                'request_status_id' => $reclamo->request_status_id,
+                'user_id'           => $vecinoTemporal->id,
                 'justification'     => 'Registro inicial del reclamo ingresado por el ciudadano de forma digital.',
             ]);
 
-            // 🔥 OPCIONAL: Si querés que algunos reclamos simulen tener MÁS de un movimiento
-            if ($reclamo->request_status_id > 1) {
+            // Si el reclamo ya avanzó más allá de "open"
+            if ($reclamo->request_status_id != $openStatusId) {
                 RequestStatusHistory::create([
                     'request_id'        => $reclamo->id,
-                    'request_status_id' => $reclamo->request_status_id, // Estado actual
-                    'user_id'           => $inspectorTemporal->id, // 📍 Reemplazado el 2 fijo por el ID del inspector temporal
-                    'justification'     => 'Simulación de actualización realizada por el cuerpo de inspectores de arbolado.',
+                    'request_status_id' => $reclamo->request_status_id,
+                    'user_id'           => $inspectorTemporal->id,
+                    'justification'     => 'Simulación de actualización realizada por el cuerpo de inspectores de arbolado y derivación a contratista.',
                 ]);
             }
         }

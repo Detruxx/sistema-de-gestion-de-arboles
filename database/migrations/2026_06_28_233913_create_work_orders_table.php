@@ -18,11 +18,13 @@ return new class extends Migration
             $table->string('task_description');
             $table->date('scheduled_date')->nullable();
             
-            // Atributo numérico para ordenar la ejecución (1, 2, 3...)
             $table->integer('execution_order')->default(1); 
-            
-            // Agregamos el estado 'En espera' al ciclo de vida
             $table->enum('work_status', ['En espera', 'Asignado', 'En Proceso', 'Finalizado'])->default('Asignado');
+
+            // Control de costos y auditoría de pagos para el panel de empresas
+            $table->string('payment_status')->default('Pendiente'); // 'Pendiente', 'Pagado'
+            $table->decimal('cost', 10, 2)->default(0.00); // Registra el costo de la tarea ejecutada
+            
             $table->timestamps();
         });
     }

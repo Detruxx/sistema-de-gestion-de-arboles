@@ -13,6 +13,15 @@ class WorkOrderFactory extends Factory
 
     public function definition(): array
     {
+        // 1. Primero definimos el estado de la obra aleatoriamente como ya lo hacías
+        $workStatus = $this->faker->randomElement(['En espera', 'Asignado', 'En Proceso', 'Finalizado']);
+
+        // 📍 LÓGICA DE NEGOCIO PARA EL PAGO: 
+        // Si está finalizado, puede estar pago o no. Si no se terminó, siempre queda 'Pendiente'.
+        $paymentStatus = ($workStatus === 'Finalizado') 
+            ? $this->faker->randomElement(['Pendiente', 'Pagado']) 
+            : 'Pendiente';
+
         return [
             // Elige un reclamo y una empresa al azar de los que ya existan en la base de datos
             'request_id'       => Request::inRandomOrder()->first()->id ?? 1,
@@ -26,7 +35,13 @@ class WorkOrderFactory extends Factory
             ]),
             'scheduled_date'   => $this->faker->dateTimeBetween('now', '+15 days')->format('Y-m-d'),
             'execution_order'  => $this->faker->numberBetween(1, 5),
-            'work_status'      => $this->faker->randomElement(['En espera', 'Asignado', 'En Proceso', 'Finalizado']),
+            'work_status'      => $workStatus,
+
+            // Estado de pago de la orden (Pedido por el frente)
+            'payment_status'   => $paymentStatus,
+
+            // Costo monetario simulado de la obra (entre $10.000 y $250.000 con 2 decimales)
+            'cost'             => $this->faker->randomFloat(2, 10000, 250000),
         ];
     }
 }
