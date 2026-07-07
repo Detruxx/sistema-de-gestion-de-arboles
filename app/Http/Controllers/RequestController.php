@@ -20,14 +20,7 @@ class RequestController extends Controller
     {
         $requests = \App\Models\Request::with(['user', 'street', 'requestType', 'tree', 'histories.status', 'status', 'workOrders.company', 'priority'])->orderBy('created_at', 'desc')->get();
 
-        $mapped = $requests->values()->map(function ($req, $key) {
-            
-            // --- HACK PARA PREVISUALIZAR ---
-            $prioridadSimulada = $req->priority ? $req->priority->priority_name : 'Baja';
-            if ($key === 0) $prioridadSimulada = 'auto-alta';
-            if ($key === 1) $prioridadSimulada = 'auto-media';
-            // -------------------------------
-
+        $mapped = $requests->map(function ($req) {
             return [
                 'id' => $req->tracking_code,
                 'vecino' => $req->user ? $req->user->name : 'Vecino Anónimo',
@@ -40,8 +33,8 @@ class RequestController extends Controller
                 'email' => $req->user ? $req->user->email : 'sin-email@treeba.gob.ar',
                 'linked_to' => $req->linked_to,
                 'suggested_duplicate_id' => $req->suggested_duplicate_id,
-                'priority' => $prioridadSimulada,
-                'risk_score' => ($key === 0) ? 92 : (($key === 1) ? 58 : null) // Simular score
+                'priority' => $req->priority ? $req->priority->priority_name : 'Baja',
+                // 'risk_score' => $req->risk_score // TODO: Descomentar al agregar risk_score a la DB
             ];
         });
 

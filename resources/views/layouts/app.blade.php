@@ -67,7 +67,9 @@
                 @php
                     // TODO (Backend): Reemplazar estas variables hardcodeadas con datos reales (ej. desde el controlador, View Composer, o Auth::user())
                     $unreadClaimsCount = 2; // Número de notificaciones no leídas en Mis Reclamos
-                    $unreadMessagesCount = 1; // Número de mensajes no leídos en la Bandeja de Entrada
+                    // SKELETON PARA EL BACKEND: Reemplazar por count real a la DB cuando la columna is_new_for_user exista.
+                    // $unreadMessagesCount = \App\Models\ContactMessage::where('user_id', Auth::id())->where('is_new_for_user', true)->count();
+                    $unreadMessagesCount = 0;
                     $hasAnyNotification = ($unreadClaimsCount > 0 || $unreadMessagesCount > 0);
                 @endphp
                 <div class="nav-dropdown">

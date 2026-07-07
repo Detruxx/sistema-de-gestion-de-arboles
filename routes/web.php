@@ -99,6 +99,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/bandeja-entrada', [ProfileController::class, 'misMensajes'])->name('profile.bandeja-entrada');
         Route::get('/mensajes', [ContactController::class, 'index'])->name('contact.index');
         Route::post('/mensajes/{id}/read', [ContactController::class, 'markRead'])->name('contact.read');
+        Route::post('/mensajes/{id}/reply', [ContactController::class, 'reply'])->name('contact.reply');
 
         // Dashboard Exclusivo Admin
         Route::middleware(['role:admin'])->group(function () {
