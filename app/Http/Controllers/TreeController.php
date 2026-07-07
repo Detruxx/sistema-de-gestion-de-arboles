@@ -279,7 +279,8 @@ class TreeController extends Controller
                 'streets.street_number',
                 'streets.door_plate',
                 'parks.park_name',
-                'species.common_name as specie_common_name'
+                'species.common_name as specie_common_name',
+                'trees.vitality'
             ])
             ->get();
 
@@ -307,7 +308,8 @@ class TreeController extends Controller
                 ] : null,
                 'specie' => $pin->specie_common_name ? [
                     'common_name' => $pin->specie_common_name
-                ] : null
+                ] : null,
+                'vitality' => $pin->vitality ? json_decode($pin->vitality) : null
             ];
         });
 

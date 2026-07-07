@@ -109,18 +109,18 @@ export function filterTrees() {
     const filterSpeciesSelect = document.getElementById('filter-tree-species');
     const filterStateSelect = document.getElementById('filter-tree-state');
     
-    const idQuery = filterIdInput ? filterIdInput.value.trim() : '';
-    const speciesFilter = filterSpeciesSelect ? filterSpeciesSelect.value : '';
-    const stateFilter = filterStateSelect ? filterStateSelect.value : '';
+    const idQuery = filterIdInput ? filterIdInput.value.trim().toLowerCase() : '';
+    const speciesFilter = filterSpeciesSelect ? filterSpeciesSelect.value.trim().toLowerCase() : '';
+    const stateFilter = filterStateSelect ? filterStateSelect.value.trim().toLowerCase() : '';
     
     const container = document.getElementById('trees-list-container');
     if(!container) return;
     container.innerHTML = '';
 
     const filtered = state.trees.filter(t => {
-        const matchesId = idQuery === '' || t.id.toString().includes(idQuery);
-        const matchesSpecies = speciesFilter === '' || t.especie === speciesFilter;
-        const matchesState = stateFilter === '' || t.estado.includes(stateFilter);
+        const matchesId = idQuery === '' || t.id.toString().toLowerCase().includes(idQuery);
+        const matchesSpecies = speciesFilter === '' || (t.especie && t.especie.toLowerCase().includes(speciesFilter));
+        const matchesState = stateFilter === '' || (t.estado && t.estado.toLowerCase().includes(stateFilter));
         return matchesId && matchesSpecies && matchesState;
     });
 
@@ -149,11 +149,28 @@ export async function loadTreesFromServer() {
             const result = await response.json();
             state.trees.length = 0;
             result.data.forEach(t => {
+                let estadoStr = 'Saludable';
+                if (t.vitality) {
+                    let vitalityArray = [];
+                    try {
+                        vitalityArray = typeof t.vitality === 'string' ? JSON.parse(t.vitality) : t.vitality;
+                    } catch (e) {
+                        vitalityArray = t.vitality;
+                    }
+                    if (Array.isArray(vitalityArray)) {
+                        estadoStr = vitalityArray.join(', ');
+                    } else if (typeof vitalityArray === 'object' && vitalityArray !== null) {
+                        estadoStr = Object.values(vitalityArray).join(', ');
+                    } else if (vitalityArray) {
+                        estadoStr = String(vitalityArray);
+                    }
+                }
+
                 state.trees.push({
                     id: t.id,
                     especie: t.specie ? t.specie.common_name : 'Desconocida',
                     calle: t.street ? `${t.street.street_name} ${t.street.street_number}` : 'Sin calle',
-                    estado: 'Ver ficha' // Los pines no traen estado, se carga al hacer click
+                    estado: estadoStr
                 });
             });
         }

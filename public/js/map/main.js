@@ -15,8 +15,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Configurar Eventos de UI
     setupUI();
 
-    // 3. Cargar datos iniciales
-    loadTreesFromDatabase();
+    // 3. Cargar datos iniciales y centrar en el árbol si se recibe un id por url query param (?id=...)
+    loadTreesFromDatabase().then(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const treeId = urlParams.get('id');
+        if (treeId) {
+            const arboles = getArboles();
+            const matched = arboles.find(a => a.id == treeId);
+            if (matched) {
+                mostrarDatosArbol(matched.id);
+                map.flyTo([matched.latitude, matched.longitude], 18, { duration: 1.2 });
+            }
+        }
+    });
 
     // 4. Configurar listeners de filtros
     const filterEspecie = document.getElementById('filter-especie');
