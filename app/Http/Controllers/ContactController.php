@@ -58,6 +58,15 @@ class ContactController extends Controller
 
         return back()->with('error', 'Mensaje no encontrado.');
     }
+
+    /**
+     * Marca un mensaje como visto por el vecino (quita la notificacion).
+     */
+    public function markSeenByUser(Request $request, $id)
+    {
+        // TODO (Backend): Implementar lógica para marcar mensaje como visto por el usuario
+        return response()->json(['success' => true]);
+    }
     /**
      * Responde a un mensaje de contacto (Solo Inspector/Admin).
      */

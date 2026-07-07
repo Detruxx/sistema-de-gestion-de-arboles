@@ -32,7 +32,7 @@
                     </p>
                     <div style="background: rgba(45, 122, 79, 0.05); border-radius: 12px; padding: 20px; text-align: left; max-width: 450px; margin: 0 auto 30px; border: 1px solid rgba(45, 122, 79, 0.1);">
                         <p style="margin: 0 0 8px 0; font-size: 0.9rem; color: #555;"><strong>Número de Referencia:</strong> <span id="success-ref-id"></span></p>
-                        <p style="margin: 0; font-size: 0.9rem; color: #555;"><strong>Próximos pasos:</strong> Un Inspector del área de Arbolado de la Comuna 13 verificará la documentación y la habilitará en el Panel de Control.</p>
+                        <p style="margin: 0; font-size: 0.9rem; color: #555;"><strong>Próximos pasos:</strong> Un Inspector del área de Espacio Público verificará la documentación y la habilitará en el Panel de Control.</p>
                     </div>
                     <a href="/" class="btn-main-cta" style="display: inline-block; text-decoration: none; padding: 12px 30px;">Volver al Inicio</a>
                 </div>

@@ -177,14 +177,16 @@
                             @endif
                             <summary class="reclamo-card-summary">
                                 <div class="card-summary-left">
-                                    <span class="reclamo-id">#{{ $id }}</span>
+                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                                        <span class="reclamo-id">#{{ $id }}</span>
+                                    </div>
                                     <div>
                                         <h3>{{ $typeName }}</h3>
                                         <p class="summary-meta">{{ $streetName }} • {{ $dateFormatted }}</p>
                                     </div>
                                 </div>
                                 <div class="card-summary-right">
-                                    <span class="status-badge {{ $statusClass }}">{{ $statusText }}</span>
+                                    <span class="status-badge {{ $statusClass }}" style="white-space: nowrap; text-align: center;">{{ $statusText }}</span>
                                     <span class="chevron-arrow">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                                     </span>
@@ -402,14 +404,16 @@
                                 @endif
                                 <summary class="reclamo-card-summary">
                                     <div class="card-summary-left">
-                                        <span class="reclamo-id">#{{ $id }}</span>
+                                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                                            <span class="reclamo-id">#{{ $id }}</span>
+                                        </div>
                                         <div>
                                             <h3>{{ $typeName }}</h3>
                                             <p class="summary-meta">{{ $streetName }} • {{ $dateFormatted }}</p>
                                         </div>
                                     </div>
                                     <div class="card-summary-right">
-                                        <span class="status-badge {{ $statusClass }}">{{ $statusText }}</span>
+                                        <span class="status-badge {{ $statusClass }}" style="white-space: nowrap; text-align: center;">{{ $statusText }}</span>
                                         <span class="chevron-arrow">
                                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                                         </span>
@@ -584,10 +588,18 @@
                         // Revisar si ya no hay más notificaciones de NADA para borrar el global dot
                         checkGlobalDot();
 
-                        // SKELETON PARA EL BACKEND: Llamada para guardar en la BD
-                        // const type = this.getAttribute('data-type');
-                        // const id = this.getAttribute('data-id');
-                        // fetch(`/api/mark-read/${type}/${id}`, { method: 'POST' });
+                        // Llamada para guardar en la BD
+                        const type = this.getAttribute('data-type');
+                        const id = this.getAttribute('data-id');
+                        if (type === 'reclamo') {
+                            fetch(`/reclamos/${id}/mark-seen-by-user`, { 
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                    'Accept': 'application/json'
+                                }
+                            });
+                        }
                     }
                 });
             });

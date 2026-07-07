@@ -21,7 +21,7 @@ La plataforma tiene como eje central un mapa interactivo que visualizará los á
 *   **Delimitación del alcance:** El volumen de funcionalidades (módulo de inspectores, módulo ciudadano y sistema colaborativo de mapeo) representa un desafío respecto al scope inicial del desarrollo.
 *   **Sistemas concurrentes:** El gobierno local posee actualmente una aplicación de uso interno para el censo en curso (a la cual el equipo tiene acceso para fines de análisis). El reto será plantear una herramienta superadora que integre el flujo de reclamos.
 *   **Viabilidad y adopción:** Al tratarse mayoritariamente de arbolado en espacio público, la implementación a gran escala dependería de la adopción por parte de gobiernos municipales o provinciales, siendo los espacios verdes privados un nicho menor.
-*   **Estandarización de procesos:** El relevamiento inicial de los procesos operativos de inspección se basó en el modelo de trabajo de la Comuna 13 (Belgrano, Colegiales y Núñez). El desafío es lograr una arquitectura de software lo suficientemente estandarizada para adaptarse a los protocolos de cualquier otra comuna, distrito o entidad privada.
+*   **Estandarización de procesos:** El relevamiento inicial de los procesos operativos de inspección se basó en protocolos estandarizados de Espacio Público. El desafío es lograr una arquitectura de software lo suficientemente estandarizada para adaptarse a los protocolos de cualquier otra comuna, distrito o entidad privada.
 
 ## Beneficios y Propuesta de Valor
 *   **Innovación local:** Actualmente no existe un software o aplicación unificada de uso masivo en Argentina que aborde esta gestión de manera integral.

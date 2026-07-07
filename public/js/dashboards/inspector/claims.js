@@ -120,7 +120,9 @@ export function loadClaimsList() {
 
         card.innerHTML = `
             <div class="list-item-header" style="align-items: flex-start;">
-                <span class="list-item-id" style="margin-right: 5px; word-break: break-all;">${c.id}</span>
+                <div style="display: flex; align-items: center; flex-wrap: wrap;">
+                    <span class="list-item-id" style="margin-right: 5px; word-break: break-all;">${c.id}</span>
+                </div>
                 <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
                     <span class="badge-status" style="background-color: ${statusHex}20; color: ${statusHex}; border: 1px solid ${statusHex}; white-space: nowrap;">${statusLabel}</span>
                     ${priorityBadge}
@@ -210,7 +212,7 @@ export function selectClaim(id) {
 
                 <div style="border-top: 1px solid var(--admin-border); padding-top: 10px;">
                     <label class="detail-label">Vecino Solicitante</label>
-                    <p class="detail-value" style="font-weight: 500;">${claim.vecino}</p>
+                    <p class="detail-value" style="font-weight: 500; display: flex; align-items: center;">${claim.vecino}</p>
                     <p style="margin: 0; font-size: 0.8rem; color: var(--admin-text-secondary);">${claim.email}</p>
                 </div>
 
@@ -559,17 +561,17 @@ export function applyTemplate (type) {
 
     let text = '';
     if (type === 'open' || type === 'info') {
-        text = `Estimado/a ${claim.vecino},\n\nHemos recibido su solicitud ID ${claim.id} sobre "${claim.categoria}". Un inspector del área técnica estará evaluando la situación a la brevedad. Si posee más imágenes del estado actual del ejemplar, por favor adjúntelas respondiendo a este correo.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
+        text = `Estimado/a ${claim.vecino},\n\nHemos recibido su solicitud ID ${claim.id} sobre "${claim.categoria}". Un inspector del área técnica estará evaluando la situación a la brevedad. Si posee más imágenes del estado actual del ejemplar, por favor adjúntelas respondiendo a este correo.\n\nAtentamente,\nEquipo de Gestión de Espacio Público.`;
     } else if (type === 'relevated') {
-        text = `Estimado/a ${claim.vecino},\n\nLe informamos que su solicitud ID ${claim.id} se encuentra en etapa de Inspección Técnica. Personal calificado visitará la dirección ${claim.direccion} dentro de los próximos 3 días hábiles para diagnosticar el árbol (${claim.especie}) y planificar el plan de acción.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
+        text = `Estimado/a ${claim.vecino},\n\nLe informamos que su solicitud ID ${claim.id} se encuentra en etapa de Inspección Técnica. Personal calificado visitará la dirección ${claim.direccion} dentro de los próximos 3 días hábiles para diagnosticar el árbol (${claim.especie}) y planificar el plan de acción.\n\nAtentamente,\nEquipo de Gestión de Espacio Público.`;
     } else if (type === 'scheduled' || type === 'in_progress') {
-        text = `Estimado/a ${claim.vecino},\n\nTras la inspección realizada en ${claim.direccion}, se ha planificado la intervención correspondiente para el día [Fecha]. Se realizará un saneamiento/poda de despeje preventivo para resguardar la seguridad pública.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
+        text = `Estimado/a ${claim.vecino},\n\nTras la inspección realizada en ${claim.direccion}, se ha planificado la intervención correspondiente para el día [Fecha]. Se realizará un saneamiento/poda de despeje preventivo para resguardar la seguridad pública.\n\nAtentamente,\nEquipo de Gestión de Espacio Público.`;
     } else if (type === 'resolved') {
-        text = `Estimado/a ${claim.vecino},\n\nNos complace informarle que la solicitud ID ${claim.id} ha sido completada de manera exitosa. Las tareas operativas y el despeje final en la zona han concluido.\n\nMuchas gracias por colaborar con el mantenimiento del arbolado de la Ciudad.\n\nAtentamente,\nGobierno de la Ciudad de Buenos Aires - Comuna 13.`;
+        text = `Estimado/a ${claim.vecino},\n\nNos complace informarle que la solicitud ID ${claim.id} ha sido completada de manera exitosa. Las tareas operativas y el despeje final en la zona han concluido.\n\nMuchas gracias por colaborar con el mantenimiento del arbolado de la Ciudad.\n\nAtentamente,\nDirección de Espacio Público.`;
     } else if (type === 'denied') {
-        text = `Estimado/a ${claim.vecino},\n\nTras la evaluación técnica de su solicitud ID ${claim.id}, lamentamos informarle que la misma ha sido rechazada por no cumplir con los criterios de intervención de la Ley de Arbolado.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
+        text = `Estimado/a ${claim.vecino},\n\nTras la evaluación técnica de su solicitud ID ${claim.id}, lamentamos informarle que la misma ha sido rechazada por no cumplir con los criterios de intervención de la Ley de Arbolado.\n\nAtentamente,\nEquipo de Gestión de Espacio Público.`;
     } else if (type === 'vinculated') {
-        text = `Estimado/a ${claim.vecino},\n\nLe informamos que su solicitud ID ${claim.id} ha sido vinculada a un trámite preexistente sobre el mismo ejemplar o incidencia.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
+        text = `Estimado/a ${claim.vecino},\n\nLe informamos que su solicitud ID ${claim.id} ha sido vinculada a un trámite preexistente sobre el mismo ejemplar o incidencia.\n\nAtentamente,\nEquipo de Gestión de Espacio Público.`;
     }
 
     if (textarea) textarea.value = text;
@@ -612,9 +614,15 @@ export function filterClaims () {
         const statusObj = state.requestStatuses.find(rs => rs.slug === c.estado);
         let statusLabel = statusObj ? statusObj.status_name : c.estado.toUpperCase();
         let statusHex = statusObj ? statusObj.color : '#6b7280';
+        
+        let internalBadge = c.is_internal ? `<span title="Reclamo Interno" style="display:inline-flex; align-items:center; gap:2px; background-color: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; margin-left: 5px; white-space: nowrap;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg> INTERNO</span>` : '';
+        
         card.innerHTML = `
             <div class="list-item-header">
-                <span class="list-item-id">${c.id}</span>
+                <div style="display: flex; align-items: center; flex-wrap: wrap;">
+                    <span class="list-item-id">${c.id}</span>
+                    ${internalBadge}
+                </div>
                 <span class="badge-status" style="background-color: ${statusHex}20; color: ${statusHex}; border: 1px solid ${statusHex};">${statusLabel}</span>
             </div>
             <div class="list-item-title">${c.categoria}</div>

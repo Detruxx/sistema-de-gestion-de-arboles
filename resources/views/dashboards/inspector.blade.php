@@ -80,7 +80,7 @@
                 <div class="admin-header-section">
                     <div>
                         <h2>Panel de Control General (Inspector)</h2>
-                        <p>Monitoreo y estadísticas de arbolado y solicitudes - Comuna 13</p>
+                        <p>Monitoreo y estadísticas de arbolado y solicitudes - Espacio Público</p>
                     </div>
                 </div>
 
@@ -133,7 +133,7 @@
                         <span class="activity-dot activity-dot-info"></span>
                         <div>
                             <p class="activity-title">Inspección de Jacarandá programada para el lunes</p>
-                            <p class="activity-desc">Hace 2 horas - Comuna 13</p>
+                            <p class="activity-desc">Hace 2 horas - Espacio Público</p>
                         </div>
                     </div>
                     <div class="activity-item">

@@ -75,7 +75,7 @@ function renderTenderDetail(id) {
         <div class="detail-header-panel">
             <div>
                 <h3 class="detail-title">${t.task_description}</h3>
-                <p class="detail-subtitle">Licitación Pública #${t.id} | Comuna 13</p>
+                <p class="detail-subtitle">Licitación Pública #${t.id} | Espacio Público</p>
             </div>
         </div>
 

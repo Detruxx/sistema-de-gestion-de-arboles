@@ -34,7 +34,7 @@ class RequestController extends Controller
                 'linked_to' => $req->linked_to,
                 'suggested_duplicate_id' => $req->suggested_duplicate_id,
                 'priority' => $req->priority ? $req->priority->priority_name : 'Baja',
-                // 'risk_score' => $req->risk_score // TODO: Descomentar al agregar risk_score a la DB
+                'status_slug' => $req->request_status_id ? $req->status->slug : 'open'
             ];
         });
 

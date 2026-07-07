@@ -75,7 +75,7 @@ function renderPaymentDetail(id) {
 
         <div class="detail-box" style="margin-top: 25px; border-left: 4px solid ${isPaid ? '#22c55e' : '#ef4444'}; padding: 15px; background: rgba(0,0,0,0.02);">
             <p style="margin: 0; font-size: 0.95rem; color: var(--admin-text-primary);">
-                ${isPaid ? 'El pago ha sido verificado e ingresado a la cuenta bancaria de tu empresa por la Tesorería de la Comuna 13.' : 'La Comuna está procesando la certificación técnica de la obra. El inspector verificará el pago a la brevedad.'}
+                ${isPaid ? 'El pago ha sido verificado e ingresado a la cuenta bancaria de tu empresa por la Tesorería de Espacio Público.' : 'El Municipio está procesando la certificación técnica de la obra. El inspector verificará el pago a la brevedad.'}
             </p>
         </div>
     `;

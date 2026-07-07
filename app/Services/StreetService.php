@@ -25,7 +25,7 @@ class StreetService
         // Buscar la calle o crearla si no existe
         return Street::firstOrCreate(
             ['street_name' => $streetName, 'street_number' => $streetNumber],
-            ['district' => 'Comuna 13'] // Opcional por defecto
+            ['district' => 'Espacio Público'] // Opcional por defecto
         );
     }
 }

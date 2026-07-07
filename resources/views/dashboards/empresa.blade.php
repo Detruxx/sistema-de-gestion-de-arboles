@@ -64,7 +64,7 @@
             <div class="admin-header-section">
                 <div>
                     <h2>Panel de Control - Contratista</h2>
-                    <p>Resumen de tareas y servicios contratados por la Comuna 13</p>
+                    <p>Resumen de tareas y servicios contratados por Espacio Público</p>
                 </div>
             </div>
 
@@ -110,14 +110,14 @@
                         <span class="activity-dot activity-dot-info"></span>
                         <div>
                             <p class="activity-title">Licitación de poda de Av. Cabildo abierta para ofertas</p>
-                            <p class="activity-desc">Hace 3 horas - Comuna 13</p>
+                            <p class="activity-desc">Hace 3 horas - Espacio Público</p>
                         </div>
                     </div>
                     <div class="activity-item">
                         <span class="activity-dot activity-dot-success"></span>
                         <div>
                             <p class="activity-title">Tu postulación a la orden #105 ha sido PRE-APROBADA por el inspector</p>
-                            <p class="activity-desc">Ayer - Comuna 13</p>
+                            <p class="activity-desc">Ayer - Espacio Público</p>
                         </div>
                     </div>
                 </div>

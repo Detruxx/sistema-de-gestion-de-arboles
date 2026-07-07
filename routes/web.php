@@ -97,9 +97,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/configuracion/photo', [ProfileController::class, 'updateProfilePhoto'])->name('profile.photo.update');
         Route::get('/mis-reclamos', [ProfileController::class, 'myRequests'])->name('profile.mis-reclamos');
         Route::post('/reclamos/{id}/status', [ProfileController::class, 'updateRequestStatus'])->name('profile.reclamo.status');
+        Route::post('/reclamos/{id}/mark-seen-by-user', [ProfileController::class, 'markRequestSeenByUser'])->name('profile.reclamo.markSeen');
         Route::get('/bandeja-entrada', [ProfileController::class, 'misMensajes'])->name('profile.bandeja-entrada');
         Route::get('/mensajes', [ContactController::class, 'index'])->name('contact.index');
         Route::post('/mensajes/{id}/read', [ContactController::class, 'markRead'])->name('contact.read');
+        Route::post('/mensajes/{id}/mark-seen-by-user', [ContactController::class, 'markSeenByUser'])->name('contact.markSeen');
         Route::post('/mensajes/{id}/reply', [ContactController::class, 'reply'])->name('contact.reply');
 
         // Dashboard Exclusivo Admin

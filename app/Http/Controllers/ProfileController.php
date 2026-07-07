@@ -142,6 +142,15 @@ class ProfileController extends Controller
     }
 
     /**
+     * Marca un reclamo como visto por el vecino (quita la notificacion).
+     */
+    public function markRequestSeenByUser(Request $request, $id)
+    {
+        // TODO (Backend): Implementar lógica para marcar reclamo como visto por el usuario
+        return response()->json(['success' => true]);
+    }
+
+    /**
      * Inicializa los reclamos de prueba en la sesion.
      */
     private function initMockRequests(Request $request)
@@ -270,14 +279,15 @@ class ProfileController extends Controller
         $isMock = false;
 
         try {
-            // Intentar cargar desde BD si existe modelo
-            // Por ahora forzamos mock para asegurar el UI
-            $isMock = true; 
+            // Cargar desde BD real
+            $mensajes = \App\Models\ContactMessage::where('user_id', $userId)
+                ->orderBy('created_at', 'desc')
+                ->get();
         } catch (\Exception $e) {
             $isMock = true;
         }
 
-        if ($mensajes->isEmpty() || $isMock) {
+        if ($isMock && $mensajes->isEmpty()) {
             if (!$request->session()->has('mock_mis_mensajes')) {
                 $this->initMockMisMensajes($request);
             }

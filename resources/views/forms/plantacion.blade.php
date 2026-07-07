@@ -84,7 +84,7 @@
                     <span class="lock-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                     </span>
-                    <p>Para solicitar la plantación de un nuevo árbol, por favor inicia sesión en tu cuenta de vecino.</p>
+                    <p>Para solicitar la plantación de un nuevo árbol, por favor inicia sesión en tu cuenta.</p>
                     <a href="/login" class="btn-main-cta">Iniciar Sesión</a>
                 </div>
             @endauth

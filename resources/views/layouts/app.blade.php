@@ -84,11 +84,10 @@
             @endguest
             @auth <!-- Si el usuario esta logueado, se muestra el menu de perfil -->
                 @php
-                    // TODO (Backend): Reemplazar estas variables hardcodeadas con datos reales (ej. desde el controlador, View Composer, o Auth::user())
+                    // TODO (Backend): Consultar notificaciones reales a la BD
                     $unreadClaimsCount = 2; // Número de notificaciones no leídas en Mis Reclamos
-                    // SKELETON PARA EL BACKEND: Reemplazar por count real a la DB cuando la columna is_new_for_user exista.
-                    // $unreadMessagesCount = \App\Models\ContactMessage::where('user_id', Auth::id())->where('is_new_for_user', true)->count();
-                    $unreadMessagesCount = 0;
+                    $unreadMessagesCount = 0; // Número de notificaciones de Mensajes
+                        
                     $hasAnyNotification = ($unreadClaimsCount > 0 || $unreadMessagesCount > 0);
                 @endphp
                 <div class="nav-dropdown">
@@ -155,7 +154,7 @@
                 </div>
                 <p class="footer-tagline">Mapeando el futuro verde de la ciudad.</p>
                 <p class="footer-source">Datos abiertos obtenidos de BA Data - GCBA.</p>
-                <p class="footer-source" style="margin-top: 5px; opacity: 0.85;">Basado en el modelo de gestión de la Comuna 13 (Belgrano, Colegiales y Núñez).</p>
+                <p class="footer-source" style="margin-top: 5px; opacity: 0.85;">Basado en protocolos estandarizados de Espacio Público.</p>
             </div>
             
             <div class="footer-links">
