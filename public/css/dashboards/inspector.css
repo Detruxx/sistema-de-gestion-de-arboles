@@ -84,10 +84,10 @@
     /* Texto oscuro */
     border-radius: 16px !important;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-    max-width: 95% !important;
-    width: 1200px !important;
-    height: 85vh !important;
-    max-height: 85vh !important;
+    max-width: 98% !important;
+    width: 1400px !important;
+    height: calc(100vh - 120px) !important;
+    max-height: calc(100vh - 120px) !important;
     overflow: hidden !important;
     /* Evita scroll en contenedor externo */
     font-family: var(--font-body, system-ui, -apple-system, sans-serif);
@@ -115,8 +115,9 @@
 /* Ajuste de la grilla interna del modal */
 #claim-detail-modal .claim-modal-grid {
     display: grid !important;
-    grid-template-columns: 1fr 1.8fr 1fr !important;
-    gap: 32px !important;
+    grid-template-columns: 0.85fr 1.95fr 1fr !important;
+    gap: 16px !important;
+    padding: 10px !important;
     height: 100% !important;
     overflow: hidden !important;
     background: #ffffff !important;
@@ -126,20 +127,19 @@
 #claim-detail-modal .claim-modal-col-right,
 #claim-detail-modal .claim-modal-col-third {
     overflow-y: auto !important;
-    /* Scroll independiente */
-    max-height: calc(85vh - 70px) !important;
-    /* Descontamos cabecera */
-    padding-bottom: 20px !important;
+    max-height: calc(100vh - 195px) !important;
+    padding: 12px !important;
     box-sizing: border-box !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
 }
 
 #claim-detail-modal .claim-modal-col-left {
-    border-right: 1px solid #e5e7eb !important;
-    padding-right: 24px !important;
+    /* ya tiene el border global */
 }
 
 #claim-detail-modal .claim-modal-col-right {
-    padding-left: 10px !important;
+    /* ya tiene el border global */
 }
 
 /* Ajustes de contraste para fondo blanco en el modal */
@@ -164,6 +164,10 @@
     margin: 0 !important;
 }
 
+#claim-detail-modal .detail-section {
+    margin-bottom: 8px !important;
+}
+
 #claim-detail-modal .detail-label {
     color: #4b5563 !important;
     font-size: 0.75rem !important;
@@ -182,7 +186,7 @@
     background: #f9fafb !important;
     border: 1px solid #e5e7eb !important;
     border-radius: 8px !important;
-    padding: 14px !important;
+    padding: 8px !important;
 }
 
 #claim-detail-modal .detail-box-desc {
@@ -236,7 +240,8 @@
     display: none;
     /* Controlado por JS */
     align-items: flex-start !important;
-    padding-top: 85px !important;
+    padding-top: 95px !important;
+    padding-bottom: 25px !important;
 }
 
 /* Sección de Trabajos Derivados */

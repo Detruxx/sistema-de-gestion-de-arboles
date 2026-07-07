@@ -56,37 +56,42 @@ export function selectClaim(id) {
     const statusLabel = statusObj ? statusObj.status_name : claim.estado.toUpperCase();
     const statusHex = statusObj ? statusObj.color : '#6b7280';
 
+    const currentSeq = state.requestStatuses.find(rs => rs.slug === claim.estado)?.sequence || 0;
+    const relevatedSeq = state.requestStatuses.find(rs => rs.slug === 'relevated')?.sequence || 2;
+    const showThirdColumn = currentSeq >= relevatedSeq;
+
     panel.innerHTML = `
-        <div class="claim-modal-grid">
+<div class="claim-modal-grid" style="${!showThirdColumn ? 'grid-template-columns: 0.85fr 1.95fr !important;' : ''}">
             <!-- COLUMNA IZQUIERDA: DETALLES -->
             <div class="claim-modal-col-left">
                 ${claim.suggested_duplicate_id ? `
                 <div style="background-color: #fef08a; border-left: 4px solid #eab308; padding: 12px; margin-bottom: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <strong style="color: #854d0e; display: block; margin-bottom: 4px;">âš ï¸ Alerta de Sistema Inteligente</strong>
-                        <span style="color: #a16207; font-size: 0.9rem;">Este reclamo podrÃ­a ser un duplicado del reclamo <strong>#${claim.suggested_duplicate_id}</strong> (misma cuadra y tipo de problema).</span>
+                                          <strong style="color: #854d0e; display: block; margin-bottom: 4px;">⚠️ Alerta de Sistema Inteligente</strong>
+                        <span style="color: #a16207; font-size: 0.9rem;">Este reclamo podría ser un duplicado del reclamo <strong>#${claim.suggested_duplicate_id}</strong> (misma cuadra y tipo de problema).</span>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button onclick="resolveDuplicate(true, ${claim.suggested_duplicate_id})" style="background: #eab308; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold;">âœ… Vincular AutomÃ¡ticamente</button>
-                        <button onclick="resolveDuplicate(false)" style="background: transparent; color: #a16207; border: 1px solid #a16207; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">âŒ Ignorar</button>
-                    </div>
+                        <button onclick="resolveDuplicate(true, ${claim.suggested_duplicate_id})" style="background: #eab308; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold;">✅ Vincular Automáticamente</button>
+                        <button onclick="resolveDuplicate(false)" style="background: transparent; color: #a16207; border: 1px solid #a16207; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">❌ Ignorar</button>
+                    </div>                    </div>
                 </div>
                 ` : ''}
 
                 ${claim.linked_to ? `
-                <div style="background-color: #fce7f3; border-left: 4px solid #db2777; padding: 12px; margin-bottom: 20px; border-radius: 4px;">
-                    <strong style="color: #9d174d;">ðŸ”— Reclamo Vinculado</strong>
-                    <span style="color: #be185d; font-size: 0.9rem; margin-left: 8px;">Este trÃ¡mite es un duplicado y estÃ¡ anexado al reclamo principal <strong>#${claim.linked_to}</strong>.</span>
+                <div style="background-color: #fce7f3; border-left: 4px solid #db2777; padding: 10px; margin-bottom: 12px; border-radius: 4px;">
+                    <strong style="color: #9d174d;">🔗 Reclamo Vinculado</strong>
+                    <span style="color: #be185d; font-size: 0.9rem; margin-left: 8px;">Este trámite es un duplicado y está anexado al reclamo principal <strong>#${claim.linked_to}</strong>.</span>
                 </div>
                 ` : ''}
 
                 <div class="detail-header-panel">
             <div>
                 <h3 class="detail-title">${claim.categoria}</h3>
-                <p class="detail-subtitle">Reclamo ID: <strong style="color:var(--admin-text-primary);">${claim.id}</strong> | Enviado el ${claim.fecha}</p>
+                <p class="detail-subtitle">
+                    Reclamo ID: <strong style="color:var(--admin-text-primary);">${claim.id}</strong> | Enviado el ${claim.fecha}
+                </p>
                 
                 ${claim.priority === 'auto-alta' || claim.priority === 'auto-media' ? `
-                <div style="margin-top: 10px; margin-bottom: 15px; background-color: #f3f4f6; border-left: 4px solid ${claim.priority === 'auto-alta' ? '#dc2626' : '#d97706'}; padding: 10px; border-radius: 8px;">
+                <div style="margin-top: 6px; margin-bottom: 8px; background-color: #f3f4f6; border-left: 4px solid ${claim.priority === 'auto-alta' ? '#dc2626' : '#d97706'}; padding: 6px 10px; border-radius: 8px;">
                     <strong style="color: ${claim.priority === 'auto-alta' ? '#991b1b' : '#92400e'}; display: flex; align-items: center; gap: 5px; font-size: 0.85rem;">
                         Elevado automáticamente por el Sistema Inteligente
                     </strong>
@@ -106,12 +111,12 @@ export function selectClaim(id) {
         </div>
 
         <div class="detail-section">
-            <p class="detail-label">DirecciÃ³n / Especie</p>
-            <p class="detail-value">${claim.direccion} â€” Especie involucrada: ${claim.especie}</p>
+            <p class="detail-label">Dirección / Especie</p>
+            <p class="detail-value">${claim.direccion} — Especie involucrada: ${claim.especie}</p>
         </div>
 
         <div class="detail-box">
-            <p class="detail-label">Mensaje / DescripciÃ³n del problema</p>
+            <p class="detail-label">Mensaje / Descripción del problema</p>
             <p class="detail-box-desc">${claim.descripcion}</p>
         </div>
     </div> <!-- FIN COLUMNA IZQUIERDA -->
@@ -135,14 +140,23 @@ export function selectClaim(id) {
         return '';
     }).join('')}
             </div>
-        </div>
-
-        <div class="response-section" style="margin-top: 10px;">
-            <h4 class="detail-title" style="font-size: 1.05rem; margin-bottom: 8px;">Actualizar TrÃ¡mite y Responder al Vecino</h4>
-            
-            <div style="margin-bottom: 10px;">
-                <label style="font-size: 0.85rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 4px;">Cambiar estado a:</label>
-                <select id="new-status-select" style="width: 100%; background: #fff; border: 1px solid var(--admin-border); border-radius: 8px; padding: 6px; color: var(--admin-text-primary); font-family: var(--font-body); font-size: 0.85rem;" onchange="if(this.value === 'vinculated') alert('Se te pedirÃ¡ el ID a vincular al guardar.')">
+        </div>        <div class="status-tracker-container" style="margin-top: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 class="detail-title" style="font-size: 1.05rem; margin-bottom: 0;">Actualizar Trámite</h4>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <label style="font-size: 0.75rem; font-weight: bold; color: var(--admin-text-secondary); text-transform: uppercase;">Prioridad:</label>
+                    <input type="text" id="new-priority-select" list="priority-options" style="background: #fef08a; color: #854d0e; border: 1px solid #eab308; border-radius: 6px; padding: 2px 6px; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; width: 100px;" value="${claim.priority?.priority_name || claim.priority || 'Baja'}" placeholder="Escribir...">
+                    <datalist id="priority-options">
+                        <option value="Baja">
+                        <option value="Media">
+                        <option value="Alta">
+                        <option value="Urgente">
+                    </datalist>
+                </div>
+            </div>
+            <div style="margin-bottom: 8px;">
+                <label style="display: block; font-size: 0.75rem; font-weight: bold; color: var(--admin-text-secondary); margin-bottom: 5px; text-transform: uppercase;">Cambiar Estado A:</label>
+                <select id="new-status-select" style="width: 100%; background: #fff; border: 1px solid var(--admin-border); border-radius: 8px; padding: 6px; color: var(--admin-text-primary); font-family: var(--font-body); font-size: 0.85rem;" onchange="if(this.value === 'vinculated') alert('Se te pedirá el ID a vincular al guardar.')">
                     ${state.requestStatuses.map(s => `
                         <option value="${s.slug}" ${claim.estado === s.slug ? 'selected' : ''}>${s.status_name}</option>
                     `).join('')}
@@ -150,14 +164,15 @@ export function selectClaim(id) {
             </div>
 
             <label style="font-size: 0.85rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 4px;">Mensaje / Respuesta (Opcional):</label>
-            <div class="template-selector">
-                <button class="template-btn" onclick="applyTemplate('info')">Pedir mÃ¡s info</button>
-                <button class="template-btn" onclick="applyTemplate('relevated')">Avisar InspecciÃ³n</button>
+            <div class="template-selector" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;">
+                <button class="template-btn" onclick="applyTemplate('info')">Pedir más info</button>
+                <button class="template-btn" onclick="applyTemplate('relevated')">Avisar Inspección</button>
                 <button class="template-btn" onclick="applyTemplate('scheduled')">Avisar Poda</button>
-                <button class="template-btn" onclick="applyTemplate('resolved')">Informar ResoluciÃ³n</button>
-                <button class="template-btn" onclick="applyTemplate('denied')">Rechazar</button>
+                <button class="template-btn" onclick="applyTemplate('resolved')">Informar Resolución</button>
+                <button class="template-btn" onclick="applyTemplate('denied')" style="background-color: #fee2e2; color: #991b1b; border-color: #fca5a5;">Denegar</button>
+                <button class="template-btn" onclick="applyTemplate('vinculated')" style="background-color: #fdf4ff; color: #86198f; border-color: #f0abfc;">Vincular</button>
             </div>
-            <textarea id="response-text" class="response-textarea" rows="3" style="min-height: 60px;" placeholder="Escribe un correo de respuesta al vecino (Si se deja vacÃ­o, solo se actualizarÃ¡ el estado interno)..."></textarea>
+            <textarea id="response-text" class="response-textarea" rows="3" style="min-height: 60px;" placeholder="Escribe un correo de respuesta al vecino (Si se deja vacío, solo se actualizará el estado interno)..."></textarea>
             
             <div class="action-row" style="display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
                 <button class="btn-secondary" onclick="clearResponse()">Limpiar</button>
@@ -167,24 +182,29 @@ export function selectClaim(id) {
     </div> <!-- FIN COLUMNA DERECHA -->
 
     <!-- COLUMNA TERCERA: TAREAS Y EMPRESAS -->
+    ${(() => {
+        const currentSeq = state.requestStatuses.find(rs => rs.slug === claim.estado)?.sequence || 0;
+        const relevatedSeq = state.requestStatuses.find(rs => rs.slug === 'relevated')?.sequence || 2;
+        if (currentSeq < relevatedSeq) return '';
+        return `
     <div class="claim-modal-col-third">
-        <div class="response-section" style="margin-top: 10px; background-color: #f8fafc; border: 1px solid #e2e8f0;">
-            <h4 class="detail-title" style="font-size: 1.05rem; margin-bottom: 8px;">AsignaciÃ³n de Tareas Externas</h4>
-            <p style="font-size: 0.8rem; color: var(--admin-text-secondary); margin-bottom: 15px;">Genera Ã³rdenes de trabajo (Poda, ExtracciÃ³n, etc.) para las empresas contratistas.</p>
+        <div class="response-section" style="margin-top: 0px; background-color: #f8fafc; border: 1px solid #e2e8f0;">
+            <h4 class="detail-title" style="font-size: 1.05rem; margin-bottom: 8px;">Asignación de Tareas Externas</h4>
+            <p style="font-size: 0.8rem; color: var(--admin-text-secondary); margin-bottom: 10px;">Genera órdenes de trabajo (Poda, Extracción, etc.) para las empresas contratistas.</p>
             
-            <div style="margin-bottom: 10px;">
-                <label style="font-size: 0.85rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 4px;">Tipo de Tarea:</label>
-                <select id="new-task-type-select" style="width: 100%; background: #fff; border: 1px solid var(--admin-border); border-radius: 8px; padding: 6px; color: var(--admin-text-primary); font-family: var(--font-body); font-size: 0.85rem;">
+            <div style="margin-bottom: 5px;">
+                <label style="font-size: 0.85rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 2px;">Tipo de Tarea:</label>
+                <select id="new-task-type-select" style="width: 100%; background: #fff; border: 1px solid var(--admin-border); border-radius: 8px; padding: 4px; color: var(--admin-text-primary); font-family: var(--font-body); font-size: 0.85rem;">
                     <option value="">-- Seleccionar Tarea --</option>
                     ${([...new Set(state.claims.map(c => c.categoria))].filter(c => c !== 'Otro' && c !== 'Arbol no mapeado')).map(cat => `
                         <option value="${cat}">${cat}</option>
                     `).join('')}
                 </select>
             </div>
-
-            <div style="margin-bottom: 15px;">
-                <label style="font-size: 0.85rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 4px;">Empresa Contratista:</label>
-                <select id="new-task-company-select" style="width: 100%; background: #fff; border: 1px solid var(--admin-border); border-radius: 8px; padding: 6px; color: var(--admin-text-primary); font-family: var(--font-body); font-size: 0.85rem;">
+            
+            <div style="margin-bottom: 5px;">
+                <label style="font-size: 0.85rem; font-weight: bold; color: var(--admin-text-primary); display: block; margin-bottom: 2px;">Empresa Contratista:</label>
+                <select id="new-task-company-select" style="width: 100%; background: #fff; border: 1px solid var(--admin-border); border-radius: 8px; padding: 4px; color: var(--admin-text-primary); font-family: var(--font-body); font-size: 0.85rem;">
                     <option value="">-- Seleccionar Empresa --</option>
                     ${(state.activeCompanies || []).map(c => `
                         <option value="${c.id}">${c.name || c.company_name}</option>
@@ -192,28 +212,29 @@ export function selectClaim(id) {
                 </select>
             </div>
 
-            <button class="btn-primary" onclick="createWorkOrder(${claim.raw_request_id || claim.id})" style="width: 100%; padding: 8px 12px; font-size: 0.85rem; display: flex; justify-content: center; align-items: center; gap: 8px;">
+            <button class="btn-primary" onclick="queueWorkOrder(${claim.raw_request_id || claim.id})" style="width: 100%; padding: 8px 12px; font-size: 0.85rem; display: flex; justify-content: center; align-items: center; gap: 8px;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Asignar Nueva Tarea
+                Asignar Trabajo
             </button>
         </div>
 
         <div style="margin-top: 20px;">
-            <h4 style="font-size: 0.9rem; margin-bottom: 10px; border-bottom: 1px solid var(--admin-border); padding-bottom: 5px;">Tareas Asignadas (${claim.work_orders ? claim.work_orders.length : 0})</h4>
+            <h4 style="font-size: 0.9rem; margin-bottom: 10px; border-bottom: 1px solid var(--admin-border); padding-bottom: 5px;">Tareas Asignadas (${(claim.work_orders || []).length + (claim.pending_work_orders || []).length})</h4>
             <div style="display: flex; flex-direction: column; gap: 10px;">
-                ${(claim.work_orders && claim.work_orders.length > 0) ? claim.work_orders.map(wo => `
-                    <div style="background: white; border: 1px solid var(--admin-border); border-radius: 6px; padding: 10px; border-left: 4px solid var(--admin-accent);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                ${((claim.work_orders || []).concat(claim.pending_work_orders || []).length > 0) ? (claim.work_orders || []).concat(claim.pending_work_orders || []).map(wo => `
+                    <div style="background: ${wo.status === 'Pendiente de Guardar' ? '#fdf8f6' : 'white'}; border: 1px solid var(--admin-border); border-radius: 6px; padding: 6px 10px; border-left: 4px solid var(--admin-accent);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
                             <strong style="font-size: 0.85rem; color: var(--admin-text-primary);">${wo.task_description}</strong>
                             <span style="font-size: 0.7rem; background: #e2e8f0; padding: 2px 6px; border-radius: 10px; color: #475569;">Orden #${wo.execution_order}</span>
                         </div>
-                        <div style="font-size: 0.8rem; color: var(--admin-text-secondary); margin-bottom: 4px;">ðŸ¢ Empresa: <span style="color: var(--admin-text-primary);">${wo.company || 'Sin Asignar'}</span></div>
-                        <div style="font-size: 0.8rem; color: var(--admin-text-secondary);">âš™ï¸ Estado: <strong style="color: var(--admin-primary);">${wo.status}</strong></div>
+                        <div style="font-size: 0.8rem; color: var(--admin-text-secondary); margin-bottom: 2px;">Empresa: <span style="color: var(--admin-text-primary);">${wo.company || 'Sin Asignar'}</span></div>
+                        <div style="font-size: 0.8rem; color: var(--admin-text-secondary);">Estado: <strong style="color: ${wo.status === 'Pendiente de Guardar' ? '#f97316' : 'var(--admin-primary)'};">${wo.status}</strong></div>
                     </div>
                 `).join('') : '<p style="font-size: 0.8rem; color: var(--admin-text-secondary); font-style: italic;">No hay tareas asignadas para este reclamo.</p>'}
             </div>
         </div>
     </div> <!-- FIN COLUMNA TERCERA -->
+    `})()}
 </div> <!-- FIN GRID -->
     `;
     modal.style.display = 'flex';
@@ -227,20 +248,36 @@ export function applyTemplate(type) {
 
     let text = '';
     if (type === 'open' || type === 'info') {
-        text = `Estimado/a ${claim.vecino},\n\nHemos recibido su solicitud ID ${claim.id} sobre "${claim.categoria}". Un inspector del Ã¡rea tÃ©cnica estarÃ¡ evaluando la situaciÃ³n a la brevedad. Si posee mÃ¡s imÃ¡genes del estado actual del ejemplar, por favor adjÃºntelas respondiendo a este correo.\n\nAtentamente,\nEquipo de GestiÃ³n de Arbolado - Comuna 13.`;
+        text = `Estimado/a ${claim.vecino},\n\nHemos recibido su solicitud ID ${claim.id} sobre "${claim.categoria}". Un inspector del área técnica estará evaluando la situación a la brevedad. Si posee más imágenes del estado actual del ejemplar, por favor adjúntelas respondiendo a este correo.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
     } else if (type === 'relevated') {
-        text = `Estimado/a ${claim.vecino},\n\nLe informamos que su solicitud ID ${claim.id} se encuentra en etapa de InspecciÃ³n TÃ©cnica. Personal calificado visitarÃ¡ la direcciÃ³n ${claim.direccion} dentro de los prÃ³ximos 3 dÃ­as hÃ¡biles para diagnosticar el Ã¡rbol (${claim.especie}) y planificar el plan de acciÃ³n.\n\nAtentamente,\nEquipo de GestiÃ³n de Arbolado - Comuna 13.`;
+        text = `Estimado/a ${claim.vecino},\n\nLe informamos que su solicitud ID ${claim.id} se encuentra en etapa de Inspección Técnica. Personal calificado visitará la dirección ${claim.direccion} dentro de los próximos 3 días hábiles para diagnosticar el árbol (${claim.especie}) y planificar el plan de acción.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
     } else if (type === 'scheduled' || type === 'in_progress') {
-        text = `Estimado/a ${claim.vecino},\n\nTras la inspecciÃ³n realizada en ${claim.direccion}, se ha planificado la intervenciÃ³n correspondiente para el dÃ­a [Fecha]. Se realizarÃ¡ un saneamiento/poda de despeje preventivo para resguardar la seguridad pÃºblica.\n\nAtentamente,\nEquipo de GestiÃ³n de Arbolado - Comuna 13.`;
+        text = `Estimado/a ${claim.vecino},\n\nTras la inspección realizada en ${claim.direccion}, se ha planificado la intervención correspondiente para el día [Fecha]. Se realizará un saneamiento/poda de despeje preventivo para resguardar la seguridad pública.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
     } else if (type === 'resolved') {
         text = `Estimado/a ${claim.vecino},\n\nNos complace informarle que la solicitud ID ${claim.id} ha sido completada de manera exitosa. Las tareas operativas y el despeje final en la zona han concluido.\n\nMuchas gracias por colaborar con el mantenimiento del arbolado de la Ciudad.\n\nAtentamente,\nGobierno de la Ciudad de Buenos Aires - Comuna 13.`;
     } else if (type === 'denied') {
-        text = `Estimado/a ${claim.vecino},\n\nTras la evaluaciÃ³n tÃ©cnica de su solicitud ID ${claim.id}, lamentamos informarle que la misma ha sido rechazada por no cumplir con los criterios de intervenciÃ³n de la Ley de Arbolado.\n\nAtentamente,\nEquipo de GestiÃ³n de Arbolado - Comuna 13.`;
+        text = `Estimado/a ${claim.vecino},\n\nTras la evaluación técnica de su solicitud ID ${claim.id}, lamentamos informarle que la misma ha sido rechazada por no cumplir con los criterios de intervención de la Ley de Arbolado.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
     } else if (type === 'vinculated') {
-        text = `Estimado/a ${claim.vecino},\n\nLe informamos que su solicitud ID ${claim.id} ha sido vinculada a un trÃ¡mite preexistente sobre el mismo ejemplar o incidencia.\n\nAtentamente,\nEquipo de GestiÃ³n de Arbolado - Comuna 13.`;
+        text = `Estimado/a ${claim.vecino},\n\nLe informamos que su solicitud ID ${claim.id} ha sido vinculada a un trámite preexistente sobre el mismo ejemplar o incidencia.\n\nAtentamente,\nEquipo de Gestión de Arbolado - Comuna 13.`;
     }
 
     if (textarea) textarea.value = text;
+
+    const statusSelect = document.getElementById('new-status-select');
+    if (statusSelect) {
+        let statusValue = type;
+        if (type === 'info') statusValue = 'open';
+        if (type === 'scheduled') statusValue = 'scheduled';
+
+        const options = Array.from(statusSelect.options).map(o => o.value);
+        if (options.includes(statusValue)) {
+            statusSelect.value = statusValue;
+        }
+
+        if (statusSelect.value === 'vinculated') {
+            alert('Se te pedirá el ID a vincular al hacer clic en Guardar.');
+        }
+    }
 };
 
 export function clearResponse() {
@@ -254,16 +291,58 @@ export async function smartUpdateClaim() {
 
     const responseText = document.getElementById('response-text').value.trim();
     const newStatus = document.getElementById('new-status-select').value;
+    const newPriorityId = document.getElementById('new-priority-select')?.value;
+    
+    // Validar asignación de trabajos si se pasa a programado o superior
+    const newStatusObj = state.requestStatuses.find(rs => rs.slug === newStatus);
+    const scheduledObj = state.requestStatuses.find(rs => rs.slug === 'scheduled');
+    
+    if (newStatusObj && scheduledObj && newStatusObj.sequence >= scheduledObj.sequence) {
+        const totalWorkOrders = (claim.work_orders ? claim.work_orders.length : 0) + (claim.pending_work_orders ? claim.pending_work_orders.length : 0);
+        if (totalWorkOrders === 0) {
+            alert('Para pasar del estado Relevado a Programado (o superior), es obligatorio asignar al menos un trabajo (orden de trabajo).');
+            return;
+        }
+    }
 
     let payload = { estado: newStatus };
     if (responseText !== '') {
         payload.respuesta = responseText;
     }
+    if (newPriorityId) {
+        payload.priority_name = newPriorityId;
+    }
 
     if (newStatus === 'vinculated') {
-        const manualId = prompt('Ingrese el ID numÃ©rico del reclamo original al que desea vincularlo (Ej: 18):');
-        if (!manualId) return; // CancelÃ³
+        const manualId = prompt('Ingrese el ID numérico del reclamo original al que desea vincularlo (Ej: 18):');
+        if (!manualId) return; // Canceló
         payload.linked_to = parseInt(manualId);
+    }
+
+    let workOrdersCreated = false;
+    if (claim.pending_work_orders && claim.pending_work_orders.length > 0) {
+        for (const wo of claim.pending_work_orders) {
+            try {
+                await fetch('/work-orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': getCsrfToken()
+                    },
+                    body: JSON.stringify({
+                        request_id: wo.request_id,
+                        company_id: wo.company_id,
+                        task_description: wo.task_description,
+                        execution_order: wo.execution_order
+                    })
+                });
+                if (response.ok) workOrdersCreated = true;
+            } catch (e) {
+                console.error("Error creating work order:", e);
+            }
+        }
+        claim.pending_work_orders = [];
     }
 
     try {
@@ -292,12 +371,17 @@ export async function smartUpdateClaim() {
 
             const banner = document.getElementById('notification-banner');
             const text = document.getElementById('notification-text');
-            if (text) text.innerText = `El estado se actualizÃ³ a '${newStatus}' y los cambios fueron guardados.`;
+            const statusFriendlyName = state.requestStatuses.find(rs => rs.slug === newStatus)?.status_name || newStatus;
+            if (text) text.innerText = `El estado se actualizó a '${statusFriendlyName}' y los cambios fueron guardados.`;
             if (banner) banner.style.display = 'flex';
 
             setTimeout(() => {
                 if (banner) banner.style.display = 'none';
             }, 5000);
+
+            if (workOrdersCreated) {
+                await loadClaimsFromServer();
+            }
 
             selectClaim(state.selectedClaimId); // Re-render
             if (typeof updateStats === 'function') updateStats();
@@ -307,7 +391,7 @@ export async function smartUpdateClaim() {
         }
     } catch (err) {
         console.error("Error updating claim:", err);
-        alert('Error de conexiÃ³n.');
+        alert('Error de conexión.');
     }
 };
 
@@ -515,9 +599,14 @@ export async function loadActiveCompanies() {
 window.createWorkOrder = createWorkOrder;
 
 export async function createWorkOrder(numericClaimId) {
+    // Retenido para compatibilidad si hay otros lugares que lo llaman
+    alert('Por favor utiliza el botón Asignar Trabajo y luego Guardar y Actualizar Estado.');
+};
+
+window.queueWorkOrder = function (numericClaimId) {
     const taskDescription = document.getElementById('new-task-type-select').value;
-    const companyId = document.getElementById('new-task-company-select').value;
-    const claim = state.claims.find(c => c.raw_request_id == numericClaimId || c.id == numericClaimId);
+    const companySelect = document.getElementById('new-task-company-select');
+    const companyId = companySelect.value;
 
     if (!taskDescription) {
         alert('Por favor selecciona un tipo de tarea.');
@@ -528,36 +617,25 @@ export async function createWorkOrder(numericClaimId) {
         return;
     }
 
-    const currentOrder = (claim.work_orders ? claim.work_orders.length : 0) + 1;
+    const companyName = companySelect.options[companySelect.selectedIndex].text;
+    const claim = state.claims.find(c => c.raw_request_id == numericClaimId || c.id == numericClaimId);
 
-    try {
-        const response = await fetch('/work-orders', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': getCsrfToken()
-            },
-            body: JSON.stringify({
-                request_id: numericClaimId,
-                company_id: companyId,
-                task_description: taskDescription,
-                execution_order: currentOrder
-            })
-        });
-
-        if (response.ok) {
-            alert('Tarea asignada correctamente a la empresa.');
-            // Refetch data to sync everything (including mapping IDs and new tasks)
-            loadClaimsFromServer();
-        } else {
-            const data = await response.json();
-            alert('Error al asignar la tarea: ' + (data.message || 'Verifica los datos.'));
-        }
-    } catch (err) {
-        console.error("Error al asignar tarea:", err);
-        alert('Error al conectar con el servidor.');
+    if (!claim.pending_work_orders) {
+        claim.pending_work_orders = [];
     }
+
+    const currentOrder = (claim.work_orders ? claim.work_orders.length : 0) + claim.pending_work_orders.length + 1;
+
+    claim.pending_work_orders.push({
+        request_id: numericClaimId,
+        company_id: companyId,
+        company: companyName,
+        task_description: taskDescription,
+        execution_order: currentOrder,
+        status: 'Pendiente de Guardar'
+    });
+
+    selectClaim(state.selectedClaimId);
 };
 
 let claimsMapInstance = null;

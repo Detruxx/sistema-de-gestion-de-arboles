@@ -110,6 +110,27 @@ class RequestController extends Controller
                                 ->whereNotIn('request_status_id', $estadosTerminalesIds)
                                 ->first();
 
+        // =========================================================================
+        // INICIO DEL ALGORITMO DE SCORING (Lógica para el equipo de Backend)
+        // =========================================================================
+        // TODO (BACKEND): Implementar algoritmo de procesamiento de lenguaje natural
+        // 1. Definir diccionario de palabras clave. Ej:
+        //    $palabrasCriticas = ['cable', 'fuego', 'caer', 'peligro', 'escuela', 'urgente'];
+        //    $palabrasMedias   = ['rama', 'apoyado', 'tapando', 'luz'];
+        // 2. Procesar $request->description:
+        //    - Convertir a minúsculas.
+        //    - Contar cuántas palabras críticas/medias aparecen.
+        // 3. Asignar puntaje (Ej: +50 por crítica, +20 por media).
+        // 4. Determinar ID de prioridad ($priority_id) y puntaje ($risk_score):
+        //    - ATENCIÓN BACKEND: Deben agregar 'auto-media' y 'auto-alta' en PrioritySeeder.php y DB.
+        //    - Si > 60 pts -> Prioridad auto-alta (id: X)
+        //    - Si > 30 pts -> Prioridad auto-media (id: Y)
+        //    - Sino        -> Prioridad Baja/Normal (id: 1)
+        
+        $calculatedPriorityId = 1; // <--- Reemplazar con el resultado del algoritmo
+        $riskScore = 0;            // <--- Reemplazar con el cálculo exacto
+        // =========================================================================
+
         // Crear el reclamo en la base de datos
         $incident = \App\Models\Request::create([
             'user_id'           => $userId,
@@ -120,6 +141,8 @@ class RequestController extends Controller
             'path'              => $photoPaths, // Guardamos la colección de rutas completa
             'request_status_id' => 1,
             'suggested_duplicate_id' => $posibleDuplicado ? $posibleDuplicado->id : null,
+            'priority_id'       => $calculatedPriorityId, // Prioridad calculada por el algoritmo
+            // 'risk_score'        => $riskScore, // TODO: Descomentar al agregar columna risk_score
         ]);
 
         // Registrar en la bitácora
@@ -140,67 +163,6 @@ class RequestController extends Controller
 
         return redirect()->back()->with('success', '¡Su reclamo ha sido registrado con éxito!');
     }
-
-    // Algoritmo de Detección de Duplicados 
-    $estadosTerminalesIds = \App\Models\RequestStatus::where('is_terminal', true)->pluck('id')->toArray();
-    $posibleDuplicado = \App\Models\Request::where('street_id', $street->id)
-                            ->where('request_type_id', $request->request_type_id)
-                            ->whereNotIn('request_status_id', $estadosTerminalesIds)
-                            ->first();
-
-    // =========================================================================
-    // INICIO DEL ALGORITMO DE SCORING (Lógica para el equipo de Backend)
-    // =========================================================================
-    // TODO (BACKEND): Implementar algoritmo de procesamiento de lenguaje natural
-    // 1. Definir diccionario de palabras clave. Ej:
-    //    $palabrasCriticas = ['cable', 'fuego', 'caer', 'peligro', 'escuela', 'urgente'];
-    //    $palabrasMedias   = ['rama', 'apoyado', 'tapando', 'luz'];
-    // 2. Procesar $request->description:
-    //    - Convertir a minúsculas.
-    //    - Contar cuántas palabras críticas/medias aparecen.
-    // 3. Asignar puntaje (Ej: +50 por crítica, +20 por media).
-    // 4. Determinar ID de prioridad ($priority_id) y puntaje ($risk_score):
-    //    - ATENCIÓN BACKEND: Deben agregar 'auto-media' y 'auto-alta' en PrioritySeeder.php y DB.
-    //    - Si > 60 pts -> Prioridad auto-alta (id: X)
-    //    - Si > 30 pts -> Prioridad auto-media (id: Y)
-    //    - Sino        -> Prioridad Baja/Normal (id: 1)
-    
-    $calculatedPriorityId = 1; // <--- Reemplazar con el resultado del algoritmo
-    $riskScore = 0;            // <--- Reemplazar con el cálculo exacto
-    // =========================================================================
-
-    // Crear el reclamo en la base de datos
-    $incident = \App\Models\Request::create([
-        'user_id'           => $userId,
-        'tree_id'           => $request->tree_id,
-        'request_type_id'   => $request->request_type_id,
-        'street_id'         => $street->id,
-        'description'       => $request->description,
-        'path'              => $photoPaths, // Guardamos la colección de rutas completa
-        'request_status_id' => 1,
-        'suggested_duplicate_id' => $posibleDuplicado ? $posibleDuplicado->id : null,
-        'priority_id'       => $calculatedPriorityId, // Prioridad calculada por el algoritmo
-        // 'risk_score'        => $riskScore, // TODO: Descomentar al agregar columna risk_score
-    ]);
-
-    // Registrar en la bitácora
-    $incident->histories()->create([
-        'request_status_id' => 1,
-        'user_id'           => $userId,
-        'justification'     => 'Registro inicial del reclamo.',
-    ]);
-
-    // Responder en JSON 
-    if ($request->wantsJson() || $request->is('api/*') || $request->is('requests')) {
-        return response()->json([
-            'status'    => 'success',
-            'message'   => 'Solicitud registrada con éxito',
-            'data'      => $incident
-        ], 201);
-    }
-
-    return redirect()->back()->with('success', '¡Su reclamo ha sido registrado con éxito!');
-}
     /**
      * Muestra el reclamo especificado (Búsqueda de Seguimiento).
      */
@@ -260,7 +222,8 @@ class RequestController extends Controller
             'estado'    => 'nullable|string',
             'respuesta' => 'nullable|string|max:1000',
             'linked_to' => 'nullable|integer',
-            'ignore_suggestion' => 'nullable|boolean'
+            'ignore_suggestion' => 'nullable|boolean',
+            'priority_name' => 'nullable|string|max:50'
         ]);
 
         $statusId = $userRequest->request_status_id;
@@ -291,11 +254,17 @@ class RequestController extends Controller
         }
 
         // Ignorar sugerencia
-        if ($request->has('ignore_suggestion') && $request->ignore_suggestion == true) {
+        if ($request->has('ignore_suggestion') && $request->ignore_suggestion) {
             $suggestedDuplicateId = null;
         }
 
-        $justification = $request->input('respuesta');
+        if ($request->has('priority_name') && !empty(trim($request->priority_name))) {
+            $pName = trim($request->priority_name);
+            $priority = \App\Models\Priority::firstOrCreate(['priority_name' => $pName]);
+            $userRequest->priority_id = $priority->id;
+        }
+
+        $justification = $request->respuesta;
         if (!$justification && $request->has('estado')) {
             $justification = 'Cambio de estado a: ' . $request->estado;
         }
