@@ -48,8 +48,8 @@ export async function updateJobStatus(jobId, newStatus) {
             }
 
             // Si se finalizó y estamos en "pagos" o "trabajos", refrescar
-            if (newStatus === 'Finalizado' && typeof window.renderPaymentsList === 'function') {
-                window.renderPaymentsList();
+            if (newStatus === 'Finalizado' && typeof window.loadCompanyPaymentsList === 'function') {
+                window.loadCompanyPaymentsList();
             }
         }
     } catch (error) {
