@@ -107,8 +107,9 @@ button.dropdown-trigger {
     font-family: inherit;
     font-size: 0.9rem;
     line-height: inherit;
+    color: inherit;
     margin: 0;
-    border: 1px solid transparent;
+    border: none;
     cursor: pointer;
     display: flex;
     align-items: center;

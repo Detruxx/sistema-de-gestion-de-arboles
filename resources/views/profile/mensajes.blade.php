@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Bandeja de Mensajes | TreeBA')
 
@@ -29,9 +29,18 @@
                     <p>No tienes ningún mensaje pendiente de vecinos en el sistema.</p>
                 </div>
             @else
-                <p class="listing-count">Mostrando {{ count($mensajes) }} mensajes (Ordenados del más antiguo al más reciente)</p>
+                <div class="list-header-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <p class="listing-count" style="margin: 0;">Mostrando <span class="count-val">{{ count($mensajes) }}</span> mensajes</p>
+                    <div class="filter-dropdown">
+                        <select id="sort-mensajes" class="form-control sort-select" onchange="sortList('mensajes-list-container', this.value)" style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-family: inherit; font-size: 0.95rem; cursor: pointer; background-color: white;">
+                            <option value="asc">Más antiguo a más nuevo</option>
+                            <option value="desc">Más nuevo a más antiguo</option>
+                            <option value="new">Nuevos/Sin Leer</option>
+                        </select>
+                    </div>
+                </div>
                 
-                <div class="reclamos-list">
+                <div class="reclamos-list" id="mensajes-list-container">
                     @foreach($mensajes as $msg)
                         @php
                             $id = is_array($msg) ? $msg['id'] : $msg->id;
@@ -47,8 +56,7 @@
                             $statusText = $status === 'unread' ? 'Nuevo' : ($status === 'answered' ? 'Respondido' : 'Leído');
                         @endphp
 
-                        <details class="reclamo-card {{ $statusClass }}" style="margin-bottom: 15px;">
-                            <summary class="reclamo-card-summary">
+                        <details class="reclamo-card {{ $statusClass }}" style="margin-bottom: 15px;" data-timestamp="{{ strtotime($createdAt) }}" data-is-new="{{ $status === 'unread' ? 'true' : 'false' }}">`n                            <summary class="reclamo-card-summary">
                                 <div class="card-summary-left">
                                     <span class="reclamo-id" style="background-color: transparent; border: 1px solid var(--admin-border); padding: 8px; border-radius: 12px;">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -116,3 +124,41 @@
         </div>
     </main>
 @endsection
+
+@section('scripts')
+    <script>
+        function sortList(containerId, order) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const items = Array.from(container.querySelectorAll('.reclamo-card'));
+            
+            items.forEach(item => {
+                if (order === 'new') {
+                    // Ocultar los que no son nuevos
+                    if (item.getAttribute('data-is-new') === 'true') {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                } else {
+                    item.style.display = 'block';
+                }
+            });
+
+            if (order !== 'new') {
+                items.sort((a, b) => {
+                    const timeA = parseInt(a.getAttribute('data-timestamp'));
+                    const timeB = parseInt(b.getAttribute('data-timestamp'));
+                    if (order === 'desc') {
+                        return timeB - timeA; // Más nuevo a más antiguo
+                    } else {
+                        return timeA - timeB; // Más antiguo a más nuevo
+                    }
+                });
+                // Re-append in new order
+                items.forEach(item => container.appendChild(item));
+            }
+        }
+    </script>
+@endsection
+
