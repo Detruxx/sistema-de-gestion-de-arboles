@@ -6,10 +6,21 @@
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/dashboards/admin.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboards/dynamic-status.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <link rel="stylesheet" href="{{ asset('css/dashboards/inspector.css') }}">
 @endsection
 
 @section('content')
 <div class="admin-dashboard-container">
+    <style>
+        /* Encuadrar contenido más arriba */
+        .admin-main-panel { padding-top: 15px !important; }
+        .admin-header-section { margin-bottom: 20px !important; }
+        .admin-sidebar { justify-content: flex-start !important; }
+        .sidebar-footer { margin-top: auto !important; margin-bottom: auto !important; } 
+        /* Si margin-top es auto, empujará un poco el footer pero no del todo al fondo si le damos min-height. Mejor un margen fijo: */
+        .sidebar-footer { margin-top: 50px !important; }
+    </style>
     
     <!-- Sidebar de la Empresa -->
     <aside class="admin-sidebar">
@@ -133,22 +144,17 @@
                 </div>
             </div>
 
-            <div class="split-layout">
+            <div class="split-layout" style="align-items: stretch; min-height: calc(100vh - 220px);">
                 <!-- Left Panel -->
-                <div class="list-panel">
-                    <div class="items-list" id="company-jobs-list-container">
+                <div class="list-panel" style="height: 100%; max-height: none; padding-right: 5px;">
+                    <div class="items-list" id="company-jobs-list-container" style="height: 100%; max-height: calc(100vh - 250px); overflow-y: auto;">
                         <!-- Loaded via JS -->
                     </div>
                 </div>
 
-                <!-- Right Panel -->
-                <div class="detail-panel" id="company-job-detail-panel">
-                    <div class="empty-state-panel">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-state-icon">
-                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-                        </svg>
-                        <p>Selecciona un trabajo asignado para ver las especificaciones técnicas y actualizar su avance.</p>
-                    </div>
+                <!-- Right Panel (Mapa Interactivo) -->
+                <div class="detail-panel" id="company-map-panel" style="padding: 0; position: relative; height: 100%; min-height: 520px;">
+                    <div id="company-jobs-map" style="width: 100%; height: 100%; min-height: 100%; border-radius: 12px; z-index: 1;"></div>
                 </div>
             </div>
         </section>
@@ -162,25 +168,38 @@
                 </div>
             </div>
 
-            <div class="split-layout">
-                <div class="list-panel">
-                    <div class="items-list" id="company-payments-list-container">
-                        <!-- Loaded via JS -->
-                    </div>
-                </div>
-                <div class="detail-panel" id="company-payment-detail-panel">
-                    <div class="empty-state-panel">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-state-icon">
-                            <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
-                            <line x1="12" y1="18" x2="12" y2="18.01"></line>
-                        </svg>
-                        <p>Selecciona un servicio finalizado para ver o validar su estado de pago.</p>
-                    </div>
-                </div>
+            <div class="items-list" id="company-payments-list-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
+                <!-- Loaded via JS -->
             </div>
         </section>
 
+        <!-- Modal para Detalles de Pago -->
+        <div id="company-payment-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: flex-start; padding-top: 95px; padding-bottom: 25px;">
+            <div class="admin-modal" style="background: white; width: 90%; max-width: 600px; max-height: calc(100vh - 120px); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+                <div class="admin-modal-header" style="background: var(--admin-bg); padding: 15px 20px; border-bottom: 1px solid var(--admin-border); display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0; color: var(--admin-accent);">Detalle de Pago</h3>
+                    <button type="button" class="admin-modal-close" onclick="closeCompanyPaymentModal()" style="background: none; border: none; font-size: 1.8rem; line-height: 1; cursor: pointer; color: var(--admin-text-secondary);">&times;</button>
+                </div>
+                <div class="admin-modal-body" id="company-payment-modal-body" style="flex: 1; overflow-y: auto; padding: 20px;">
+                    <!-- Cargado dinámicamente por JS -->
+                </div>
+            </div>
+        </div>
 
+
+
+        <!-- Modal para Detalles del Trabajo -->
+        <div id="company-job-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: flex-start; padding-top: 95px; padding-bottom: 25px;">
+            <div class="admin-modal" style="background: white; width: 90%; max-width: 900px; max-height: calc(100vh - 120px); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+                <div class="admin-modal-header" style="background: var(--admin-bg); padding: 15px 20px; border-bottom: 1px solid var(--admin-border); display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0; color: var(--admin-accent);">Detalle de Orden de Trabajo</h3>
+                    <button type="button" class="admin-modal-close" onclick="closeCompanyJobModal()" style="background: none; border: none; font-size: 1.8rem; line-height: 1; cursor: pointer; color: var(--admin-text-secondary);">&times;</button>
+                </div>
+                <div class="admin-modal-body" id="company-job-modal-body" style="flex: 1; overflow-y: auto; padding: 20px;">
+                    <!-- Cargado dinámicamente por JS -->
+                </div>
+            </div>
+        </div>
 
     </main>
 </div>
@@ -203,7 +222,7 @@
     <script>
         window.currentUserRole = "empresa";
     </script>
-    <script src="{{ asset('js/dashboards/inspector/modules/core.js') }}"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script type="module" src="{{ asset('js/dashboards/company/main.js') }}"></script>
 @endsection
 

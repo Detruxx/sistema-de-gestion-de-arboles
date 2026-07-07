@@ -7,6 +7,7 @@
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/forms/reclamos.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/shared/autocomplete.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboards/dynamic-status.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 @endsection
@@ -33,12 +34,7 @@
 
         <!-- TAB: CREATE COMPLAINT -->
         <div id="section-create" class="tab-content" style="display: block;">
-            <x-layouts.alert-modal 
-                type="success" 
-                title="¡Trámite Enviado!" 
-                message="Tu sugerencia/reclamo ha sido registrado correctamente."
-                image="{{ asset('img/components/success-tree.webp') }}"
-            />
+
             <section class="reveal delay-1">
                 <!-- Banner de información de árbol preseleccionado -->
                 <div id="selected-tree-banner" style="display: none;">
@@ -56,22 +52,22 @@
                 @auth
                 <form class="contact-form" id="reclamo-form">
                     <div class="form-group">
-                        <label for="tipo-reclamo">Tipo de Incidencia <span class="required-asterisk">*</span></label>
-                        <select id="tipo-reclamo" class="form-control" required>
+                        <label for="tipo-reclamo">Tipo de Error <span class="required-asterisk">*</span></label>
+                        <select id="tipo-reclamo" name="request_type_id" class="form-control" required>
                         <!-- Aca se rellena solo con el JS -->
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label for="arbol-id">ID del Árbol (Opcional)</label>
-                        <input type="number" id="arbol-id" placeholder="Ej: 1001 (Si lo conoces y deseas vincularlo)" class="form-control">
+                        <input type="number" id="arbol-id" name="arbol_id" placeholder="Ej: 1001 (Si lo conoces y deseas vincularlo)" class="form-control">
                         <small id="arbol-id-help" style="display: none;"></small>
                     </div>
 
                     <div class="form-group">
                         <label for="direccion">Dirección / Ubicación aproximada <span class="required-asterisk">*</span></label>
                         <div class="input-with-button">
-                            <input type="text" id="direccion" placeholder="Ej: Av. Santa Fe 2500, Palermo" class="form-control" required>
+                            <input type="text" id="direccion" name="address" placeholder="Ej: Av. Santa Fe 2500, Palermo" class="form-control" required>
                             <button type="button" id="btn-select-map" class="btn-main-cta track-btn">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--spring-leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
@@ -84,7 +80,7 @@
 
                     <div class="form-group">
                         <label for="descripcion">Detalles del Reclamo <span class="required-asterisk">*</span></label>
-                        <textarea id="descripcion" placeholder="Describe brevemente la situación para ayudar a los inspectores..." required rows="4" class="form-control"></textarea>
+                        <textarea id="descripcion" name="description" placeholder="Describe brevemente la situación para ayudar a los inspectores..." required rows="4" class="form-control"></textarea>
                     </div>
 
                     <div class="form-group">
@@ -94,7 +90,7 @@
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-paperclip"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
                                 <span>Seleccionar archivo</span>
                             </label>
-                            <input type="file" id="foto" accept="image/*" multiple class="foto-input" style="display: none;" onchange="
+                            <input type="file" id="foto" name="foto" accept="image/*" multiple class="foto-input" style="display: none;" onchange="
                                 const count = this.files.length;
                                 const label = document.getElementById('foto-name');
                                 if(count === 0) label.textContent = 'Ningún archivo seleccionado';
@@ -128,9 +124,26 @@
                 <h2 class="track-title">Consulta tu Reclamo</h2>
                 <p class="track-subtitle">Ingresa el código identificador de tu solicitud (ej: REC-2026-001) para ver el progreso actual y la respuesta de la Comuna.</p>
                 
-                <div class="track-input-group">
-                    <input type="text" id="track-id-input" placeholder="Ej. REC-2026-001" class="track-input">
-                    <button type="button" class="btn-main-cta track-btn" onclick="trackComplaint()">Buscar Solicitud</button>
+                <div class="track-input-group" style="display: flex; gap: 15px; align-items: stretch; justify-content: flex-start; flex-wrap: wrap;">
+                    
+                    <!-- Contenedor visual que simula ser un solo input -->
+                    <div style="display: flex; align-items: center; gap: 8px; background-color: var(--paper-white); border: 1px solid rgba(45, 122, 79, 0.3); border-radius: 8px; padding: 0 15px; flex-grow: 1; max-width: 320px; transition: all 0.3s ease;">
+                        
+                        <input type="text" id="track-part1" maxlength="3" placeholder="REC" style="width: 50px; border: none; background: transparent; outline: none; text-align: left; font-size: 1.1rem; color: var(--forest-night); text-transform: uppercase; font-family: var(--font-body); padding: 15px 0;">
+                        
+                        <span style="color: rgba(45, 122, 79, 0.5); font-weight: bold;">-</span>
+                        
+                        <input type="text" id="track-part2" maxlength="4" placeholder="2026" style="width: 60px; border: none; background: transparent; outline: none; text-align: left; font-size: 1.1rem; color: var(--forest-night); font-family: var(--font-body); padding: 15px 0;">
+                        
+                        <span style="color: rgba(45, 122, 79, 0.5); font-weight: bold;">-</span>
+                        
+                        <input type="text" id="track-part3" maxlength="3" placeholder="001" style="width: 50px; border: none; background: transparent; outline: none; text-align: left; font-size: 1.1rem; color: var(--forest-night); font-family: var(--font-body); padding: 15px 0;">
+                        
+                        <!-- Input oculto (ESQUELETO BACKEND): Almacena el valor completo (Ej: REC-2026-001) para que el backend o el JS existente lo procese sin tener que cambiar nada en su lógica -->
+                        <input type="hidden" id="track-id-input" class="track-input">
+                    </div>
+
+                    <button type="button" class="btn-main-cta track-btn" onclick="trackComplaint()" style="white-space: nowrap;">Buscar Solicitud</button>
                 </div>
 
             <!-- Error container -->
@@ -206,12 +219,110 @@
             </div>
         </div>
     </div>
+    </main>
+
+    <x-layouts.alert-modal 
+        type="success" 
+        title="¡Trámite Enviado!" 
+        message="Tu sugerencia/reclamo ha sido registrado correctamente."
+        image="{{ asset('img/components/success-tree.webp') }}"
+    />
+    <x-layouts.alert-modal 
+        type="error" 
+        title="ID no encontrado" 
+        message="El ID de árbol ingresado es erróneo o el árbol no fue encontrado. Por favor, verifique el código y vuelva a intentarlo."
+        image="{{ asset('img/components/error-tree.webp') }}"
+    />
 @endsection
 
 @section('scripts')
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="{{ asset('js/shared/address-autocomplete.js') }}"></script>
     <script type="module" src="{{ asset('js/forms/claims/main.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof initAddressAutocomplete === 'function') {
+                initAddressAutocomplete('direccion');
+            }
+        });
+    </script>
 
-    
+    <!-- Lógica Frontend para el formato automático de código (Sin necesidad de Backend) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const p1 = document.getElementById('track-part1');
+            const p2 = document.getElementById('track-part2');
+            const p3 = document.getElementById('track-part3');
+            const hiddenInput = document.getElementById('track-id-input');
+
+            // Función para unificar los 3 campos en el input oculto que usa el sistema/backend
+            function updateHiddenInput() {
+                const val1 = p1.value.toUpperCase();
+                const val2 = p2.value;
+                const val3 = p3.value;
+                if (val1 || val2 || val3) {
+                    hiddenInput.value = `${val1}-${val2}-${val3}`;
+                } else {
+                    hiddenInput.value = '';
+                }
+            }
+
+            function setupAutoAdvance(current, next, prev, maxLength) {
+                // Evento al escribir
+                current.addEventListener('input', function(e) {
+                    // Limpieza: Solo letras en la 1ra parte, solo números en las demás
+                    if (current.id === 'track-part1') {
+                        current.value = current.value.replace(/[^a-zA-Z]/g, '');
+                    } else {
+                        current.value = current.value.replace(/[^0-9]/g, '');
+                    }
+
+                    updateHiddenInput();
+
+                    // Pasar al siguiente input si ya completó los caracteres
+                    if (current.value.length >= maxLength && next) {
+                        next.focus();
+                    }
+                });
+
+                // Eventos de teclado (Retroceso y Enter)
+                current.addEventListener('keydown', function(e) {
+                    // Volver al input anterior al borrar si está vacío
+                    if (e.key === 'Backspace' && current.value === '' && prev) {
+                        prev.focus();
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (typeof trackComplaint === 'function') {
+                            trackComplaint();
+                        }
+                    }
+                });
+                
+                // Manejar Pegado (Paste) de un código completo (ej: REC-2026-001 o REC2026001)
+                current.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    let pasted = (e.clipboardData || window.clipboardData).getData('text');
+                    pasted = pasted.replace(/[^a-zA-Z0-9]/g, ''); // Remover guiones
+                    
+                    if (pasted.length > 0) {
+                        p1.value = pasted.substring(0, 3).toUpperCase();
+                        p2.value = pasted.substring(3, 7);
+                        p3.value = pasted.substring(7, 10);
+                        updateHiddenInput();
+                        
+                        if (pasted.length <= 3) p1.focus();
+                        else if (pasted.length <= 7) p2.focus();
+                        else p3.focus();
+                    }
+                });
+            }
+
+            if (p1 && p2 && p3) {
+                setupAutoAdvance(p1, p2, null, 3);
+                setupAutoAdvance(p2, p3, p1, 4);
+                setupAutoAdvance(p3, null, p2, 3);
+            }
+        });
+    </script>
 @endsection
 

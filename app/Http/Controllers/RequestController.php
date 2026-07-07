@@ -10,6 +10,8 @@ use App\Models\Company;
 use Illuminate\Http\Request;
 use App\Models\Request as RequestModel;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail; // 📍 IMPORTANTE PARA TAREA 2
+use App\Mail\ClaimMergedMail;       // 📍 IMPORTANTE PARA TAREA 2
 
 class RequestController extends Controller
 {
@@ -20,7 +22,7 @@ class RequestController extends Controller
     {
         $requests = \App\Models\Request::with(['user', 'street', 'requestType', 'tree', 'histories.status', 'status', 'workOrders.company', 'priority'])->orderBy('created_at', 'desc')->get();
 
-        $mapped = $requests->map(function ($req) {
+        $mapped = $requests->values()->map(function ($req) {
             return [
                 'id' => $req->tracking_code,
                 'vecino' => $req->user ? $req->user->name : 'Vecino Anónimo',
@@ -32,7 +34,19 @@ class RequestController extends Controller
                 'especie' => $req->tree ? $req->tree->species_name : 'No vinculada',
                 'email' => $req->user ? $req->user->email : 'sin-email@treeba.gob.ar',
                 'linked_to' => $req->linked_to,
-                'suggested_duplicate_id' => $req->suggested_duplicate_id
+                'suggested_duplicate_id' => $req->suggested_duplicate_id,
+                'raw_request_id' => $req->id,
+                'work_orders' => $req->workOrders->map(function($wo) {
+                    return [
+                        'id' => $wo->id,
+                        'task_description' => $wo->task_description,
+                        'execution_order' => $wo->execution_order,
+                        'company' => $wo->company ? $wo->company->name : null,
+                        'status' => $wo->work_status
+                    ];
+                }),
+                'priority' => $req->priority ? $req->priority->slug : 'low', 
+                'risk_score' => $req->risk_score 
             ];
         });
 
@@ -42,87 +56,122 @@ class RequestController extends Controller
         ], 200);
     }
 
-    // El formulario de creación de reclamos ahora vive en forms.reclamos y es manejado directamente
-    // en las rutas web, por lo que el método create() ya no es necesario aquí.
-
     /**
-     * Guarda un reclamo recién creado en la base de datos.
+     * Guarda un reclamo recién creado en la base de datos con algoritmo de scoring inteligente (TAREA 1).
      */
-   public function store(Request $request, \App\Services\StreetService $streetService)
-{
-    // Validamos los datos de entrada
-    $request->validate([
-        'request_type_id' => 'required|exists:request_types,id',
-        'address'         => 'required|string', 
-        'description'     => 'required|string|min:10',
-        'tree_id'         => 'nullable|exists:trees,id',
-        'foto'            => 'nullable|array|max:3', // Valida que vengan como máximo 3 fotos 
-        'foto.*'          => 'image|mimes:jpeg,png,jpg,webp,heic|max:10240', 
-    ]);
+    public function store(Request $request, \App\Services\StreetService $streetService)
+    {
+        // 1. Validamos los datos de entrada
+        $request->validate([
+            'request_type_id' => 'required|exists:request_types,id',
+            'address'         => 'required|string', 
+            'description'     => 'required|string|min:10',
+            'tree_id'         => 'nullable|exists:trees,id',
+            'foto'            => 'nullable|array|max:3', 
+            'foto.*'          => 'image|mimes:jpeg,png,jpg,webp,heic|max:10240', 
+        ], [
+            'request_type_id.required' => 'El campo tipo de reclamo es obligatorio.',
+            'request_type_id.exists'   => 'El tipo de reclamo seleccionado es inválido.',
+            'address.required'         => 'El campo dirección es obligatorio.',
+            'description.required'     => 'El campo descripción es obligatorio.',
+            'description.min'          => 'La descripción debe tener al menos 10 caracteres.',
+            'tree_id.exists'           => 'El ID de árbol ingresado es erróneo o el árbol no fue encontrado.',
+            'foto.max'                 => 'No puedes subir más de 3 fotografías.',
+            'foto.*.image'             => 'El archivo debe ser una imagen.',
+            'foto.*.mimes'             => 'El formato de imagen no es válido.',
+            'foto.*.max'               => 'La imagen no debe pesar más de 10 MB.',
+        ]);
 
-    $userId = auth()->id() ?? 1;
+        $userId = auth()->id() ?? 1;
 
-    // Delegamos la lógica de la calle 
-    $street = $streetService->resolveFromAddress($request->address);
+        $street = $streetService->resolveFromAddress($request->address);
 
-    // Manejo de la subida de múltiples fotos 
-    $photoPaths = [];
-    if ($request->hasFile('foto')) {
-        foreach ($request->file('foto') as $file) {
-            $photoPaths[] = $file->store('fotos/reclamos', 'public');
+        $photoPaths = [];
+        if ($request->hasFile('foto')) {
+            foreach ($request->file('foto') as $file) {
+                $photoPaths[] = $file->store('fotos/reclamos', 'public');
+            }
         }
+
+        $estadosTerminalesIds = \App\Models\RequestStatus::where('is_terminal', true)->pluck('id')->toArray();
+        $posibleDuplicado = \App\Models\Request::where('street_id', $street->id)
+                                ->where('request_type_id', $request->request_type_id)
+                                ->whereNotIn('request_status_id', $estadosTerminalesIds)
+                                ->first();
+
+        // 🤖 ALGORITMO DE SCORING (TAREA 1 COMPLETADA)
+        $descripcion = mb_strtolower($request->input('description', ''));
+        $riskScore = 0;
+
+        $palabrasCriticas = ['cable', 'fuego', 'caer', 'peligro', 'escuela', 'urgente', 'derrumba', 'electrocu'];
+        $palabrasMedias   = ['rama', 'apoyado', 'tapando', 'luz', 'vereda', 'raiz', 'viento'];
+
+        foreach ($palabrasCriticas as $critica) {
+            if (str_contains($descripcion, $critica)) {
+                $apariciones = substr_count($descripcion, $critica);
+                $riskScore += (50 * $apariciones);
+            }
+        }
+
+        foreach ($palabrasMedias as $media) {
+            if (str_contains($descripcion, $media)) {
+                $apariciones = substr_count($descripcion, $media);
+                $riskScore += (20 * $apariciones);
+            }
+        }
+
+        if ($riskScore > 100) {
+            $riskScore = 100;
+        }
+
+        $defaultPriority = \App\Models\Priority::where('slug', 'low')->first();
+        $calculatedPriorityId = $defaultPriority ? $defaultPriority->id : 1;
+
+        if ($riskScore > 60) {
+            $prioridadAuto = \App\Models\Priority::where('slug', 'auto-alta')->first();
+            if ($prioridadAuto) { $calculatedPriorityId = $prioridadAuto->id; }
+        } elseif ($riskScore > 30) {
+            $prioridadAuto = \App\Models\Priority::where('slug', 'auto-media')->first();
+            if ($prioridadAuto) { $calculatedPriorityId = $prioridadAuto->id; }
+        }
+        $incident = \App\Models\Request::create([
+            'user_id'                => $userId,
+            'tree_id'                => $request->tree_id,
+            'request_type_id'        => $request->request_type_id,
+            'street_id'              => $street->id,
+            'description'            => $request->description,
+            'path'                   => $photoPaths,
+            'request_status_id'      => 1,
+            'suggested_duplicate_id' => $posibleDuplicado ? $posibleDuplicado->id : null,
+            'priority_id'            => $calculatedPriorityId, 
+            'risk_score'             => $riskScore,             
+        ]);
+
+        $incident->histories()->create([
+            'request_status_id' => 1,
+            'user_id'           => $userId,
+            'justification'     => 'Registro inicial del reclamo.',
+        ]);
+
+        if ($request->wantsJson() || $request->is('api/*') || $request->is('requests')) {
+            return response()->json([
+                'status'    => 'success',
+                'message'   => 'Solicitud registrada con éxito',
+                'data'      => $incident
+            ], 201);
+        }
+
+        return redirect()->back()->with('success', '¡Su reclamo ha sido registrado con éxito!');
     }
-
-    // Algoritmo de Detección de Duplicados 
-    $estadosTerminalesIds = \App\Models\RequestStatus::where('is_terminal', true)->pluck('id')->toArray();
-    $posibleDuplicado = \App\Models\Request::where('street_id', $street->id)
-                            ->where('request_type_id', $request->request_type_id)
-                            ->whereNotIn('request_status_id', $estadosTerminalesIds)
-                            ->first();
-
-    // Crear el reclamo en la base de datos
-    $incident = \App\Models\Request::create([
-        'user_id'           => $userId,
-        'tree_id'           => $request->tree_id,
-        'request_type_id'   => $request->request_type_id,
-        'street_id'         => $street->id,
-        'description'       => $request->description,
-        'path'              => $photoPaths, // Guardamos la colección de rutas completa
-        'request_status_id' => 1,
-        'suggested_duplicate_id' => $posibleDuplicado ? $posibleDuplicado->id : null,
-    ]);
-
-    // Registrar en la bitácora
-    $incident->histories()->create([
-        'request_status_id' => 1,
-        'user_id'           => $userId,
-        'justification'     => 'Registro inicial del reclamo.',
-    ]);
-
-    // Responder en JSON 
-    if ($request->wantsJson() || $request->is('api/*') || $request->is('requests')) {
-        return response()->json([
-            'status'    => 'success',
-            'message'   => 'Solicitud registrada con éxito',
-            'data'      => $incident
-        ], 201);
-    }
-
-    return redirect()->back()->with('success', '¡Su reclamo ha sido registrado con éxito!');
-}
 
     /**
      * Muestra el reclamo especificado (Búsqueda de Seguimiento).
      */
     public function show($id)
     {
-        // 1. Extraer el ID numérico del código (Ej: de "REC-2026-018" extraer "18")
-        // Si el usuario ingresa solo "18", también funcionará.
         $parts = explode('-', $id);
         $numericId = (int) end($parts);
 
-        // 2. Buscar el reclamo en la base de datos
-        // Usamos with() para traer los datos relacionados y no hacer múltiples consultas
         $incident = \App\Models\Request::with(['street', 'requestType', 'histories.status', 'status', 'workOrders.company', 'priority'])->find($numericId);
 
         if (!$incident) {
@@ -134,14 +183,11 @@ class RequestController extends Controller
 
         $estadoFrontend = $incident->status ? $incident->status->slug : 'open';
 
-        // 4. Obtener la respuesta del administrador (si hay) de la última bitácora
-        // Suponiendo que las justificaciones son las respuestas.
         $ultimaBitacora = $incident->histories->last();
         $respuestaAdmin = $ultimaBitacora && $incident->request_status_id > 1 
                             ? $ultimaBitacora->justification 
                             : null;
 
-        // 5. Devolver la estructura JSON exacta que espera reclamos.js
         return response()->json([
             'status' => 'success',
             'data'   => [
@@ -154,29 +200,30 @@ class RequestController extends Controller
             ]
         ], 200);
     }
+
     /**
-     * Actualiza el estado del reclamo y/o la justificación en la base de datos real.
+     * Actualiza el estado del reclamo y envía correos automáticos (TAREA 2).
      */
     public function updateStatus(Request $request, $id)
     {
-        // 1. Extraer el ID numérico del código (Ej: de "REC-2026-018" extraer "18")
         $parts = explode('-', $id);
         $numericId = (int) end($parts);
 
-        $userRequest = \App\Models\Request::findOrFail($numericId);
+        // Cargamos la relación del usuario para tener su email listo
+        $userRequest = \App\Models\Request::with('user')->findOrFail($numericId);
 
         $request->validate([
             'estado'    => 'nullable|string',
             'respuesta' => 'nullable|string|max:1000',
             'linked_to' => 'nullable|integer',
-            'ignore_suggestion' => 'nullable|boolean'
+            'ignore_suggestion' => 'nullable|boolean',
+            'priority_name' => 'nullable|string|max:50'
         ]);
 
         $statusId = $userRequest->request_status_id;
         $linkedTo = $userRequest->linked_to;
         $suggestedDuplicateId = $userRequest->suggested_duplicate_id;
         
-        // Si mandan un estado nuevo desde el JS (el slug real)
         if ($request->has('estado')) {
             $dbSlug = $request->estado;
             
@@ -185,45 +232,59 @@ class RequestController extends Controller
                 $statusId = $statusObj->id;
             }
 
-            // Lógica de duplicado manual o automático
+            // 📬 LÓGICA DE ENVÍO DE MAIL - TAREA 2 COMPLETADA
             if ($dbSlug === 'vinculated' && $request->has('linked_to')) {
                 $linkedTo = $request->linked_to;
                 $suggestedDuplicateId = null;
+                
+                // Si el reclamo tiene un usuario vinculado con un email válido, le disparamos el correo
+                if ($userRequest->user && !empty($userRequest->user->email)) {
+                    Mail::to($userRequest->user->email)->send(new ClaimMergedMail($linkedTo));
+                }
             } elseif ($dbSlug !== 'vinculated') {
-                // Si cambiamos de estado "vinculado" a cualquier otro (ej. por error),
-                // desvinculamos el reclamo limpiando la columna.
                 $linkedTo = null;
             }
         }
 
         // Ignorar sugerencia
-        if ($request->has('ignore_suggestion') && $request->ignore_suggestion == true) {
+        if ($request->has('ignore_suggestion') && $request->ignore_suggestion) {
             $suggestedDuplicateId = null;
         }
 
-        $justification = $request->input('respuesta');
+        if ($request->has('priority_name') && !empty(trim($request->priority_name))) {
+            $pName = trim($request->priority_name);
+            $priority = \App\Models\Priority::firstOrCreate(['priority_name' => $pName]);
+            $userRequest->priority_id = $priority->id;
+        }
+
+        $justification = $request->respuesta;
         if (!$justification && $request->has('estado')) {
             $justification = 'Cambio de estado a: ' . $request->estado;
         }
-
-        // Aca se define el usuario que va a hacer el cambio de status. Por defecto es 1
         
         $userId = auth()->id() ?? 1;
 
-        DB::transaction(function () use ($userRequest, $statusId, $userId, $justification, $linkedTo, $suggestedDuplicateId) {
+        DB::transaction(function () use ($userRequest, $statusId, $userId, $justification, $linkedTo, $suggestedDuplicateId, $request) {
             $userRequest->update([
                 'request_status_id' => $statusId,
                 'linked_to' => $linkedTo,
                 'suggested_duplicate_id' => $suggestedDuplicateId
             ]);
 
-            // Solo creamos historial si hay un cambio de estado o una respuesta nueva
             if ($justification) {
                 $userRequest->histories()->create([
                     'request_status_id' => $statusId,
                     'user_id'           => $userId,
                     'justification'     => $justification,
                 ]);
+            }
+
+            // Si el reclamo pasa a estar certificado, marcamos las tareas finalizadas como aptas para cobro
+            if ($request->estado === 'certified') {
+                \App\Models\WorkOrder::where('request_id', $userRequest->id)
+                    ->where('work_status', 'Finalizado')
+                    ->where('payment_status', 'Pendiente')
+                    ->update(['payment_status' => 'Apto para Cobro']);
             }
         });
 
@@ -260,7 +321,7 @@ class RequestController extends Controller
             'data'   => $requests,
         ], 200);
     }
-    
+
     /**
      * Muestra todas las solicitudes por estado.
      */
@@ -338,6 +399,4 @@ class RequestController extends Controller
             'data'   => $statuses
         ], 200);
     }
-
-
 }

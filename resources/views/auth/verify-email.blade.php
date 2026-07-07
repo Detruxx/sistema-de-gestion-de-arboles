@@ -12,7 +12,7 @@
         </div>
 
         <!-- El modal se muestra por defecto al cargar esta página (show="true") -->
-        <x-layouts.alert-modal type="success" title="¡Ya casi estamos!" show="true" hideActions="true">
+        <x-layouts.alert-modal type="success" title="¡Ya casi estamos!" show="true" hideActions="true" closeRoute="/">
             
             <p class="alert-modal-message" style="margin-bottom: 20px;">
                 Antes de continuar utilizando el sistema de arbolado, necesitamos que verifiques tu dirección de correo electrónico haciendo clic en el enlace que te acabamos de enviar.

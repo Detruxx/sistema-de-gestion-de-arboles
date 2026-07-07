@@ -17,7 +17,7 @@ export async function fetchRequestStatuses() {
 }
 
 export async function fetchActiveCompanies() {
-    const res = await fetch('/api/admin/companies');
+    const res = await fetch('/admin/companies');
     if (!res.ok) throw new Error('Error al cargar empresas');
     return res.json();
 }

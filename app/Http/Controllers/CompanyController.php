@@ -20,4 +20,14 @@ class CompanyController extends Controller
 
         return response()->json($companies, 200);
     }
+
+    public function indexAdmin() :JsonResponse
+    {
+        // El admin necesita toda la lista de empresas para verlo en el dashboard
+        $companies = Company::orderBy('id', 'desc')->get();
+        return response()->json([
+            'status' => 'success',
+            'data' => $companies
+        ], 200);
+    }
 }

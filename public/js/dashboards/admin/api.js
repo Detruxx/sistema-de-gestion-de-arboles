@@ -6,7 +6,7 @@ import { getCsrfToken, showNotification } from '../shared/layout.js';
 import { state } from '../inspector/state.js';
 import * as api from './api.js';
 
-export async function changeUserRole (id, role) {
+export async function changeUserRole(id, role) {
     const user = state.users.find(u => u.id === id);
     if (!user) return;
 
@@ -25,7 +25,7 @@ export async function changeUserRole (id, role) {
         user.role = role;
         showNotification(`Usuario #${id} cambiado al rol: ${role}`);
         updateAdminStats();
-        
+
         // Reset panels
         if (role === 'inspector') {
             state.selectedresidentId = null;
@@ -44,7 +44,7 @@ export async function changeUserRole (id, role) {
     }
 };
 
-export async function banUserPrompt (id, days) {
+export async function banUserPrompt(id, days) {
     const user = state.users.find(u => u.id === id);
     if (!user) return;
 
@@ -72,7 +72,7 @@ export async function banUserPrompt (id, days) {
     }
 };
 
-export async function liftBan (id) {
+export async function liftBan(id) {
     const user = state.users.find(u => u.id === id);
     if (!user) return;
 
@@ -97,56 +97,82 @@ export async function liftBan (id) {
 };
 
 
-export function updateAdminStats () {
-    const residentsCount = state.users.filter(u => u.role === 'vecino').length;
-    const inspectorsCount = state.users.filter(u => u.role === 'inspector').length;
-    const companiesCount = state.companies.length;
-    
-    const pendingPostulations = state.companies.filter(c => c.status === 'Pendiente').length;
-
-    const elN = document.getElementById('stat-total-residents');
-    const elI = document.getElementById('stat-total-inspectors');
-    const elC = document.getElementById('stat-total-companies');
-    const elP = document.getElementById('stat-pending-postulations');
-
-    if (elN) elN.innerText = residentsCount;
-    if (elI) elI.innerText = inspectorsCount;
-    if (elC) elC.innerText = companiesCount;
-    if (elP) elP.innerText = pendingPostulations;
-};
-export async function loadAdminData (searchQuery = '') {
+export async function updateAdminStats() {
     try {
-        const url = searchQuery ? `/api/admin/users?search=${encodeURIComponent(searchQuery)}` : '/api/admin/users';
-        const userRes = await fetch(url);
-        if (userRes.ok) {
-            const data = await userRes.json();
-            state.users = data.data || [];
-        } else {
-            state.users = [];
+        const response = await fetch('/api/admin/stats');
+        if (response.ok) {
+            const stats = await response.json();
+            const elN = document.getElementById('stat-total-residents');
+            const elI = document.getElementById('stat-total-inspectors');
+            const elC = document.getElementById('stat-total-companies');
+            const elP = document.getElementById('stat-pending-postulations');
+
+            if (elN) elN.innerText = stats.residents || 0;
+            if (elI) elI.innerText = stats.inspectors || 0;
+            if (elC) elC.innerText = stats.companies || 0;
+            if (elP) elP.innerText = stats.pendingCompanies || 0;
         }
     } catch (err) {
-        console.error("Error al cargar usuarios:", err);
-        state.users = [];
+        console.error("Error fetching stats:", err);
     }
+}
 
+export async function fetchResidents() {
     try {
-        const compRes = await fetch('/api/admin/companies');
-        if (compRes.ok) {
-            const data = await compRes.json();
+        const response = await fetch('/api/admin/users?role=vecino');
+        if (response.ok) {
+            const data = await response.json();
+            // lo almacena localmente asi las acciones lo encuentran
+            state.users = state.users.filter(u => u.role !== 'vecino').concat(data.data);
+            if (typeof window.loadresidentsList === 'function') window.loadresidentsList();
+        }
+    } catch (err) {
+        console.error("Error al cargar vecinos:", err);
+    }
+}
+
+export async function fetchInspectors() {
+    try {
+        const response = await fetch('/api/admin/users?role=inspector');
+        if (response.ok) {
+            const data = await response.json();
+            state.users = state.users.filter(u => u.role !== 'inspector').concat(data.data);
+            if (typeof window.loadInspectorsList === 'function') window.loadInspectorsList();
+        }
+    } catch (err) {
+        console.error("Error al cargar inspectores:", err);
+    }
+}
+
+export async function fetchCompanies() {
+    try {
+        const response = await fetch('/api/admin/companies');
+        if (response.ok) {
+            const data = await response.json();
             state.companies = data.data;
-        } else {
-            state.companies = [];
+            if (typeof window.loadCompaniesList === 'function') window.loadCompaniesList();
         }
     } catch (err) {
         console.error("Error al cargar empresas:", err);
-        state.companies = [];
     }
+}
 
-    loadresidentsList();
-    loadInspectorsList();
-    loadCompaniesList();
+export function showAdminModule(moduleName) {
+    // LLamar al showModule base que cambia el CSS y la vista
+    if (typeof window.showModule === 'function') window.showModule(moduleName);
+
+    // Cargar los datos específicos de la solapa on-demand
+    if (moduleName === 'resumen') updateAdminStats();
+    if (moduleName === 'vecinos') fetchResidents();
+    if (moduleName === 'inspectores') fetchInspectors();
+    if (moduleName === 'empresas') fetchCompanies();
+}
+
+export async function loadAdminData() {
+    // Al cargar la pagina inicialmente
     updateAdminStats();
-};
+    fetchResidents(); // Por si estamos en una solapa por defecto
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     if (state.currentUserRole === 'admin') {

@@ -23,7 +23,7 @@
 
         <div class="sidebar-menu">
             <h3 class="sidebar-menu-title">Panel Comunal</h3>
-            <button class="sidebar-btn active" onclick="showModule('resumen')" id="menu-resumen">
+            <button class="sidebar-btn active" onclick="window.showAdminModule('resumen')" id="menu-resumen">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="3" width="7" height="9"></rect>
                     <rect x="14" y="3" width="7" height="5"></rect>
@@ -34,21 +34,21 @@
             </button>
 
                 <!-- Opciones exclusivas de Administrador -->
-                <button class="sidebar-btn" onclick="showModule('vecinos')" id="menu-vecinos">
+                <button class="sidebar-btn" onclick="window.showAdminModule('vecinos')" id="menu-vecinos">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                         <circle cx="9" cy="7" r="4"></circle>
                     </svg>
                     Gestión de Vecinos
                 </button>
-                <button class="sidebar-btn" onclick="showModule('inspectores')" id="menu-inspectores">
+                <button class="sidebar-btn" onclick="window.showAdminModule('inspectores')" id="menu-inspectores">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>
                     </svg>
                     Inspectores
                 </button>
-                <button class="sidebar-btn" onclick="showModule('empresas')" id="menu-empresas">
+                <button class="sidebar-btn" onclick="window.showAdminModule('empresas')" id="menu-empresas">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
                     </svg>

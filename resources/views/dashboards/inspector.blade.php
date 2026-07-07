@@ -345,7 +345,7 @@
 </div>
 <!-- Modal Detalle de Reclamo -->
 <div id="claim-detail-modal" class="admin-modal-overlay" style="display: none; z-index: 1050;">
-    <div class="admin-modal-container claim-modal-large" style="max-width: 90%; width: 1200px; height: 90vh; display: flex; flex-direction: column;">
+    <div class="admin-modal-container claim-modal-large" style="max-width: 95%; width: 1500px; height: 90vh; display: flex; flex-direction: column;">
         <div class="admin-modal-header" style="padding: 15px 20px; border-bottom: 1px solid var(--admin-border);">
             <h3 style="margin: 0; color: var(--admin-accent);">Detalle y Gestión de Reclamo</h3>
             <button type="button" class="admin-modal-close" onclick="closeClaimDetailModal()" style="background: none; border: none; font-size: 1.8rem; line-height: 1; cursor: pointer; color: var(--admin-text-secondary);">&times;</button>

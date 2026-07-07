@@ -114,8 +114,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const result = await submitClaim(formData, token);
-                if (typeof window.showSuccessModal === 'function') {
-                    window.showSuccessModal('¡Reclamo Enviado!', `El reclamo se registró con éxito bajo el código de seguimiento: ${result.data.tracking_code}`);
+                if (typeof window.openAlertModal === 'function') {
+                    const modalSuccess = document.getElementById('alert-modal-success');
+                    if (modalSuccess) {
+                        const msgEl = modalSuccess.querySelector('.alert-modal-message');
+                        if (msgEl) msgEl.textContent = `Tu sugerencia/reclamo ha sido registrado con éxito bajo el código de seguimiento: ${result.data.tracking_code}`;
+                    }
+                    window.openAlertModal('alert-modal-success');
                 } else {
                     alert(`Reclamo registrado con éxito bajo el ID: ${result.data.tracking_code}`);
                 }
@@ -123,7 +128,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 setSeleccionArbolUI(null);
             } catch (err) {
                 console.error('Submit error:', err);
-                alert('Error al intentar registrar el reclamo. Verifique consola.');
+                if (typeof window.openAlertModal === 'function') {
+                    // Update the modal's text with the real error message
+                    const modalError = document.getElementById('alert-modal-error');
+                    if (modalError) {
+                        const titleEl = modalError.querySelector('.alert-modal-title');
+                        const msgEl = modalError.querySelector('.alert-modal-message');
+                        if (titleEl) titleEl.textContent = 'Error de Validación';
+                        if (msgEl) msgEl.textContent = err.message || 'Ocurrió un error al procesar la solicitud.';
+                    }
+                    window.openAlertModal('alert-modal-error');
+                } else {
+                    alert(err.message || 'Error al intentar registrar el reclamo.');
+                }
             }
         });
     }

@@ -136,7 +136,7 @@ button.dropdown-trigger {
     border: 1px solid var(--deep-canopy);
     border-radius: 14px;
     width: 170px;
-    padding: 8px 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
     box-shadow: 0 15px 30px rgba(10, 26, 13, 0.4);
@@ -144,6 +144,7 @@ button.dropdown-trigger {
     pointer-events: none;
     transition: opacity 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
     z-index: 1000;
+    overflow: hidden;
 }
 
 .nav-dropdown.active .dropdown-menu {
@@ -168,10 +169,19 @@ button.dropdown-trigger {
     padding-left: 24px;
 }
 
+.dropdown-menu a:first-child {
+    padding-top: 18px;
+}
+
+.dropdown-menu a:last-child {
+    padding-bottom: 18px;
+}
+
 .dropdown-menu a.active {
-    background-color: var(--paper-white);
-    color: var(--forest-night);
+    background-color: rgba(45, 122, 79, 0.25);
+    color: var(--spring-leaf);
     font-weight: 600;
+    padding-left: 24px;
 }
 
 /* ================= Menú Hamburguesa (Desktop) ================= */
