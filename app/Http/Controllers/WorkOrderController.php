@@ -56,7 +56,7 @@ class WorkOrderController extends Controller
         }
 
         // 2. Creamos la orden de trabajo externa
-        WorkOrder::create([
+        $workOrder = WorkOrder::create([
             'request_id'       => $request->request_id,
             'company_id'       => $request->company_id,
             'task_description' => $request->task_description,
@@ -66,6 +66,15 @@ class WorkOrderController extends Controller
         ]);
 
         // 3. Opcional: Podrías actualizar el estado del reclamo a "En proceso de reparación" automáticamente aquí
+        
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Orden de trabajo registrada con éxito.',
+                'work_order' => $workOrder
+            ]);
+        }
+        
         return redirect()->back()->with('work_assigned', 'Orden de trabajo registrada con éxito bajo el flujo secuencial establecido.');
     }
 

@@ -32,7 +32,17 @@ class RequestController extends Controller
                 'especie' => $req->tree ? $req->tree->species_name : 'No vinculada',
                 'email' => $req->user ? $req->user->email : 'sin-email@treeba.gob.ar',
                 'linked_to' => $req->linked_to,
-                'suggested_duplicate_id' => $req->suggested_duplicate_id
+                'suggested_duplicate_id' => $req->suggested_duplicate_id,
+                'raw_request_id' => $req->id,
+                'work_orders' => $req->workOrders->map(function($wo) {
+                    return [
+                        'id' => $wo->id,
+                        'task_description' => $wo->task_description,
+                        'execution_order' => $wo->execution_order,
+                        'company' => $wo->company ? $wo->company->name : null,
+                        'status' => $wo->work_status
+                    ];
+                })
             ];
         });
 
