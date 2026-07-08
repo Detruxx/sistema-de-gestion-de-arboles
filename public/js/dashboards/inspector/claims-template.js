@@ -35,8 +35,7 @@ export function getClaimModalHtml(claim, state) {
     const statusHex = statusObj ? statusObj.color : '#6b7280';
 
     const currentSeq = state.requestStatuses.find(rs => rs.slug === claim.estado)?.sequence || 0;
-    const relevatedSeq = state.requestStatuses.find(rs => rs.slug === 'relevated')?.sequence || 2;
-    const showThirdColumn = currentSeq >= relevatedSeq;
+    const showThirdColumn = ['relevated', 'scheduled', 'in_progress'].includes(claim.estado);
 
     let html = `<div class="claim-modal-grid" style="${!showThirdColumn ? 'grid-template-columns: 0.85fr 1.95fr !important;' : ''}">`;
 
@@ -150,7 +149,9 @@ export function getClaimModalHtml(claim, state) {
                 <select id="new-status-select" class="status-selector-select" onchange="if(this.value === 'vinculated') alert('Se te pedirá el ID a vincular al guardar.')">`;
 
     state.requestStatuses.forEach(s => {
-        html += `<option value="${s.slug}" ${claim.estado === s.slug ? 'selected' : ''}>${s.status_name}</option>`;
+        if (!['in_progress', 'resolved'].includes(s.slug) || claim.estado === s.slug) {
+            html += `<option value="${s.slug}" ${claim.estado === s.slug ? 'selected' : ''}>${s.status_name}</option>`;
+        }
     });
 
     html += `</select>

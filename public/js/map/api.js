@@ -4,6 +4,7 @@
 
 import { openSidebar } from './ui.js';
 import { renderMapMarkers, getArboles, setArboles } from './markers.js';
+import { getMap } from './core.js';
 
 export async function loadTreesFromDatabase() {
     try {
@@ -13,6 +14,21 @@ export async function loadTreesFromDatabase() {
         const result = await response.json();
         setArboles(result.data);
         renderMapMarkers();
+
+        // Localizar árbol por ID de URL si existe
+        const urlParams = new URLSearchParams(window.location.search);
+        const treeId = urlParams.get('id');
+        if (treeId) {
+            const arbolId = parseInt(treeId, 10);
+            const arbol = result.data.find(a => a.id === arbolId);
+            if (arbol) {
+                mostrarDatosArbol(arbolId);
+                const map = getMap();
+                if (map) {
+                    map.flyTo([arbol.latitude, arbol.longitude], 17, { duration: 1.5 });
+                }
+            }
+        }
     } catch (error) {
         console.error("Error al obtener los árboles de la base de datos:", error);
     }
