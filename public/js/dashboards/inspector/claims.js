@@ -61,7 +61,7 @@ export async function loadClaimsFromServer() {
 
     try {
         const result = await fetchClaims();
-        state.claims = result.data || result;
+        state.claims = (result.data || result).sort((a, b) => a.raw_request_id - b.raw_request_id);
         
         updateStats();
         ui.loadClaimsList();
