@@ -8,9 +8,11 @@
     // Si el usuario inicio sesion, contamos cuantas notificaciones nuevas tiene en la base de datos
     if (auth()->check()) {
         // Buscamos reclamos nuevos
-        $unreadClaimsCount = \App\Models\Request::where('user_id', auth()->id())
-            ->where('is_new_for_user', true)
-            ->count();
+        // TODO: Descomentar cuando la migración is_new_for_user para requests esté creada
+        // $unreadClaimsCount = \App\Models\Request::where('user_id', auth()->id())
+        //     ->where('is_new_for_user', true)
+        //     ->count();
+        $unreadClaimsCount = 0;
 
         // Buscamos mensajes nuevos
         $unreadMessagesCount = \App\Models\ContactMessage::where('user_id', auth()->id())
