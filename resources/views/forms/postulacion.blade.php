@@ -54,8 +54,14 @@
 
                     <!-- Razón Social -->
                     <div class="form-group">
-                        <label for="company-name" style="display: block; margin-bottom: 8px; font-weight: 600;">Razón Social / Nombre de la Empresa</label>
-                        <input type="text" id="company-name" class="form-control" placeholder="Se completará al verificar el CUIT o ingrese manualmente" required disabled>
+                        <label for="company-business-name" style="display: block; margin-bottom: 8px; font-weight: 600;">Razón Social</label>
+                        <input type="text" id="company-business-name" class="form-control" placeholder="Se completará al verificar el CUIT o ingrese manualmente" required disabled>
+                    </div>
+
+                    <!-- Nombre Fantasía -->
+                    <div class="form-group">
+                        <label for="company-name" style="display: block; margin-bottom: 8px; font-weight: 600;">Nombre de Fantasía</label>
+                        <input type="text" id="company-name" class="form-control" placeholder="Ingrese el nombre de fantasía de la empresa" required>
                     </div>
 
                     <!-- Email de contacto -->
@@ -64,16 +70,10 @@
                         <input type="email" id="company-email" class="form-control" placeholder="Ej: contacto@miempresa.com" required>
                     </div>
 
-                    <!-- Teléfono -->
-                    <div class="form-group">
-                        <label for="company-phone" style="display: block; margin-bottom: 8px; font-weight: 600;">Teléfono de Contacto</label>
-                        <input type="tel" id="company-phone" class="form-control" placeholder="Ej: +54 11 4444-4444" required>
-                    </div>
-
                     <!-- Dirección de Sede -->
                     <div class="form-group">
-                        <label for="company-address" style="display: block; margin-bottom: 8px; font-weight: 600;">Dirección Fiscal / Sede Operativa</label>
-                        <input type="text" id="company-address" class="form-control" placeholder="Ej: Av. del Libertador 4500, CABA" required>
+                        <label for="company-location" style="display: block; margin-bottom: 8px; font-weight: 600;">Dirección Fiscal / Sede Operativa</label>
+                        <input type="text" id="company-location" class="form-control" placeholder="Ej: Av. del Libertador 4500, CABA" required>
                     </div>
 
                     <!-- Captcha de seguridad Turnstile -->

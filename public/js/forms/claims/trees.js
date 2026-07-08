@@ -2,24 +2,49 @@
  * Componente (Formulario Reclamos): Lógica para la selección de especies y características de árboles.
  */
 
-// Base de datos de árboles simulada para validación
-const arboles = [
-    { id: 1001, especie: 'Jacarandá', direccion: 'Plaza Armenia, Palermo, CABA' },
-    { id: 1002, especie: 'Ceibo', direccion: 'Av. Sarmiento 2400, Palermo, CABA' },
-    { id: 1003, especie: 'Fresno', direccion: 'Defensa 850, San Telmo, CABA' },
-    { id: 1004, especie: 'Palo Borracho', direccion: 'Plaza Francia, Recoleta, CABA' },
-    { id: 1005, especie: 'Tilo', direccion: 'Juramento 1900, Belgrano, CABA' },
-    { id: 1006, especie: 'Liquidámbar', direccion: 'Av. Del Libertador 3200, Palermo, CABA' },
-    { id: 1007, especie: 'Jacarandá', direccion: 'Plaza Cortazar, Palermo, CABA' },
-    { id: 1008, especie: 'Fresno', direccion: 'Av. Cabildo 2100, Belgrano, CABA' },
-    { id: 1009, especie: 'Tilo', direccion: 'Bolívar 600, San Telmo, CABA' },
-    { id: 1010, especie: 'Ceibo', direccion: 'Parque Rivadavia, Caballito, CABA' },
-    { id: 1011, especie: 'Liquidámbar', direccion: 'Juana Manso 1100, Puerto Madero, CABA' },
-    { id: 1012, especie: 'Palo Borracho', direccion: 'Av. 9 de Julio 1200, San Nicolás, CABA' }
-];
+let arboles = [];
+
+// Base de datos de árboles real para validación (se carga al inicio)
+async function loadTrees() {
+    try {
+        const response = await fetch('/api/arboles/pines');
+        if (!response.ok) throw new Error('Error al obtener árboles');
+        const data = await response.json();
+
+        if (data.status === 'success' && data.data) {
+            arboles = data.data.map(t => {
+                let direccion = '';
+                if (t.street && t.street.street_name) {
+                    direccion = `${t.street.street_name} ${t.street.street_number || ''}`.trim();
+                    if (t.street.door_plate) direccion += ` (Frente ${t.street.door_plate})`;
+                    direccion += ', CABA';
+                } else if (t.park && t.park.park_name) {
+                    direccion = t.park.park_name + ', CABA';
+                }
+
+                return {
+                    id: t.id,
+                    especie: t.specie ? t.specie.common_name : 'Desconocida',
+                    direccion: direccion || 'Ubicación no especificada',
+                    latitude: t.latitude,
+                    longitude: t.longitude
+                };
+            });
+        }
+    } catch (e) {
+        console.error('Error cargando los árboles reales:', e);
+    }
+}
+
+// Cargar los árboles apenas se importa el módulo
+loadTrees();
 
 export function findTreeById(id) {
     return arboles.find(a => a.id == id) || null;
+}
+
+export function getArboles() {
+    return arboles;
 }
 
 export function initTreeSelectionLogic(setSeleccionArbolCallback) {
@@ -35,10 +60,16 @@ export function initTreeSelectionLogic(setSeleccionArbolCallback) {
         inputArbolId.readOnly = true;
         inputArbolId.classList.add('readonly-input');
 
-        const matched = findTreeById(arbolIdParam);
-        if (matched) {
-            setSeleccionArbolCallback(matched);
-        }
+        // loadlTrees es asincrónico, reintentamos hasta que termine de cargar
+        const checkAndSet = () => {
+            const matched = findTreeById(arbolIdParam);
+            if (matched) {
+                setSeleccionArbolCallback(matched);
+            } else if (arboles.length === 0) {
+                setTimeout(checkAndSet, 100);
+            }
+        };
+        checkAndSet();
     }
 
     // 2. Controlar ingreso manual de ID

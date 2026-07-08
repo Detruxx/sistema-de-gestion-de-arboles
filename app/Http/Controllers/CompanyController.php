@@ -20,7 +20,7 @@ class CompanyController extends Controller
             'business_name'  => 'required|string|max:255', 
             'cuit'           => 'required|string|max:20|unique:companies,cuit', 
             'email'          => 'nullable|email|max:255',
-            'location_id'    => 'nullable|string|max:255' 
+            'location'       => 'required|string|max:255' 
         ]);
 
         try {

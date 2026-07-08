@@ -214,13 +214,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/api/admin/analytics/custom', [AnalyticsController::class, 'generateCustomReport'])->name('api.admin.analytics.custom');
 });
 
-// =========================================================================
-// RUTAS DE LA RAMA BACKEND-JOACO (Notificaciones y Empresas)
-// =========================================================================
+
 Route::middleware(['auth'])->group(function () {
 
     // 1. Alta de Empresa Contratista (Store)
-    // Nota: Si esto es para registro público, quitar middleware en el futuro.
+    
     Route::post('/companies', [CompanyController::class, 'store'])
         ->name('companies.store')
         ->middleware('turnstile');

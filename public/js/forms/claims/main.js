@@ -5,7 +5,7 @@
 import { fetchRequestTypes, submitClaim, fetchClaimDetails, fetchRequestStatuses } from './api.js';
 import { populateRequestTypes, setSeleccionArbolUI, initTabSwitching, renderTrackingResult, showTrackError, hideTrackMessages } from './ui.js';
 import { initTreeSelectionLogic } from './trees.js';
-import { initSelectorMap, getCurrentCoordsAddress, invalidateMapSize } from './map.js';
+import { initSelectorMap, getCurrentCoordsAddress, invalidateMapSize, getCurrentSelectedTreeId } from './map.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Iniciar Tabs
@@ -46,15 +46,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnConfirmAddress) {
         btnConfirmAddress.addEventListener('click', () => {
-            const currentCoordsAddress = getCurrentCoordsAddress();
-            if (currentCoordsAddress) {
-                if (inputDireccion) {
-                    inputDireccion.value = currentCoordsAddress;
-                    inputDireccion.readOnly = false;
-                    inputDireccion.classList.remove('readonly-input');
+            const currentSelectedTreeId = typeof getCurrentSelectedTreeId === 'function' ? getCurrentSelectedTreeId() : null;
+            if (currentSelectedTreeId) {
+                if (inputArbolId) {
+                    inputArbolId.value = currentSelectedTreeId;
+                    inputArbolId.dispatchEvent(new Event('input'));
                 }
-                if (inputArbolId) inputArbolId.value = '';
-                setSeleccionArbolUI(null); // Limpia los banners
+            } else {
+                const currentCoordsAddress = getCurrentCoordsAddress();
+                if (currentCoordsAddress) {
+                    if (inputDireccion) {
+                        inputDireccion.value = currentCoordsAddress;
+                        inputDireccion.readOnly = false;
+                        inputDireccion.classList.remove('readonly-input');
+                    }
+                    if (inputArbolId) inputArbolId.value = '';
+                    setSeleccionArbolUI(null); // Limpia los banners
+                }
             }
             if (mapModal) mapModal.classList.remove('active');
         });

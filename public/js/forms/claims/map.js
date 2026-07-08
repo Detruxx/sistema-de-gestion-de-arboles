@@ -2,9 +2,16 @@
  * Componente (Formulario Reclamos): Lógica para seleccionar y marcar la ubicación en el mapa al hacer un reclamo.
  */
 
+import { getArboles } from './trees.js';
+
 let selectorMap = null;
 let currentCoordsAddress = '';
+let currentSelectedTreeId = null;
 let debounceTimer = null;
+
+export function getCurrentSelectedTreeId() {
+    return currentSelectedTreeId;
+}
 
 export function initSelectorMap() {
     const previewText = document.getElementById('address-preview-text');
@@ -32,21 +39,47 @@ export function initSelectorMap() {
         const myLocationIcon = L.divIcon({
             className: 'my-location-pin',
             html: `
-                <div style="display: flex; flex-direction: column; align-items: center; pointer-events: none;">
-                    <svg width="20" height="28" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3));">
-                        <path d="M12 0C5.37 0 0 5.37 0 12C0 21 12 32 12 32C12 32 24 21 24 12C24 5.37 18.63 0 12 0ZM12 16.5C9.51 16.5 7.5 14.49 7.5 12C7.5 9.51 9.51 7.5 12 7.5C14.49 7.5 16.5 9.51 16.5 12C16.5 14.49 14.49 16.5 12 16.5Z" fill="#D32F2F"/>
-                    </svg>
-                    <span style="background: white; padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; font-family: var(--font-body, sans-serif); box-shadow: 0 1px 4px rgba(0,0,0,0.25); margin-top: 4px; color: #333; white-space: nowrap;">Te encuentras aquí</span>
-                </div>
+                <div style="width: 16px; height: 16px; background: #3b82f6; border: 2.5px solid white; border-radius: 50%; box-shadow: 0 0 8px rgba(0,0,0,0.4);"></div>
             `,
-            iconSize: [120, 55],
-            iconAnchor: [60, 28] // Anclar la base del pin
+            iconSize: [16, 16],
+            iconAnchor: [8, 8]
         });
         L.marker(e.latlng, { icon: myLocationIcon, zIndexOffset: 1000 }).addTo(selectorMap);
     });
 
+    // Render trees on map
+    const treeIcon = L.divIcon({
+        className: 'tree-marker-icon',
+        html: `<div style="width: 14px; height: 14px; background: #22c55e; border: 2px solid white; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
+        iconSize: [14, 14],
+        iconAnchor: [7, 7]
+    });
+
+    let renderAttempts = 0;
+    const renderTrees = () => {
+        const trees = getArboles();
+        if (trees.length === 0 && renderAttempts < 10) {
+            renderAttempts++;
+            setTimeout(renderTrees, 500);
+            return;
+        }
+
+        trees.forEach(t => {
+            if (t.latitude && t.longitude) {
+                const marker = L.marker([t.latitude, t.longitude], { icon: treeIcon }).addTo(selectorMap);
+                marker.on('click', () => {
+                    currentSelectedTreeId = t.id;
+                    if(previewText) previewText.innerHTML = `<strong>Árbol Seleccionado:</strong> ID #${t.id} - ${t.especie}`;
+                    if(btnConfirmAddress) btnConfirmAddress.disabled = false;
+                });
+            }
+        });
+    };
+    renderTrees();
+
     // Función de geocodificación reversa usando Nominatim
     function reverseGeocode(lat, lng) {
+        currentSelectedTreeId = null;
         if(previewText) previewText.textContent = 'Buscando dirección...';
         if(btnConfirmAddress) btnConfirmAddress.disabled = true;
 

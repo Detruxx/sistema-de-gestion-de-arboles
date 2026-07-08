@@ -9,6 +9,7 @@ async function verifyCuit() {
     const cuitVal = cuitInput.value.trim();
     const msgEl = document.getElementById('cuit-validation-msg');
     const nameInput = document.getElementById('company-name');
+    const businessNameInput = document.getElementById('company-business-name');
     const submitBtn = document.getElementById('btn-submit-postulation');
     const btnText = document.getElementById('btn-verify-text');
     const btnSpinner = document.getElementById('btn-verify-spinner');
@@ -47,13 +48,15 @@ async function verifyCuit() {
     msgEl.innerHTML = '✓ CUIT verificado en AFIP y Registro Comunal. Estado: Activo.';
     
     // Auto fill reason / company name based on cuit ending or defaults
-    nameInput.disabled = false;
+    businessNameInput.disabled = false;
+    businessNameInput.value = '';
+    
     if (cleanCuit.endsWith('3')) {
-        nameInput.value = 'Mantenimiento y Espacios Verdes del Norte';
+        businessNameInput.value = 'Mantenimiento y Espacios Verdes del Norte';
     } else if (cleanCuit.endsWith('7')) {
-        nameInput.value = 'Arbolado Urbano Rioplatense S.A.';
+        businessNameInput.value = 'Arbolado Urbano Rioplatense S.A.';
     } else {
-        nameInput.value = 'Servicios Forestales ' + cleanCuit.substring(2, 6) + ' S.R.L.';
+        businessNameInput.value = 'Servicios Forestales ' + cleanCuit.substring(2, 6) + ' S.R.L.';
     }
     
     cuitInput.disabled = true;
@@ -70,10 +73,10 @@ async function handlePostulationSubmit(event) {
     if (!cuitVerified) return;
 
     const name = document.getElementById('company-name').value;
+    const businessName = document.getElementById('company-business-name').value;
     const cuit = document.getElementById('company-cuit').value;
     const email = document.getElementById('company-email').value;
-    const phone = document.getElementById('company-phone').value;
-    const address = document.getElementById('company-address').value;
+    const location = document.getElementById('company-location').value;
     const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
 
     const errorMsgEl = document.getElementById('turnstile-error-msg');
@@ -84,19 +87,18 @@ async function handlePostulationSubmit(event) {
 
     try {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-        const response = await fetch('/api/postulacion-empresa', {
+        const response = await fetch('/companies', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken
             },
             body: JSON.stringify({
-                company_name: name,
+                name: name,
+                business_name: businessName,
                 cuit: cuit,
-                contact_email: email,
-                phone: phone,
-                address: address,
-                services: [],
+                email: email,
+                location: location,
                 'cf-turnstile-response': turnstileToken
             })
         });

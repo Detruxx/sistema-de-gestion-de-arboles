@@ -15,7 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // middleware de autenticacion: protege las rutas privadas
         $middleware->alias([
+            // middleware de roles
             'role' => \App\Http\Middleware\CheckRole::class,
+            // middleware de captcha cloudflare
+            'turnstile' => \App\Http\Middleware\ValidateTurnstile::class,
         ]);
     })
     // Manejo de errores personalizado: lo que hace es atrapar los errores globales y los convierte en respuestas JSON
