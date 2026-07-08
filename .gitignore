@@ -28,3 +28,6 @@ TODO.md
 
 # Obsidian vault settings
 .obsidian/
+
+# Agent configuration
+.agents/

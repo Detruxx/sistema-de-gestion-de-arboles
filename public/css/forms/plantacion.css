@@ -193,3 +193,25 @@
     color: #666;
     margin-left: 10px;
 }
+
+/* =========================================
+   RESPONSIVE (Plantación Móvil)
+   ========================================= */
+@media (max-width: 768px) {
+    .plantacion-form-container {
+        padding: 0 15px;
+    }
+    .custom-file-upload {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .custom-file-upload .file-label {
+        justify-content: center;
+    }
+    .form-actions {
+        justify-content: center;
+    }
+    .form-actions .btn-main-cta {
+        width: 100%;
+    }
+}

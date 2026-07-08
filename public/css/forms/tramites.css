@@ -222,3 +222,29 @@ textarea.form-control {
     font-size: 0.95rem;
     margin-bottom: 25px;
 }
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+@media (max-width: 768px) {
+    .permisos-card, .permisos-docs-card {
+        padding: 20px;
+    }
+    
+    .input-with-button {
+        flex-direction: column;
+    }
+    
+    #btn-select-map {
+        width: 100%;
+        padding: 12px;
+    }
+    
+    .form-actions {
+        justify-content: center;
+    }
+    
+    .form-actions .btn-main-cta {
+        width: 100%;
+    }
+}

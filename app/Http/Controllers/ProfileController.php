@@ -316,4 +316,31 @@ class ProfileController extends Controller
 
         $request->session()->put('mock_mis_mensajes', $mocks);
     }
+
+    /**
+     * Marca un reclamo (solicitud) como visto por el vecino, apagando la notificación.
+     * Busca el reclamo por ID y usuario, y le cambia el estado de novedad.
+     */
+    public function markRequestSeenByUser(Request $request, $id)
+    {
+        // Buscamos el reclamo en la base de datos asegurándonos de que pertenezca al usuario activo
+        $reclamo = \App\Models\Request::where('id', $id)->where('user_id', auth()->id())->first();
+        
+        // Si no lo encontramos, devolvemos un error 404
+        if (!$reclamo) {
+            return response()->json(['success' => false, 'message' => 'Reclamo no encontrado.'], 404);
+        }
+        
+        // Si el reclamo tiene la marca de que es nuevo, la apagamos
+        if ($reclamo->is_new_for_user) {
+            $reclamo->is_new_for_user = false;
+            $reclamo->save(); 
+        }
+        
+        // Devolvemos respuesta exitosa en formato JSON
+        return response()->json([
+            'success' => true,
+            'message' => 'Notificación revisada.'
+        ]);
+    }
 }

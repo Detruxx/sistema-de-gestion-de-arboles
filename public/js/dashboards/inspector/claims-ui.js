@@ -17,6 +17,9 @@ export function loadClaimsList() {
         card.onclick = () => window.selectClaim(c.id);
 
         const statusObj = state.requestStatuses.find(rs => rs.slug === c.estado);
+        const statusColor = statusObj ? statusObj.color : '#e5e7eb';
+        card.style.setProperty('border-left', `5px solid ${statusColor}`, 'important');
+
         card.innerHTML = getClaimListCardHtml(c, state.selectedClaimId === c.id, statusObj);
         container.appendChild(card);
     });
@@ -61,6 +64,9 @@ export function filterClaims() {
         card.onclick = () => window.selectClaim(c.id);
 
         const statusObj = state.requestStatuses.find(rs => rs.slug === c.estado);
+        const statusColor = statusObj ? statusObj.color : '#e5e7eb';
+        card.style.setProperty('border-left', `5px solid ${statusColor}`, 'important');
+
         card.innerHTML = getClaimListCardHtml(c, state.selectedClaimId === c.id, statusObj);
         container.appendChild(card);
     });

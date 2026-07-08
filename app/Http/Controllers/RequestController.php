@@ -99,7 +99,7 @@ class RequestController extends Controller
                                 ->whereNotIn('request_status_id', $estadosTerminalesIds)
                                 ->first();
 
-        // 🤖 ALGORITMO DE SCORING (TAREA 1 COMPLETADA)
+        // ALGORITMO DE SCORING 
         $descripcion = mb_strtolower($request->input('description', ''));
         $riskScore = 0;
 
@@ -124,16 +124,17 @@ class RequestController extends Controller
             $riskScore = 100;
         }
 
-        $defaultPriority = \App\Models\Priority::where('slug', 'low')->first();
+        $defaultPriority = Priority::where('slug', 'low')->first();
         $calculatedPriorityId = $defaultPriority ? $defaultPriority->id : 1;
 
         if ($riskScore > 60) {
-            $prioridadAuto = \App\Models\Priority::where('slug', 'auto-alta')->first();
+            $prioridadAuto = Priority::where('slug', 'auto-alta')->first();
             if ($prioridadAuto) { $calculatedPriorityId = $prioridadAuto->id; }
         } elseif ($riskScore > 30) {
-            $prioridadAuto = \App\Models\Priority::where('slug', 'auto-media')->first();
+            $prioridadAuto = Priority::where('slug', 'auto-media')->first();
             if ($prioridadAuto) { $calculatedPriorityId = $prioridadAuto->id; }
         }
+
         $incident = \App\Models\Request::create([
             'user_id'                => $userId,
             'tree_id'                => $request->tree_id,
@@ -179,6 +180,11 @@ class RequestController extends Controller
                 'status'  => 'error',
                 'message' => 'Reclamo no encontrado'
             ], 404);
+        }
+
+        // 📍 ⚪ Apagamos el puntito rojo si el vecino logueado está viendo su propia solicitud modificada
+        if (auth()->check() && $incident->user_id === auth()->id() && $incident->is_new_for_user) {
+            $incident->update(['is_new_for_user' => false]);
         }
 
         $estadoFrontend = $incident->status ? $incident->status->slug : 'open';
@@ -232,7 +238,7 @@ class RequestController extends Controller
                 $statusId = $statusObj->id;
             }
 
-            // 📬 LÓGICA DE ENVÍO DE MAIL - TAREA 2 COMPLETADA
+            //LÓGICA DE ENVÍO DE MAIL 
             if ($dbSlug === 'vinculated' && $request->has('linked_to')) {
                 $linkedTo = $request->linked_to;
                 $suggestedDuplicateId = null;
@@ -246,8 +252,7 @@ class RequestController extends Controller
             }
         }
 
-        // Ignorar sugerencia
-        if ($request->has('ignore_suggestion') && $request->ignore_suggestion) {
+        if ($request->has('ignore_suggestion') && $request->ignore_suggestion == true) {
             $suggestedDuplicateId = null;
         }
 
@@ -266,9 +271,10 @@ class RequestController extends Controller
 
         DB::transaction(function () use ($userRequest, $statusId, $userId, $justification, $linkedTo, $suggestedDuplicateId, $request) {
             $userRequest->update([
-                'request_status_id' => $statusId,
-                'linked_to' => $linkedTo,
-                'suggested_duplicate_id' => $suggestedDuplicateId
+                'request_status_id'      => $statusId,
+                'linked_to'              => $linkedTo,
+                'suggested_duplicate_id' => $suggestedDuplicateId,
+                'is_new_for_user'        => true // Activamos el puntito de notificación para el vecino
             ]);
 
             if ($justification) {

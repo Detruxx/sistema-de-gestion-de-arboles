@@ -17,20 +17,22 @@ class Request extends Model
         'description',
         'path',               
         'request_status_id',
+        'is_new_for_user', 
         'cancellation_reason',
         'priority_id',
-        'company_id',         //Permitir asignación de empresa
         'linked_to',
         'suggested_duplicate_id',
+        'risk_score'
     ];
 
-    // Esto hace que Laravel convierta el JSON de la BDD a un array de PHP automáticamente
+    // Esto hace que Laravel convierta los tipos de la BDD automáticamente
     protected $casts = [
         'path' => 'array',
+        'is_new_for_user' => 'boolean', // CONVERSIÓN A TRUE/FALSE GARANTIZADA
+        'risk_score' => 'integer',
     ];
     
     // Esto es para que se pueda acceder al codigo de seguimiento como si fuera una propiedad normal
-    
     protected $appends = ['tracking_code'];
 
     /**
@@ -102,11 +104,5 @@ class Request extends Model
     {
         $year = $this->created_at ? $this->created_at->format('Y') : date('Y');
         return 'REC-' . $year . '-' . str_pad($this->id, 3, '0', STR_PAD_LEFT);
-    }
-
-    //Relación: Un reclamo puede tener una empresa asignada.
-    public function company()
-    {
-        return $this->belongsTo(Company::class);
     }
 }

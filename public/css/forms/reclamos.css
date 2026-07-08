@@ -324,3 +324,73 @@
     color: #666;
     margin-left: 10px;
 }
+
+/* =========================================
+   RESPONSIVE (Reclamos Móvil)
+   ========================================= */
+@media (max-width: 768px) {
+    .tramites-tabs {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    
+    .tab-btn {
+        text-align: center;
+        width: 100%;
+        padding: 10px;
+        font-size: 0.95rem;
+    }
+    
+    #reclamo-form, .track-container {
+        padding: 20px;
+    }
+    
+    .track-input-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .track-btn {
+        width: 100%;
+    }
+    
+    .track-summary-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .track-step-line {
+        display: none; /* Mejor ocultar la linea en movil para evitar solapamientos en pantallas muy finas */
+    }
+    
+    .track-stepper-row {
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+    }
+    
+    .track-step-item {
+        flex-direction: row;
+        gap: 15px;
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .step-lbl {
+        margin-top: 0;
+        font-size: 0.95rem;
+    }
+    
+    .custom-file-upload {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .custom-file-upload .file-label {
+        justify-content: center;
+    }
+    
+    .admin-reply-box {
+        padding: 15px;
+    }
+}

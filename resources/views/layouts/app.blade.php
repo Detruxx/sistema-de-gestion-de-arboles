@@ -1,3 +1,29 @@
+<!-- Notificaciones del perfil de usuario -->
+@php
+    // Iniciamos contadores en cero por defecto (para invitados o si no hay novedades)
+    $unreadClaimsCount = 0;
+    $unreadMessagesCount = 0;
+    $hasAnyNotification = false;
+
+    // Si el usuario inicio sesion, contamos cuantas notificaciones nuevas tiene en la base de datos
+    if (auth()->check()) {
+        // Buscamos reclamos nuevos
+        // TODO: Descomentar cuando la migración is_new_for_user para requests esté creada
+        // $unreadClaimsCount = \App\Models\Request::where('user_id', auth()->id())
+        //     ->where('is_new_for_user', true)
+        //     ->count();
+        $unreadClaimsCount = 0;
+
+        // Buscamos mensajes nuevos
+        $unreadMessagesCount = \App\Models\ContactMessage::where('user_id', auth()->id())
+            ->where('is_new_for_user', true)
+            ->count();
+            
+        // Si hay al menos un reclamo o mensaje nuevo, encendemos la notificacion global
+        $hasAnyNotification = ($unreadClaimsCount > 0 || $unreadMessagesCount > 0);
+    }
+@endphp
+
 <!-- Plantilla principal de la pagina web -->
 <!DOCTYPE html>
 <html lang="es">
@@ -50,26 +76,39 @@
                 </div>
             </div>
             
-            <a href="/#sobre-nosotros" class="nav-pill">Sobre Nosotros</a>
-            @auth
-                @if(Auth::user()->role === 'inspector' || Auth::user()->role === 'admin')
+            @guest
+                <a href="/#sobre-nosotros" class="nav-pill">Sobre Nosotros</a>
+                <a href="/#contacto" class="nav-pill">Contacto</a>
+            @else
+                @php $role = Auth::user()->role; @endphp
+                @if($role === 'inspector')
+                    <a href="/dashboard/inspector#reclamos" class="nav-pill">Mensajes de Reclamos</a>
                     <a href="/mensajes" class="nav-pill">Mensajes</a>
+                @elseif($role === 'admin')
+                    <div class="nav-dropdown">
+                        <button class="nav-pill dropdown-trigger" aria-expanded="false">
+                            Usuarios
+                            <svg class="dropdown-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="/dashboard/admin#vecinos">Gestión de Vecinos</a>
+                            <a href="/dashboard/admin#inspectores">Inspectores</a>
+                        </div>
+                    </div>
+                    <a href="/dashboard/admin#estadisticas" class="nav-pill">Estadísticas</a>
+                @elseif($role === 'empresa')
+                    <a href="/dashboard/empresa#trabajos" class="nav-pill">Trabajos</a>
+                    <a href="/dashboard/empresa#pagos" class="nav-pill">Pagos</a>
                 @else
+                    <!-- Vecino (default) -->
+                    <a href="/#sobre-nosotros" class="nav-pill">Sobre Nosotros</a>
                     <a href="/#contacto" class="nav-pill">Contacto</a>
                 @endif
-            @else
-                <a href="/#contacto" class="nav-pill">Contacto</a>
-            @endauth
+            @endguest
             @guest <!-- Si el usuario no esta logueado, se muestra el boton de login -->
                 <a href="/login" class="nav-pill btn-login @yield('active-login')">Login</a>
             @endguest
             @auth <!-- Si el usuario esta logueado, se muestra el menu de perfil -->
-                @php
-                    // TODO (Backend): Reemplazar estas variables hardcodeadas con datos reales (ej. desde el controlador, View Composer, o Auth::user())
-                    $unreadClaimsCount = 2; // Número de notificaciones no leídas en Mis Reclamos
-                    $unreadMessagesCount = 1; // Número de mensajes no leídos en la Bandeja de Entrada
-                    $hasAnyNotification = ($unreadClaimsCount > 0 || $unreadMessagesCount > 0);
-                @endphp
                 <div class="nav-dropdown">
                     <button class="nav-pill dropdown-trigger" aria-expanded="false" style="position: relative; background: none; border: 1px solid transparent; padding: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; color: var(--paper-white); overflow: visible;" title="Perfil de {{ Auth::user()->name }}">
                         <!-- Icono SVG de persona (cabeza y cuerpo) o imagen del avatar -->
@@ -134,7 +173,7 @@
                 </div>
                 <p class="footer-tagline">Mapeando el futuro verde de la ciudad.</p>
                 <p class="footer-source">Datos abiertos obtenidos de BA Data - GCBA.</p>
-                <p class="footer-source" style="margin-top: 5px; opacity: 0.85;">Basado en el modelo de gestión de la Comuna 13 (Belgrano, Colegiales y Núñez).</p>
+                <p class="footer-source" style="margin-top: 5px; opacity: 0.85;">Basado en protocolos estandarizados de Espacio Público.</p>
             </div>
             
             <div class="footer-links">
