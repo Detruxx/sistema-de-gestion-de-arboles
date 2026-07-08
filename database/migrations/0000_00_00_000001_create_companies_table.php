@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('cuit')->unique();
             $table->string('email')->unique();
             $table->string('location');      // Dirección o zona de cobertura
+            $table->foreignId('user_status_id')->default(1)->constrained('user_statuses'); //Conexión con la tabla de estados de usuario/empresa 
             $table->timestamps();
         });
     }

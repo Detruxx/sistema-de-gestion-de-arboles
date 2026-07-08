@@ -13,6 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     // Aca van los middleware de la aplicacion
     ->withMiddleware(function (Middleware $middleware): void {
+        
+        //Esto corre el middleware globalmente en todas las rutas web normales
+        $middleware->web(append: [
+            \App\Http\Middleware\CheckUserStatus::class,
+        ]);
+
         // middleware de autenticacion: protege las rutas privadas
         $middleware->alias([
             // middleware de roles

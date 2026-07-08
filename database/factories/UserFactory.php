@@ -25,10 +25,15 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'name' => fake()->firstName(),          // Cambiado a firstName para consistencia con last_name
+            'last_name' => fake()->lastName(),      // 📍 Agregado porque tu migración lo exige
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            
+            // 📍 LÍNEA AGREGADA: Todo usuario dummy nace habilitado por defecto (ID 1)
+            'user_status_id' => 1,                  // 
+            
             'remember_token' => Str::random(10),
         ];
     }

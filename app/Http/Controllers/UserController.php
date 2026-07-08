@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -13,7 +14,8 @@ class UserController extends Controller
      */
     public function index(\Illuminate\Http\Request $request)
     { 
-        $query = User::orderBy('id','desc');
+        //Cargamos la relación 'status' con eager loading para evitar consultas repetitivas (N+1)
+        $query = User::with('status')->orderBy('id', 'desc');
         
         if ($request->has('role')) {
             $query->where('role', $request->role);
@@ -76,7 +78,6 @@ class UserController extends Controller
 
         // Enviamos un mensaje flash de éxito
         return redirect()->back()->with('success', 'Usuario actualizado correctamente.');
-
     }
 
     /**
@@ -132,4 +133,50 @@ class UserController extends Controller
         ], 200); 
     }
 
+     /**
+      * Alterna el estado (Habilitar/Deshabilitar) de cualquier usuario del sistema.
+      * Solo accesible por el Administrador.
+      */
+    public function toggleStatus($id)
+    {   
+        // Verificación de rol: Solo el Administrador puede hacer esto
+        if (auth()->user()->role !== 'admin') {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Acceso denegado. Solo el Administrador puede realizar esta acción.'
+            ], 403);
+        }
+
+        try {
+            // Buscamos al usuario que se quiere modificar
+            $user = User::findOrFail($id);
+
+            // Evita que el admin se deshabilite a sí mismo
+            if ($user->id === auth()->id()) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'No podés deshabilitar tu propia cuenta de administrador.'
+                ], 400);
+            }
+
+            //Cambiado 'status_id' por 'user_status_id' para que coincida con tu migración y modelo
+            $user->user_status_id = ($user->user_status_id == 1) ? 2 : 1;
+            $user->save();
+
+            $newStatus = ($user->user_status_id == 1) ? 'Habilitado' : 'Deshabilitado';
+
+            return response()->json([
+                'status'    => 'success',
+                'message'   => "El usuario {$user->name} {$user->last_name} ahora está {$newStatus}.",
+                'user_status_id' => $user->user_status_id
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'No se pudo alterar el estado del usuario.',
+                'debug'   => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
+    }
 }

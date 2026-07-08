@@ -26,6 +26,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'role',
         'company_id',
         'profile_photo',
+        'user_status_id',
     ];
 
     /**
@@ -48,6 +49,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'user_status_id' => 'integer', // Fuerza a entero siempre
         ];
     }
 
@@ -55,5 +57,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * Relación: Un usuario tiene un único estado asignado
+     */
+    public function status()
+    {
+        //Apunta a UserStatus mediante 'user_status_id'
+        return $this->belongsTo(UserStatus::class, 'user_status_id');
     }
 }
