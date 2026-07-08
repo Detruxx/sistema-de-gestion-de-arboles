@@ -64,25 +64,9 @@ class ContactController extends Controller
      */
     public function index(Request $request)
     {
-        $mensajes = collect();
-        $isMock = false;
-
-        try {
-            $mensajes = ContactMessage::with('user')
-                ->orderBy('created_at', 'asc')
-                ->get();
-        } catch (\Exception $e) {
-            $isMock = true;
-        }
-
-        if ($mensajes->isEmpty() || $isMock) {
-            if (!$request->session()->has('mock_mensajes')) {
-                $this->initMockMensajes($request);
-            }
-            $allMock = collect($request->session()->get('mock_mensajes'));
-            // Los mas viejos arriba
-            $mensajes = $allMock->sortBy('created_at');
-        }
+        $mensajes = ContactMessage::with('user')
+            ->orderBy('created_at', 'asc')
+            ->get();
 
         return view('profile.mensajes', compact('mensajes'));
     }
@@ -135,37 +119,25 @@ class ContactController extends Controller
      */
     public function markRead(Request $request, $id)
     {
-        try {
-            $msg = ContactMessage::find($id);
-            if ($msg) {
-                $msg->status = 'read';
-                $msg->save();
-                return back()->with('success', 'Mensaje marcado como leído.');
-            }
-        } catch (\Exception $e) {
-            // Continuar al fallback
+        $msg = ContactMessage::find($id);
+        if ($msg) {
+            $msg->status = 'read';
+            $msg->save();
+            return back()->with('success', 'Mensaje marcado como leído.');
         }
 
-        // Fallback en session
-        if ($request->session()->has('mock_mensajes')) {
-            $mocks = $request->session()->get('mock_mensajes');
-            foreach ($mocks as &$m) {
-                if ($m['id'] == $id) {
-                    $m['status'] = 'read';
-                    break;
-                }
-            }
-            $request->session()->put('mock_mensajes', $mocks);
-        }
-
-        return back()->with('success', 'Mensaje marcado como leído (Simulado).');
+        return back()->with('error', 'Mensaje no encontrado.');
     }
-
     /**
+<<<<<<< HEAD
      * Inicializa los mensajes de prueba con las nuevas propiedades.
+=======
+     * Responde a un mensaje de contacto (Solo Inspector/Admin).
+>>>>>>> d45cd6118924c7b2dbb7ab1413e95388f27ac652
      */
-    private function initMockMensajes(Request $request)
+    public function reply(Request $request, $id)
     {
+<<<<<<< HEAD
         $mocks = [
             [
                 'id' => 201,
@@ -199,7 +171,28 @@ class ContactController extends Controller
                 'created_at' => now()->subDays(10)->format('Y-m-d H:i:s')
             ]
         ];
+=======
+        // =========================================================================
+        // SKELETON PARA BACKEND: Lógica de respuesta oficial al vecino
+        // =========================================================================
+        $request->validate([
+            'reply_message' => 'required|string|min:5'
+        ]);
+>>>>>>> d45cd6118924c7b2dbb7ab1413e95388f27ac652
 
-        $request->session()->put('mock_mensajes', $mocks);
+        $msg = ContactMessage::findOrFail($id);
+        
+        // 1. Guardar la respuesta y cambiar estado
+        // TODO (BACKEND): Agregar estas columnas en la migración de contact_messages
+        // $msg->inspector_response = $request->reply_message;
+        // $msg->is_new_for_user = true; // Activa el punto rojo en la campana del vecino
+        
+        $msg->status = 'answered';
+        $msg->save();
+
+        // 2. Enviar correo electrónico al vecino notificando la respuesta
+        // TODO (BACKEND): Ej -> Mail::to($msg->user->email)->send(new ContactRepliedMail($msg));
+
+        return back()->with('success', 'Respuesta oficial enviada con éxito.');
     }
 }

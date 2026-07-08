@@ -19,6 +19,7 @@ class Request extends Model
         'request_status_id',
         'cancellation_reason',
         'priority_id',
+        'company_id',         //Permitir asignación de empresa
         'linked_to',
         'suggested_duplicate_id',
     ];
@@ -101,5 +102,11 @@ class Request extends Model
     {
         $year = $this->created_at ? $this->created_at->format('Y') : date('Y');
         return 'REC-' . $year . '-' . str_pad($this->id, 3, '0', STR_PAD_LEFT);
+    }
+
+    //Relación: Un reclamo puede tener una empresa asignada.
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }

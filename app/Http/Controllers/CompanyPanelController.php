@@ -13,6 +13,10 @@ class CompanyPanelController extends Controller
         // Conseguimos el ID de la empresa del usuario logueado
         $companyId = Auth::user()->company_id;
 
+        if (!$companyId) {
+            abort(403, 'Acceso denegado: No tienes una empresa asignada.');
+        }
+
         // Traemos las órdenes de trabajo de esa empresa que NO estén "En espera"
         $orders = WorkOrder::with('request')
             ->where('company_id', $companyId)
@@ -31,6 +35,10 @@ class CompanyPanelController extends Controller
         // Obtenemos el ID de la empresa
         $companyId = auth()->user()->company_id;    
         
+        if (!$companyId) {
+            abort(403, 'Acceso denegado: No tienes una empresa asignada.');
+        }
+
         // Obtenemos las órdenes de trabajo de esa empresa
         $workOrders = WorkOrder::with([
             'request.street',

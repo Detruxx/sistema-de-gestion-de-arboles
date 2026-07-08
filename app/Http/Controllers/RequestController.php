@@ -124,17 +124,16 @@ class RequestController extends Controller
             $riskScore = 100;
         }
 
-        $defaultPriority = Priority::where('slug', 'low')->first();
+        $defaultPriority = \App\Models\Priority::where('slug', 'low')->first();
         $calculatedPriorityId = $defaultPriority ? $defaultPriority->id : 1;
 
         if ($riskScore > 60) {
-            $prioridadAuto = Priority::where('slug', 'auto-alta')->first();
+            $prioridadAuto = \App\Models\Priority::where('slug', 'auto-alta')->first();
             if ($prioridadAuto) { $calculatedPriorityId = $prioridadAuto->id; }
         } elseif ($riskScore > 30) {
-            $prioridadAuto = Priority::where('slug', 'auto-media')->first();
+            $prioridadAuto = \App\Models\Priority::where('slug', 'auto-media')->first();
             if ($prioridadAuto) { $calculatedPriorityId = $prioridadAuto->id; }
         }
-
         $incident = \App\Models\Request::create([
             'user_id'                => $userId,
             'tree_id'                => $request->tree_id,
@@ -217,7 +216,8 @@ class RequestController extends Controller
             'estado'    => 'nullable|string',
             'respuesta' => 'nullable|string|max:1000',
             'linked_to' => 'nullable|integer',
-            'ignore_suggestion' => 'nullable|boolean'
+            'ignore_suggestion' => 'nullable|boolean',
+            'priority_name' => 'nullable|string|max:50'
         ]);
 
         $statusId = $userRequest->request_status_id;
@@ -246,18 +246,25 @@ class RequestController extends Controller
             }
         }
 
-        if ($request->has('ignore_suggestion') && $request->ignore_suggestion == true) {
+        // Ignorar sugerencia
+        if ($request->has('ignore_suggestion') && $request->ignore_suggestion) {
             $suggestedDuplicateId = null;
         }
 
-        $justification = $request->input('respuesta');
+        if ($request->has('priority_name') && !empty(trim($request->priority_name))) {
+            $pName = trim($request->priority_name);
+            $priority = \App\Models\Priority::firstOrCreate(['priority_name' => $pName]);
+            $userRequest->priority_id = $priority->id;
+        }
+
+        $justification = $request->respuesta;
         if (!$justification && $request->has('estado')) {
             $justification = 'Cambio de estado a: ' . $request->estado;
         }
         
         $userId = auth()->id() ?? 1;
 
-        DB::transaction(function () use ($userRequest, $statusId, $userId, $justification, $linkedTo, $suggestedDuplicateId) {
+        DB::transaction(function () use ($userRequest, $statusId, $userId, $justification, $linkedTo, $suggestedDuplicateId, $request) {
             $userRequest->update([
                 'request_status_id' => $statusId,
                 'linked_to' => $linkedTo,
@@ -270,6 +277,14 @@ class RequestController extends Controller
                     'user_id'           => $userId,
                     'justification'     => $justification,
                 ]);
+            }
+
+            // Si el reclamo pasa a estar certificado, marcamos las tareas finalizadas como aptas para cobro
+            if ($request->estado === 'certified') {
+                \App\Models\WorkOrder::where('request_id', $userRequest->id)
+                    ->where('work_status', 'Finalizado')
+                    ->where('payment_status', 'Pendiente')
+                    ->update(['payment_status' => 'Apto para Cobro']);
             }
         });
 

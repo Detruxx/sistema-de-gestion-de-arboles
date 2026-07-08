@@ -50,10 +50,15 @@
 
                             $statusClass = 'open';
                             $statusText = 'Pendiente';
-                            if ($status === 'answered' || $status === 'read' || $response) {
+                            
+                            if ($status === 'answered' || $response) {
                                 $statusClass = 'resolved';
                                 $statusText = 'Respondido';
+                            } elseif ($status === 'read') {
+                                $statusClass = 'open'; // Mantenemos el estilo de pendiente/abierto
+                                $statusText = 'En Revisión'; // Pero indicamos que ya lo leyeron
                             }
+
                             // SKELETON PARA EL BACKEND: Reemplazar false por la lógica real
                             $isNew = is_array($msg) ? ($msg['is_new'] ?? false) : false;
                         @endphp
@@ -96,20 +101,19 @@
                             </summary>
                             
                             <div class="reclamo-card-details">
-                                @if($statusClass === 'resolved')
-                                    <div class="message-full-response">
-                                        <h4>
-                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                                            Respuesta Oficial
+                                @if($statusClass === 'resolved' && $response)
+                                    <div class="message-full-response" style="background-color: #f0fdf4; border-left: 4px solid #16a34a; padding: 15px; margin-bottom: 15px; border-radius: 4px;">
+                                        <h4 style="color: #166534; margin-top: 0; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                            Respuesta Oficial del Inspector
                                         </h4>
-                                        <p>{{ $response }}</p>
+                                        <p style="color: #15803d; font-size: 0.9rem; margin-bottom: 0;">{{ $response }}</p>
                                     </div>
+                                    <h4 class="details-section-title" style="font-size: 0.85rem; color: #6b7280; text-transform: uppercase;">Tu mensaje original:</h4>
                                 @else
-                                    <div class="details-section" style="margin-bottom: 20px;">
-                                        <div style="display: flex; align-items: center; gap: 8px; color: #f57f17; font-weight: 600; margin-bottom: 10px;">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                            Aguardando respuesta de la Comuna...
-                                        </div>
+                                    <div class="message-full-response">
+                                        <h4 class="details-section-title">Aviso Importante</h4>
+                                        <p>Tu consulta fue recibida y se encuentra en revisión. En breve recibirás una respuesta oficial por este medio.</p>
                                     </div>
                                 @endif
 

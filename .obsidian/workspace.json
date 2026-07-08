@@ -20,8 +20,23 @@
               "icon": "lucide-file",
               "title": "documentacion"
             }
+          },
+          {
+            "id": "e7edb11f0143091b",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "README.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "README"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -183,10 +198,21 @@
       "bases:Crear nueva base": false
     }
   },
-  "active": "a6a08d31c2a8de51",
+  "active": "e7edb11f0143091b",
   "lastOpenFiles": [
+    "storage/framework/sessions/XYi1HzzNrdAzQUHk5EWSsjGCtJrxEeu6HPXlB9O8",
+    "storage/framework/sessions/2GgIp34oeyVBlzr449W8xaLec4ySEjQVKClNIOSk",
+    "storage/framework/sessions/P6ben949ZsNwjPyamlSA8W0WTeAxJcBydUIRB11M",
+    "storage/framework/sessions/lZUhYD6PBk2odTKj8YoG0Nn7QgMXDYsbGvdM9mUi",
+    "storage/framework/sessions/CslDdq7lWedLK2TSmEMXUrlqyHJ91QKa6hXdHT0O",
+    "storage/framework/sessions/Jq0hrKurDHcdvf3iX74gu5wamWdYFQ9aKZBloOyC",
+    "storage/framework/sessions/YYZIWZmvwrnv8erstP3jbB2cpD6qQCIF1jfMHSKD",
+    "storage/framework/sessions/gYShdubpC4iRNAwWU8xjCTbiil2jLomdMXDLfx5R",
+    "storage/framework/sessions/hgisxiRfeX0PMY7ZmCuhhiF5JFjQVh3xNo2KRLdr",
+    "storage/framework/sessions/OOGFECG190UfBGPT0HCdeu6vri6qSmH2lMZsINZk",
+    "storage/framework/sessions/8nHYL7CBGnh6q819lnbxY50Lhjkvf3mPOxdwbI39",
+    "docs/documentacion.md",
     "TODO.md",
-    "README.md",
-    "docs/documentacion.md"
+    "README.md"
   ]
 }
