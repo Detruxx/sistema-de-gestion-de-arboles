@@ -21,13 +21,14 @@ export function triggerCompanyMapResize() {
     }
 }
 
-export function updateCompanyMapMarkers() {
+export function updateCompanyMapMarkers(filteredList = null) {
     if (!companyMapObj || !stateRef) return;
 
     // Solo mapeamos los que NO están finalizados para la vista principal
     const activeJobs = stateRef.jobs.filter(j => j.work_status !== 'Finalizado');
+    const jobsToMap = filteredList || activeJobs;
 
-    updateMapMarkers(companyMapObj, activeJobs, (job) => {
+    updateMapMarkers(companyMapObj, jobsToMap, (job) => {
         let lat = null;
         let lng = null;
 

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Registro | TreeBA')
+@section('title', 'Registro | Arborea')
 @section('navbar-class', 'scrolled')
 @section('active-login', 'active')
 
@@ -116,3 +116,4 @@
 @section('scripts')
     <script src="{{ asset('js/auth/register.js') }}"></script>
 @endsection
+

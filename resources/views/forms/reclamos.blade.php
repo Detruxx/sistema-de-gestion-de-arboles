@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Reclamos | TreeBA')
+@section('title', 'Reclamos | Arborea')
 @section('navbar-class', 'scrolled')
 @section('active-tramites', 'active')
 @section('active-reclamos', 'active')
@@ -325,4 +325,5 @@
         });
     </script>
 @endsection
+
 

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Sesión Expirada | TreeBA')
+@section('title', 'Sesión Expirada | Arborea')
 @section('navbar-class', 'scrolled')
 
 @section('content')
@@ -24,3 +24,4 @@
     </div>
 </main>
 @endsection
+

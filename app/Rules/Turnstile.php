@@ -23,7 +23,7 @@ class Turnstile implements ValidationRule
             return;
         }
         // Consultamos la API de verificacion de cloudflare
-        $response = Http::asForm()->post(uri: 'https://challenges.cloudflare.com/turnstile/v0/siteverify', data: [
+        $response = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
             'secret' => config('services.cloudflare.turnstile.secret_key'),
             'response' => $value,
         ]);

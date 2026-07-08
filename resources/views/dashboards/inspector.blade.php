@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Panel de Control Administrador | TreeBA')
+@section('title', 'Panel de Control Administrador | Arborea')
 @section('navbar-class', 'scrolled')
 
 @section('styles')
@@ -376,4 +376,5 @@
     <script type="module" src="{{ asset('js/dashboards/inspector/main.js') }}"></script>
 
 @endsection
+
 

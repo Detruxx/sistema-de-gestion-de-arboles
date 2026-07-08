@@ -5,7 +5,7 @@
 
         <a href="/" class="nav-brand">
             <div class="logo"><img src="{{ asset('img/logo.png') }}" alt="logo"></div>
-            <span class="brand-name">TreeBA</span>
+            <span class="brand-name">Arborea</span>
         </a>
         <nav class="nav-links">
             <a href="/mapa" class="nav-pill">Mapa</a>

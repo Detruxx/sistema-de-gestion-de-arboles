@@ -81,7 +81,7 @@ Route::middleware(['auth'])->group(function () {
     // 2. La ruta que procesa el LINK del mail (Laravel se encarga de la lógica internamente)
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill(); // Marca al usuario como verificado estampando la fecha
-        return redirect('/mapa')->with('success', '¡Email verificado con éxito!');
+        return redirect('/')->with('success', '¡Email verificado con éxito!');
     })->middleware(['signed'])->name('verification.verify');
 
     // 3. Botón por si el usuario pide reenviar el correo de verificación

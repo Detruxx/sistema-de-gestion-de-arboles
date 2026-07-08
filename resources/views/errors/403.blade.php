@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Acceso Denegado | TreeBA')
+@section('title', 'Acceso Denegado | Arborea')
 @section('navbar-class', 'scrolled')
 
 @section('content')
@@ -25,3 +25,4 @@
     </div>
 </main>
 @endsection
+

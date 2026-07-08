@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Panel de Control Empresa | TreeBA')
+@section('title', 'Panel de Control Empresa | Arborea')
 @section('navbar-class', 'scrolled')
 
 @section('styles')
@@ -144,6 +144,23 @@
                 </div>
             </div>
 
+            <!-- Filters Bar -->
+            <div class="inventory-filter-bar" style="margin-bottom: 20px;">
+                <div class="inventory-filter-group" style="flex: 1 1 250px;">
+                    <label for="search-company-jobs">Buscar por ID o Tarea</label>
+                    <input type="text" id="search-company-jobs" placeholder="Ej. 105, Poda..." oninput="filterJobs()">
+                </div>
+                <div class="inventory-filter-group" style="flex: 1 1 180px;">
+                    <label for="filter-job-status">Estado</label>
+                    <select id="filter-job-status" onchange="filterJobs()">
+                        <option value="">Todos los activos</option>
+                        <option value="Asignado">Asignado</option>
+                        <option value="En Proceso">En Proceso</option>
+                        <option value="En espera">En espera</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="split-layout" style="align-items: stretch; min-height: calc(100vh - 220px);">
                 <!-- Left Panel -->
                 <div class="list-panel" style="height: 100%; max-height: none; padding-right: 5px;">
@@ -225,4 +242,5 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script type="module" src="{{ asset('js/dashboards/company/main.js') }}"></script>
 @endsection
+
 

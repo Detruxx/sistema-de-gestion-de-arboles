@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Solicitud de Plantación | TreeBA')
+@section('title', 'Solicitud de Plantación | Arborea')
 @section('navbar-class', 'scrolled')
 @section('active-tramites', 'active')
 @section('active-plantacion', 'active')
@@ -138,4 +138,5 @@
     </script>
     @endauth
 @endsection
+
 

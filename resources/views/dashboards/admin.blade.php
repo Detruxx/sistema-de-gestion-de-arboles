@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Panel de Control Administrador | TreeBA')
+@section('title', 'Panel de Control Administrador | Arborea')
 @section('navbar-class', 'scrolled')
 
 @section('styles')
@@ -722,5 +722,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script type="module" src="{{ asset('js/dashboards/admin/main.js') }}"></script>
 @endsection
+
 
 

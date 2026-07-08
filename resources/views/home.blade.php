@@ -117,7 +117,7 @@
                 <div class="about-text reveal">
                     <h2 class="section-title">Nuestra Misión</h2>
                     <p>
-                        TreeBA es un proyecto de ciencia ciudadana y colaboración abierta. Buscamos involucrar a los vecinos de la Ciudad de Buenos Aires en el cuidado, reporte y aprendizaje sobre los árboles de su entorno.
+                        Arborea es un proyecto de ciencia ciudadana y colaboración abierta. Buscamos involucrar a los vecinos de la Ciudad de Buenos Aires en el cuidado, reporte y aprendizaje sobre los árboles de su entorno.
                     </p>
                     <p>
                         Creemos que un bosque urbano saludable mejora la calidad de vida de todos, disminuye la temperatura de la ciudad, purifica el aire y embellece nuestras calles.

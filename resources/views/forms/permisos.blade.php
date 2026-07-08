@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Permisos y Normativas | TreeBA')
+@section('title', 'Permisos y Normativas | Arborea')
 @section('navbar-class', 'scrolled')
 @section('active-tramites', 'active')
 @section('active-permisos', 'active')
@@ -74,4 +74,5 @@
         </div>
     </main>
 @endsection
+
 

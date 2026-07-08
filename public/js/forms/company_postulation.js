@@ -47,17 +47,9 @@ async function verifyCuit() {
     msgEl.style.color = '#22c55e';
     msgEl.innerHTML = '✓ CUIT verificado en AFIP y Registro Comunal. Estado: Activo.';
     
-    // Auto fill reason / company name based on cuit ending or defaults
+    // Habilitar el campo de Razón Social para que el usuario lo complete manualmente
     businessNameInput.disabled = false;
-    businessNameInput.value = '';
-    
-    if (cleanCuit.endsWith('3')) {
-        businessNameInput.value = 'Mantenimiento y Espacios Verdes del Norte';
-    } else if (cleanCuit.endsWith('7')) {
-        businessNameInput.value = 'Arbolado Urbano Rioplatense S.A.';
-    } else {
-        businessNameInput.value = 'Servicios Forestales ' + cleanCuit.substring(2, 6) + ' S.R.L.';
-    }
+    businessNameInput.focus();
     
     cuitInput.disabled = true;
     document.getElementById('btn-verify-cuit').disabled = true;
@@ -91,6 +83,7 @@ async function handlePostulationSubmit(event) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 'X-CSRF-TOKEN': csrfToken
             },
             body: JSON.stringify({
@@ -104,15 +97,39 @@ async function handlePostulationSubmit(event) {
         });
 
         if (!response.ok) {
-            if (response.status === 422 && errorMsgEl) {
+            if (response.status === 422) {
                 const errorData = await response.json();
-                const captchaError = errorData.errors?.['cf-turnstile-response']?.[0];
-                if (captchaError) {
+                const errors = errorData.errors || {};
+                
+                // Mostrar error de captcha si existe
+                if (errors['cf-turnstile-response'] && errorMsgEl) {
                     errorMsgEl.style.display = 'block';
-                    errorMsgEl.innerText = captchaError;
+                    errorMsgEl.innerText = errors['cf-turnstile-response'][0];
                 }
+                
+                // Agrupar y mostrar otros errores de validación (ej: CUIT repetido)
+                const otherErrors = Object.keys(errors)
+                    .filter(k => k !== 'cf-turnstile-response')
+                    .map(k => errors[k][0])
+                    .join('\n');
+                    
+                if (otherErrors) {
+                    alert('Errores en el formulario:\n' + otherErrors);
+                }
+                
+                return; // Cortamos la ejecución sin lanzar excepción para no triggerear el alert genérico
             }
-            throw new Error('Error en el servidor');
+            let serverErrorMsg = 'Error en el servidor';
+            try {
+                const rawText = await response.text();
+                console.error("RAW SERVER RESPONSE:", rawText);
+                const errData = JSON.parse(rawText);
+                if (errData.debug) serverErrorMsg = errData.debug;
+                else if (errData.message) serverErrorMsg = errData.message;
+            } catch (e) {
+                console.error("Failed to parse error response:", e);
+            }
+            throw new Error(serverErrorMsg);
         }
 
         const result = await response.json();
@@ -125,6 +142,6 @@ async function handlePostulationSubmit(event) {
         document.getElementById('success-ref-id').innerText = 'REF-' + refId;
     } catch (err) {
         console.error("Error al enviar postulación:", err);
-        alert('Hubo un error al enviar la postulación. Por favor, intente de nuevo.');
+        alert('Hubo un error al enviar la postulación. Por favor, intente de nuevo.\n\nDetalle técnico: ' + err.message);
     }
 }

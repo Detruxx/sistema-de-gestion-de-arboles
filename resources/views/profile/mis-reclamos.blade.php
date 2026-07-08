@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Mis Reclamos | TreeBA')
+@section('title', 'Mis Reclamos | Arborea')
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/profile/profile.css') }}">
@@ -613,3 +613,4 @@
         }
     </script>
 @endsection
+

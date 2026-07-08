@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Página no encontrada | TreeBA')
+@section('title', 'Página no encontrada | Arborea')
 @section('navbar-class', 'scrolled')
 
 @section('content')
@@ -24,3 +24,4 @@
     </div>
 </main>
 @endsection
+

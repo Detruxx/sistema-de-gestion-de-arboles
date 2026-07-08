@@ -19,7 +19,7 @@ class CompanyController extends Controller
             'name'           => 'required|string|max:255|unique:companies,name',
             'business_name'  => 'required|string|max:255', 
             'cuit'           => 'required|string|max:20|unique:companies,cuit', 
-            'email'          => 'nullable|email|max:255',
+            'email'          => 'nullable|email|max:255|unique:companies,email',
             'location'       => 'required|string|max:255' 
         ]);
 
@@ -60,7 +60,7 @@ class CompanyController extends Controller
     public function indexAdmin() :JsonResponse
     {
         // El admin necesita toda la lista de empresas para verlo en el dashboard
-        $companies = Company::orderBy('id', 'desc')->get();
+        $companies = Company::with(['jobRoles', 'workOrders'])->orderBy('id', 'desc')->get();
         return response()->json([
             'status' => 'success',
             'data' => $companies

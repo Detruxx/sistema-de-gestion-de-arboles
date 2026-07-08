@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Iniciar Sesión | TreeBA')
+@section('title', 'Iniciar Sesión | Arborea')
 @section('navbar-class', 'scrolled')
 @section('active-login', 'active')
 @section('styles')
@@ -16,7 +16,7 @@
             <div class="contact-form">
                 <div style="text-align: center; margin-bottom: 30px;">
                     <h2 style="font-family: var(--font-display); color: var(--deep-canopy); font-size: 2.2rem; margin-bottom: 8px; line-height: 1.3; padding-bottom: 5px;">Ingresar</h2>
-                    <p style="color: var(--forest-night); font-size: 1rem;">Inicia sesión en la plataforma TreeBA</p>
+                    <p style="color: var(--forest-night); font-size: 1rem;">Inicia sesión en la plataforma Arborea</p>
                 </div>
 
                 @if ($errors->any())
@@ -79,3 +79,4 @@
         </section>
     </main>
 @endsection
+

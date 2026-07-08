@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Verifica tu correo | TreeBA')
+@section('title', 'Verifica tu correo | Arborea')
 
 @section('content')
     <main class="page-container" style="min-height: 80vh; display: flex; align-items: center; justify-content: center; position: relative;">
@@ -37,3 +37,4 @@
         </x-alert-modal>
     </main>
 @endsection
+

@@ -33,7 +33,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Aca va el icono de la pagina -->
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
-    <title>@yield('title', 'TreeBA | Mapeado de Arboles')</title>
+    <title>@yield('title', 'Arborea | Mapeado de Arboles')</title>
 
     <!-- Aca van las fuentes que usa la pagina -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,7 +51,7 @@
     <header class="navbar @yield('navbar-class')" id="navbar"> <!-- Aca va la barra de navegacion de la pagina -->
         <a href="/" class="nav-brand">
             <div class="logo"><img src="{{ asset('img/logo.png') }}" alt="logo"></div>
-            <span class="brand-name">TreeBA</span>
+            <span class="brand-name">Arborea</span>
         </a>
         
         <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false">
@@ -169,7 +169,7 @@
             <div class="footer-brand">
                 <div class="footer-logo">
                     <div class="logo"><img src="{{ asset('img/logo.png') }}" alt="logo"></div>
-                    <span class="brand-name">TreeBA</span>
+                    <span class="brand-name">Arborea</span>
                 </div>
                 <p class="footer-tagline">Mapeando el futuro verde de la ciudad.</p>
                 <p class="footer-source">Datos abiertos obtenidos de BA Data - GCBA.</p>
@@ -231,7 +231,7 @@
                     </li>
                     <li>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                        <span>contacto@treeba.gob.ar</span>
+                        <span>contacto@Arborea.gob.ar</span>
                     </li>
                     <li>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
@@ -252,7 +252,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 TreeBA. Creado con <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#5bbf8c" stroke="#5bbf8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin: 0 3px; position: relative; top: -1px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> para la Ciudad de Buenos Aires.</p>
+            <p>&copy; 2026 Arborea. Creado con <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#5bbf8c" stroke="#5bbf8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin: 0 3px; position: relative; top: -1px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> para la Ciudad de Buenos Aires.</p>
         </div>
     </footer>
     @show
@@ -300,4 +300,5 @@
     </script>
 </body>
 </html>
+
 

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Bandeja de Mensajes | TreeBA')
+@section('title', 'Bandeja de Mensajes | Arborea')
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
@@ -45,7 +45,7 @@
                         @php
                             $id = is_array($msg) ? $msg['id'] : $msg->id;
                             $userName = is_array($msg) ? $msg['user_name'] : ($msg->user ? $msg->user->name : 'Vecino Anónimo');
-                            $userEmail = is_array($msg) ? $msg['user_email'] : ($msg->user ? $msg->user->email : 'sin-email@treeba.gob.ar');
+                            $userEmail = is_array($msg) ? $msg['user_email'] : ($msg->user ? $msg->user->email : 'sin-email@Arborea.gob.ar');
                             $messageText = is_array($msg) ? $msg['message'] : $msg->message;
                             $status = is_array($msg) ? $msg['status'] : $msg->status;
                             $createdAt = is_array($msg) ? $msg['created_at'] : $msg->created_at->format('Y-m-d H:i:s');
@@ -162,4 +162,5 @@
         }
     </script>
 @endsection
+
 

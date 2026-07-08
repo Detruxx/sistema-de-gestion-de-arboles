@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Mapa | TreeBA')
+@section('title', 'Mapa | Arborea')
 @section('navbar-class', 'scrolled')
 @section('active-mapa', 'active')
 @section('body-class', 'map-body')

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Configuración de Cuenta | TreeBA')
+@section('title', 'Configuración de Cuenta | Arborea')
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/profile/profile.css') }}">
@@ -11,7 +11,7 @@
     <main class="profile-page-container">
         <section class="profile-header reveal">
             <h1 class="hero-title">Configuración de Cuenta</h1>
-            <p class="section-subtitle">Gestiona tus datos personales y la seguridad de tu acceso a TreeBA.</p>
+            <p class="section-subtitle">Gestiona tus datos personales y la seguridad de tu acceso a Arborea.</p>
         </section>
 
         <div class="profile-grid reveal delay-1">
@@ -62,7 +62,7 @@
                 <div class="profile-info-list">
                     <div class="info-item">
                         <span class="info-label">Nombre Completo</span>
-                        <span class="info-value">{{ $user ? $user->name : 'Vecino Juan' }}</span>
+                        <span class="info-value">{{ $user ? $user->name . ' ' . $user->last_name : 'Vecino Juan' }}</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Correo Electrónico</span>
@@ -213,3 +213,4 @@
         });
     </script>
 @endsection
+

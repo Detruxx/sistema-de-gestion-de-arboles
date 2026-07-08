@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Error del Servidor | TreeBA')
+@section('title', 'Error del Servidor | Arborea')
 @section('navbar-class', 'scrolled')
 
 @section('content')
@@ -24,3 +24,4 @@
     </div>
 </main>
 @endsection
+

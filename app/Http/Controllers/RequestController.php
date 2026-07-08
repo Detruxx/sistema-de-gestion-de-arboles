@@ -46,7 +46,10 @@ class RequestController extends Controller
                     ];
                 }),
                 'priority' => $req->priority ? $req->priority->slug : 'low', 
-                'risk_score' => $req->risk_score 
+                'risk_score' => $req->risk_score,
+                'tree_id' => $req->tree_id,
+                'latitude' => $req->tree ? (float) $req->tree->latitude : null,
+                'longitude' => $req->tree ? (float) $req->tree->longitude : null
             ];
         });
 

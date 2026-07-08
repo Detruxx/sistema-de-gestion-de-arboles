@@ -7,6 +7,9 @@ import { updateCompanyStats } from './ui.js';
 import { initJobs, reloadJobsList, state as jobsState } from './jobs.js';
 import { loadCompanyPaymentsList } from './payments.js';
 import { showModule, toggleAdminSidebar, getCsrfToken } from '../shared/layout.js';
+import { filterJobs } from './jobs-ui.js';
+
+window.filterJobs = filterJobs;
 
 window.showModule = (moduleName) => {
     showModule(moduleName);

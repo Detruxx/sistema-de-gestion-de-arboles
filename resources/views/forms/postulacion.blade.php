@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Postulación de Empresa | TreeBA')
+@section('title', 'Postulación de Empresa | Arborea')
 @section('navbar-class', 'scrolled')
 @section('active-tramites', 'active')
 
@@ -14,7 +14,7 @@
             <section class="cuidados-header reveal">
                 <h1 class="hero-title" style="color: var(--deep-canopy) !important; text-align: left;">Postulación de Empresa</h1>
                 <p class="section-subtitle" style="color: var(--forest-night) !important; text-align: left;">
-                    ¿Querés ser contratista oficial de TreeBA? Completá los datos de tu empresa para sumarte al mantenimiento del arbolado público de la ciudad.
+                    ¿Querés ser contratista oficial de Arborea? Completá los datos de tu empresa para sumarte al mantenimiento del arbolado público de la ciudad.
                 </p>
             </section>
 
@@ -55,7 +55,7 @@
                     <!-- Razón Social -->
                     <div class="form-group">
                         <label for="company-business-name" style="display: block; margin-bottom: 8px; font-weight: 600;">Razón Social</label>
-                        <input type="text" id="company-business-name" class="form-control" placeholder="Se completará al verificar el CUIT o ingrese manualmente" required disabled>
+                        <input type="text" id="company-business-name" class="form-control" placeholder="Ingrese la Razón Social de la empresa" required disabled>
                     </div>
 
                     <!-- Nombre Fantasía -->
@@ -99,4 +99,5 @@
 @section('scripts')
     <script src="{{ asset('js/forms/company_postulation.js') }}"></script>
 @endsection
+
 

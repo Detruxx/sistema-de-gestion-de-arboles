@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Bandeja de Entrada | TreeBA')
+@section('title', 'Bandeja de Entrada | Arborea')
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
@@ -215,3 +215,4 @@
         }
     </script>
 @endsection
+

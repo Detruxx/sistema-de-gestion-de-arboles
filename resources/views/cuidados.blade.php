@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Cuidados | TreeBA')
+@section('title', 'Cuidados | Arborea')
 @section('navbar-class', 'scrolled')
 @section('active-cuidados', 'active')
 
@@ -196,3 +196,4 @@
     <script src="{{ asset('js/pages/home/cuidados-canvas.js') }}"></script>
     <script src="{{ asset('js/shared/modal.js') }}"></script>
 @endsection
+
