@@ -74,6 +74,13 @@ async function handlePostulationSubmit(event) {
     const email = document.getElementById('company-email').value;
     const phone = document.getElementById('company-phone').value;
     const address = document.getElementById('company-address').value;
+    const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
+
+    const errorMsgEl = document.getElementById('turnstile-error-msg');
+    if (errorMsgEl) {
+        errorMsgEl.style.display = 'none';
+        errorMsgEl.innerText = '';
+    }
 
     try {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
@@ -89,11 +96,20 @@ async function handlePostulationSubmit(event) {
                 contact_email: email,
                 phone: phone,
                 address: address,
-                services: []
+                services: [],
+                'cf-turnstile-response': turnstileToken
             })
         });
 
         if (!response.ok) {
+            if (response.status === 422 && errorMsgEl) {
+                const errorData = await response.json();
+                const captchaError = errorData.errors?.['cf-turnstile-response']?.[0];
+                if (captchaError) {
+                    errorMsgEl.style.display = 'block';
+                    errorMsgEl.innerText = captchaError;
+                }
+            }
             throw new Error('Error en el servidor');
         }
 

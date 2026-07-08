@@ -76,6 +76,12 @@
                         <input type="text" id="company-address" class="form-control" placeholder="Ej: Av. del Libertador 4500, CABA" required>
                     </div>
 
+                    <!-- Captcha de seguridad Turnstile -->
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <x-turnstile />
+                        <span id="turnstile-error-msg" style="color: #d32f2f; font-size: 0.85rem; display: none; margin-top: 5px;"></span>
+                    </div>
+
                     <!-- Acciones del Formulario -->
                     <div class="form-actions" style="margin-top: 20px; border-top: 1px solid rgba(0,0,0,0.08); padding-top: 15px; display: flex; justify-content: flex-end;">
                         <button type="submit" id="btn-submit-postulation" class="btn-main-cta" style="width: 100%; padding: 12px; font-size: 1.05rem; cursor: not-allowed; opacity: 0.6;" disabled>

@@ -178,6 +178,16 @@
                         <label for="message">Tu Mensaje</label>
                         <textarea id="message" name="mensaje" placeholder="Escribe tu mensaje aquí..." required rows="5"></textarea>
                     </div>
+                    <!-- Captcha de seguridad Turnstile -->
+                    <div style="margin-bottom: 15px;">
+                        <x-turnstile />
+                        @error('cf-turnstile-response')
+                            <span class="error-text" style="color: #d32f2f; font-size: 0.85rem; display: block; margin-top: 5px;">
+                                {{ $message }}
+                            </span>
+                        @enderror
+                    </div>
+
                     <button type="submit" class="btn-main-cta">Enviar Mensaje</button>
                 </form>
             </div>

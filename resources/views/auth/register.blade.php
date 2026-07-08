@@ -88,6 +88,16 @@
                         </div>
                     </div>
 
+                    <!-- Captcha de seguridad Turnstile -->
+                    <div class="form-group" style="margin-top: 15px; margin-bottom: 15px;">
+                        <x-turnstile />
+                        @error('cf-turnstile-response')
+                            <span class="error-text" style="color: #d32f2f; font-size: 0.85rem; display: block; margin-top: 5px;">
+                                {{ $message }}
+                            </span>
+                        @enderror
+                    </div>
+
                     <div class="form-actions" style="margin-top: 30px; text-align: center;">
                         <button type="submit" class="btn-main-cta" id="submit-btn" style="width: 100%;">Registrarse</button>
                     </div>
