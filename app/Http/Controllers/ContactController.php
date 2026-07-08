@@ -131,7 +131,7 @@ class ContactController extends Controller
     }
 
     /**
-     * Marca un mensaje como leido manualmente por el Inspector.
+     * Marca un mensaje como leído manualmente por el Inspector.
      */
     public function markRead(Request $request, $id)
     {
@@ -159,6 +159,34 @@ class ContactController extends Controller
         }
 
         return back()->with('success', 'Mensaje marcado como leído (Simulado).');
+    }
+
+    /**
+     * Apaga la notificación (puntito rojo) cuando el vecino ya vio la respuesta.
+     */
+    public function markSeenByUser(Request $request, $id)
+    {
+        // Buscamos el mensaje que corresponda al usuario actual
+        $msg = ContactMessage::where('id', $id)->where('user_id', auth()->id())->first();
+        
+        // Si no existe, devolvemos error
+        if(!$msg){
+            return response()->json([
+                'success' => false,
+                'message' => 'Mensaje no encontrado.'
+            ], 404);
+        }
+
+        // Si el mensaje es nuevo para el usuario, lo marcamos como visto
+        if ($msg->is_new_for_user) {
+            $msg->is_new_for_user = false;
+            $msg->save(); 
+        }
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Notificación revisada.'
+        ], 200); 
     }
 
     /**

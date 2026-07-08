@@ -1,3 +1,27 @@
+<!-- Notificaciones del perfil de usuario -->
+@php
+    // Iniciamos contadores en cero por defecto (para invitados o si no hay novedades)
+    $unreadClaimsCount = 0;
+    $unreadMessagesCount = 0;
+    $hasAnyNotification = false;
+
+    // Si el usuario inicio sesion, contamos cuantas notificaciones nuevas tiene en la base de datos
+    if (auth()->check()) {
+        // Buscamos reclamos nuevos
+        $unreadClaimsCount = \App\Models\Request::where('user_id', auth()->id())
+            ->where('is_new_for_user', true)
+            ->count();
+
+        // Buscamos mensajes nuevos
+        $unreadMessagesCount = \App\Models\ContactMessage::where('user_id', auth()->id())
+            ->where('is_new_for_user', true)
+            ->count();
+            
+        // Si hay al menos un reclamo o mensaje nuevo, encendemos la notificacion global
+        $hasAnyNotification = ($unreadClaimsCount > 0 || $unreadMessagesCount > 0);
+    }
+@endphp
+
 <!-- Plantilla principal de la pagina web -->
 <!DOCTYPE html>
 <html lang="es">
@@ -83,14 +107,6 @@
                 <a href="/login" class="nav-pill btn-login @yield('active-login')">Login</a>
             @endguest
             @auth <!-- Si el usuario esta logueado, se muestra el menu de perfil -->
-                @php
-                    // TODO (Backend): Reemplazar estas variables hardcodeadas con datos reales (ej. desde el controlador, View Composer, o Auth::user())
-                    $unreadClaimsCount = 2; // Número de notificaciones no leídas en Mis Reclamos
-                    // SKELETON PARA EL BACKEND: Reemplazar por count real a la DB cuando la columna is_new_for_user exista.
-                    // $unreadMessagesCount = \App\Models\ContactMessage::where('user_id', Auth::id())->where('is_new_for_user', true)->count();
-                    $unreadMessagesCount = 0;
-                    $hasAnyNotification = ($unreadClaimsCount > 0 || $unreadMessagesCount > 0);
-                @endphp
                 <div class="nav-dropdown">
                     <button class="nav-pill dropdown-trigger" aria-expanded="false" style="position: relative; background: none; border: 1px solid transparent; padding: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; color: var(--paper-white); overflow: visible;" title="Perfil de {{ Auth::user()->name }}">
                         <!-- Icono SVG de persona (cabeza y cuerpo) o imagen del avatar -->

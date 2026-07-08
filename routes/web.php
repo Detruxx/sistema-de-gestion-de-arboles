@@ -211,3 +211,23 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/api/admin/analytics', [AnalyticsController::class, 'getDashboardAnalytics'])->name('api.admin.analytics');
     Route::post('/api/admin/analytics/custom', [AnalyticsController::class, 'generateCustomReport'])->name('api.admin.analytics.custom');
 });
+
+// =========================================================================
+// RUTAS DE LA RAMA BACKEND-JOACO (Notificaciones y Empresas)
+// =========================================================================
+Route::middleware(['auth'])->group(function () {
+
+    // 1. Alta de Empresa Contratista (Store)
+    // Nota: Si esto es para registro público, quitar middleware en el futuro.
+    Route::post('/companies', [CompanyController::class, 'store'])
+        ->name('companies.store');
+
+    // 2. Apagar puntito rojo de Mensajes de Contacto (cuando el vecino lo ve)
+    Route::post('/mensajes/{id}/mark-seen-by-user', [ContactController::class, 'markSeenByUser'])
+        ->name('contact.markSeen');
+
+    // 3. Apagar puntito rojo de Actualización de Reclamos (En el Profile)
+    Route::post('/reclamos/{id}/mark-seen-by-user', [ProfileController::class, 'markRequestSeenByUser'])
+        ->name('profile.reclamo.markSeen');
+
+});
