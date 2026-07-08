@@ -59,7 +59,7 @@
                                 $statusText = 'En Revisión'; // Pero indicamos que ya lo leyeron
                             }
 
-                            // SKELETON PARA EL BACKEND: Reemplazar false por la lógica real
+                            // SKELETON PARA EL BACKEND: Reemplazar false por la lógica real de "no leído" de la base de datos
                             $isNew = is_array($msg) ? ($msg['is_new'] ?? false) : false;
                         @endphp
 
@@ -192,8 +192,14 @@
                         checkGlobalDot();
 
                         // SKELETON PARA EL BACKEND
-                        // const id = this.getAttribute('data-id');
-                        // fetch(`/api/mark-read/mensaje/${id}`, { method: 'POST' });
+                        const id = this.getAttribute('data-id');
+                        fetch(`/mensajes/${id}/mark-seen-by-user`, { 
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'Accept': 'application/json'
+                            }
+                        });
                     }
                 });
             });

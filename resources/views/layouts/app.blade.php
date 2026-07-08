@@ -173,7 +173,7 @@
                 </div>
                 <p class="footer-tagline">Mapeando el futuro verde de la ciudad.</p>
                 <p class="footer-source">Datos abiertos obtenidos de BA Data - GCBA.</p>
-                <p class="footer-source" style="margin-top: 5px; opacity: 0.85;">Basado en el modelo de gestión de la Comuna 13 (Belgrano, Colegiales y Núñez).</p>
+                <p class="footer-source" style="margin-top: 5px; opacity: 0.85;">Basado en protocolos estandarizados de Espacio Público.</p>
             </div>
             
             <div class="footer-links">

@@ -99,9 +99,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/configuracion/photo', [ProfileController::class, 'updateProfilePhoto'])->name('profile.photo.update');
         Route::get('/mis-reclamos', [ProfileController::class, 'myRequests'])->name('profile.mis-reclamos');
         Route::post('/reclamos/{id}/status', [ProfileController::class, 'updateRequestStatus'])->name('profile.reclamo.status');
+        Route::post('/reclamos/{id}/mark-seen-by-user', [ProfileController::class, 'markRequestSeenByUser'])->name('profile.reclamo.markSeen');
         Route::get('/bandeja-entrada', [ProfileController::class, 'misMensajes'])->name('profile.bandeja-entrada');
         Route::get('/mensajes', [ContactController::class, 'index'])->name('contact.index');
         Route::post('/mensajes/{id}/read', [ContactController::class, 'markRead'])->name('contact.read');
+        Route::post('/mensajes/{id}/mark-seen-by-user', [ContactController::class, 'markSeenByUser'])->name('contact.markSeen');
         Route::post('/mensajes/{id}/reply', [ContactController::class, 'reply'])->name('contact.reply');
 
         //Endpoint para la lista dinámica de árboles/reclamos en el Dashboard
@@ -221,13 +223,5 @@ Route::middleware(['auth'])->group(function () {
     // Nota: Si esto es para registro público, quitar middleware en el futuro.
     Route::post('/companies', [CompanyController::class, 'store'])
         ->name('companies.store');
-
-    // 2. Apagar puntito rojo de Mensajes de Contacto (cuando el vecino lo ve)
-    Route::post('/mensajes/{id}/mark-seen-by-user', [ContactController::class, 'markSeenByUser'])
-        ->name('contact.markSeen');
-
-    // 3. Apagar puntito rojo de Actualización de Reclamos (En el Profile)
-    Route::post('/reclamos/{id}/mark-seen-by-user', [ProfileController::class, 'markRequestSeenByUser'])
-        ->name('profile.reclamo.markSeen');
 
 });
