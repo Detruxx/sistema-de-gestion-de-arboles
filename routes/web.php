@@ -205,6 +205,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // Modificar el rol de un usuario específico (PATCH)
     Route::patch('/api/admin/users/{user}/role', [UserController::class, 'updateRole'])->name('api.admin.users.updateRole');
 
+    //Para el metodo de toggleStatus
+    Route::patch('/admin/users/{id}/toggle-status', [UserController::class, 'toggleStatus']);
+
     // Listado global de empresas en formato JSON
     Route::get('/api/admin/companies', [CompanyController::class, 'indexAdmin'])->name('api.admin.companies.index');
     
@@ -226,3 +229,4 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('turnstile');
 
 });
+

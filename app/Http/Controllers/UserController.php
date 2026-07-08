@@ -132,4 +132,51 @@ class UserController extends Controller
         ], 200); 
     }
 
+     /**
+     * Alterna el estado (Habilitar/Deshabilitar) de cualquier usuario del sistema.
+     * Solo accesible por el Administrador.
+     */
+    public function toggleStatus($id)
+    {   
+        // Verificación de rol: Solo el Administrador puede hacer esto
+        if (auth()->user()->role !== 'admin') {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Acceso denegado. Solo el Administrador puede realizar esta acción.'
+            ], 403);
+        }
+
+        try {
+            // Buscamos al usuario que se quiere modificar
+            $user = User::findOrFail($id);
+
+            // Evita que el admin se deshabilite a sí mismo
+            if ($user->id === auth()->id()) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'No podés deshabilitar tu propia cuenta de administrador.'
+                ], 400);
+            }
+
+            // Cambiamos el estado (1 = Activo, 2 = Inactivo)
+            $user->status_id = ($user->status_id == 1) ? 2 : 1;
+            $user->save();
+
+            $newStatus = ($user->status_id == 1) ? 'Activo' : 'Inactivo';
+
+            return response()->json([
+                'status'    => 'success',
+                'message'   => "El usuario {$user->name} ahora está {$newStatus}.",
+                'status_id' => $user->status_id
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'No se pudo alterar el estado del usuario.',
+                'debug'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
 }
