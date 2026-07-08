@@ -49,12 +49,12 @@ Route::get('/postulacion-empresa', function () {
 
 // Rutas de Autenticación
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
+Route::post('/login', [LoginController::class, 'login'])->middleware('turnstile');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Rutas para el Registro Público del Vecino
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register']);
+Route::post('/register', [RegisterController::class, 'register'])->middleware('turnstile');
 
 // PARTE DE RECLAMOS
 Route::resource('requests', RequestController::class);
@@ -66,7 +66,7 @@ Route::get('/requests/tree/{treeId}', [RequestController::class, 'getRequestsByT
 Route::get('/requests/type/{typeId}', [RequestController::class, 'getRequestsByType']);
 
 // Rutas de Contacto (de rediseño-home)
-Route::post('/contacto', [ContactController::class, 'store'])->name('contacto.store');
+Route::post('/contacto', [ContactController::class, 'store'])->name('contacto.store')->middleware('turnstile');
 
 // Rutas protegidas por autenticación
 Route::middleware(['auth'])->group(function () {
@@ -222,6 +222,7 @@ Route::middleware(['auth'])->group(function () {
     // 1. Alta de Empresa Contratista (Store)
     // Nota: Si esto es para registro público, quitar middleware en el futuro.
     Route::post('/companies', [CompanyController::class, 'store'])
-        ->name('companies.store');
+        ->name('companies.store')
+        ->middleware('turnstile');
 
 });
