@@ -225,4 +225,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('companies.store')
         ->middleware('turnstile');
 
+    // 2. Actualizar foto de perfil
+    Route::post('/profile/photo', [App\Http\Controllers\ProfileController::class, 'updateProfilePhoto'])
+        ->name('profile.photo.update');
+
 });

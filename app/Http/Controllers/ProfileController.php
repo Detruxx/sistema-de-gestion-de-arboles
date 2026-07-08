@@ -79,20 +79,29 @@ class ProfileController extends Controller
 
     public function updateProfilePhoto(Request $request) 
     {
-        // 1. Validamos que sea una imagen real y no supere los 2MB
+        // 1. Validamos que venga un archivo o la URL de un avatar predeterminado
         $request->validate([
-            'profile_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'default_avatar' => 'nullable|string',
         ]);
 
         $user = Auth::user();
 
-        // 2. Si el usuario ya tenía una foto vieja, la borramos del servidor para no acumular basura
-        if ($user->profile_photo) {
-            Storage::disk('public')->delete($user->profile_photo);
+        // 2. Si hay un archivo subido, lo guardamos y borramos el anterior (si no era uno por defecto)
+        if ($request->hasFile('profile_photo')) {
+            if ($user->profile_photo && !str_starts_with($user->profile_photo, '/img/user/')) {
+                Storage::disk('public')->delete($user->profile_photo);
+            }
+            $path = $request->file('profile_photo')->store('avatars', 'public');
+        } else if ($request->filled('default_avatar')) {
+            // 3. Si eligió un avatar por defecto
+            if ($user->profile_photo && !str_starts_with($user->profile_photo, '/img/user/')) {
+                Storage::disk('public')->delete($user->profile_photo);
+            }
+            $path = $request->default_avatar;
+        } else {
+            return redirect()->back()->with('error', 'Debes seleccionar una imagen.');
         }
-
-        // 3. Guardamos el nuevo archivo en la carpeta 'avatars' dentro del disco público
-        $path = $request->file('profile_photo')->store('avatars', 'public');
 
         // 4. Guardamos la ruta en la base de datos
         $user->update([

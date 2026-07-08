@@ -20,11 +20,14 @@
                 <div class="profile-card-header" style="flex-direction: column; align-items: center; text-align: center; border-bottom: none; padding-bottom: 10px;">
                     <div class="profile-avatar-wrapper" style="position: relative; cursor: pointer; width: 100px; height: 100px;">
                         <div class="profile-avatar-large" id="profile-avatar-preview" style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background-color: rgba(91, 191, 140, 0.15); border: 3px solid var(--living-moss); transition: all 0.3s ease;">
-                            <svg id="profile-avatar-svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                            <img id="profile-avatar-img" src="" alt="Avatar" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                            @if(Auth::user()->profile_photo)
+                                <img src="{{ str_starts_with(Auth::user()->profile_photo, '/img/user/') ? asset(Auth::user()->profile_photo) : Storage::url(Auth::user()->profile_photo) }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
+                            @else
+                                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            @endif
                         </div>
                         <!-- Overlay al pasar el mouse para editar -->
                         <div class="avatar-edit-overlay" onclick="document.getElementById('avatar-file-input').click()" style="position: absolute; top: 0; left: 0; width: 100px; height: 100px; border-radius: 50%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; color: white; opacity: 0; transition: opacity 0.3s ease;">
@@ -41,23 +44,32 @@
                 </div>
 
                 <!-- Selección de Avatar -->
-                <div class="avatar-selection-container" style="border-top: 1px solid rgba(45, 122, 79, 0.15); border-bottom: 1px solid rgba(45, 122, 79, 0.15); padding: 20px 0; display: flex; flex-direction: column; gap: 15px; align-items: center;">
+                <form action="{{ route('profile.photo.update') }}" method="POST" enctype="multipart/form-data" id="avatar-form" class="avatar-selection-container" style="border-top: 1px solid rgba(45, 122, 79, 0.15); border-bottom: 1px solid rgba(45, 122, 79, 0.15); padding: 20px 0; display: flex; flex-direction: column; gap: 15px; align-items: center;">
+                    @csrf
                     <span class="info-label" style="font-size: 0.8rem;">Elegir avatar o subir foto</span>
                     <div class="default-avatars" style="display: flex; gap: 15px; justify-content: center;">
-                        <img class="default-avatar-option" data-avatar="/img/user/avatar1.png" src="{{ asset('img/user/avatar1.png') }}" alt="Avatar 1" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.2s ease;">
-                        <img class="default-avatar-option" data-avatar="/img/user/avatar2.png" src="{{ asset('img/user/avatar2.png') }}" alt="Avatar 2" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.2s ease;">
-                        <img class="default-avatar-option" data-avatar="/img/user/avatar3.png" src="{{ asset('img/user/avatar3.png') }}" alt="Avatar 3" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.2s ease;">
+                        <button type="submit" name="default_avatar" value="/img/user/avatar1.png" style="background: none; border: none; padding: 0;">
+                            <img class="default-avatar-option" src="{{ asset('img/user/avatar1.png') }}" alt="Avatar 1" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.2s ease;">
+                        </button>
+                        <button type="submit" name="default_avatar" value="/img/user/avatar2.png" style="background: none; border: none; padding: 0;">
+                            <img class="default-avatar-option" src="{{ asset('img/user/avatar2.png') }}" alt="Avatar 2" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.2s ease;">
+                        </button>
+                        <button type="submit" name="default_avatar" value="/img/user/avatar3.png" style="background: none; border: none; padding: 0;">
+                            <img class="default-avatar-option" src="{{ asset('img/user/avatar3.png') }}" alt="Avatar 3" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.2s ease;">
+                        </button>
                     </div>
                     <div style="display: flex; justify-content: center; gap: 10px; width: 100%; flex-wrap: wrap;">
                         <button type="button" class="btn-main-cta" onclick="document.getElementById('avatar-file-input').click()" style="background-color: transparent; border: 2px solid var(--living-moss); color: var(--living-moss); font-size: 0.85rem; padding: 6px 12px; margin: 0;">
                             Subir propia imagen
                         </button>
-                        <button type="button" id="btn-remove-avatar" class="btn-main-cta" style="background-color: transparent; border: 2px solid #d32f2f; color: #d32f2f; font-size: 0.85rem; padding: 6px 12px; margin: 0; display: none;">
+                        @if(Auth::user()->profile_photo)
+                        <button type="submit" name="default_avatar" value="" class="btn-main-cta" style="background-color: transparent; border: 2px solid #d32f2f; color: #d32f2f; font-size: 0.85rem; padding: 6px 12px; margin: 0;">
                             Quitar foto
                         </button>
+                        @endif
                     </div>
-                    <input type="file" id="avatar-file-input" accept="image/*" style="display: none;">
-                </div>
+                    <input type="file" name="profile_photo" id="avatar-file-input" accept="image/*" style="display: none;" onchange="document.getElementById('avatar-form').submit()">
+                </form>
 
                 <div class="profile-info-list">
                     <div class="info-item">
@@ -124,93 +136,22 @@
 
 @section('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const avatarSvg = document.getElementById('profile-avatar-svg');
-            const avatarImg = document.getElementById('profile-avatar-img');
-            const navAvatarSvg = document.getElementById('nav-avatar-svg');
-            const navAvatarImg = document.getElementById('nav-avatar-img');
-            
-            const fileInput = document.getElementById('avatar-file-input');
-            const removeBtn = document.getElementById('btn-remove-avatar');
-            const defaultOptions = document.querySelectorAll('.default-avatar-option');
-
-            // Cargar avatar inicial
-            const savedAvatar = localStorage.getItem('user_avatar');
-            if (savedAvatar) {
-                updateAvatarUI(savedAvatar);
-            }
-
-            // Manejar click en avatares predeterminados
-            defaultOptions.forEach(opt => {
-                opt.addEventListener('click', () => {
-                    const avatarUrl = opt.getAttribute('data-avatar');
-                    localStorage.setItem('user_avatar', avatarUrl);
-                    updateAvatarUI(avatarUrl);
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animación de campos de formulario
+            const formInputs = document.querySelectorAll('.form-control');
+            formInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
                 });
-            });
-
-            // Manejar subida de archivo propio
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        const base64Data = event.target.result;
-                        localStorage.setItem('user_avatar', base64Data);
-                        updateAvatarUI(base64Data);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            // Eliminar avatar
-            removeBtn.addEventListener('click', () => {
-                localStorage.removeItem('user_avatar');
-                
-                // Resetear vistas previas del perfil
-                avatarImg.style.display = 'none';
-                avatarImg.src = '';
-                avatarSvg.style.display = 'block';
-
-                // Resetear navbar
-                if (navAvatarImg && navAvatarSvg) {
-                    navAvatarImg.style.display = 'none';
-                    navAvatarImg.src = '';
-                    navAvatarSvg.style.display = 'block';
-                }
-
-                // Ocultar botón eliminar y quitar seleccionados
-                removeBtn.style.display = 'none';
-                defaultOptions.forEach(o => o.classList.remove('selected'));
-                fileInput.value = '';
-            });
-
-            function updateAvatarUI(src) {
-                // Actualizar perfil
-                avatarImg.src = src;
-                avatarImg.style.display = 'block';
-                avatarSvg.style.display = 'none';
-
-                // Actualizar navbar
-                if (navAvatarImg && navAvatarSvg) {
-                    navAvatarImg.src = src;
-                    navAvatarImg.style.display = 'block';
-                    navAvatarSvg.style.display = 'none';
-                }
-
-                // Mostrar botón de eliminar
-                removeBtn.style.display = 'inline-block';
-
-                // Marcar cuál está seleccionado si es predeterminado
-                defaultOptions.forEach(o => {
-                    if (o.getAttribute('data-avatar') === src) {
-                        o.classList.add('selected');
-                    } else {
-                        o.classList.remove('selected');
+                input.addEventListener('blur', function() {
+                    if (!this.value) {
+                        this.parentElement.classList.remove('focused');
                     }
                 });
-            }
+                if (input.value) {
+                    input.parentElement.classList.add('focused');
+                }
+            });
         });
     </script>
 @endsection
-
