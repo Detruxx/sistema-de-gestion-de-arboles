@@ -4,7 +4,7 @@
 
 import { initMap, getMap } from './core.js';
 import { setupUI } from './ui.js';
-import { loadTreesFromDatabase, mostrarDatosArbol } from './api.js';
+import { loadTreesFromDatabase, loadClaimsFromDatabase, mostrarDatosArbol } from './api.js';
 import { renderMapMarkers, updateMarkersSizeOnZoom, getArboles } from './markers.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. Cargar datos iniciales
     loadTreesFromDatabase();
+    loadClaimsFromDatabase();
 
     // 4. Configurar listeners de filtros
     const filterEspecie = document.getElementById('filter-especie');

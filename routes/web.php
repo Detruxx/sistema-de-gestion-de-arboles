@@ -156,6 +156,9 @@ Route::get('/api/request-types',[RequestTypeController::class, 'index']);
 // Endpoint para traer todos los estados de reclamo con su metadata UI
 Route::get('/api/request-statuses', [RequestController::class, 'getStatuses']);
 
+// Endpoint para traer los reclamos geolocalizados (solo los que tienen un árbol vinculado)
+Route::get('/api/reclamos/pines', [RequestController::class, 'getClaimPins']);
+
 // Datos para el Panel de la Empresa Contratista 
 Route::get('/company/dashboard-data', [CompanyPanelController::class, 'getDashboardData']);
 

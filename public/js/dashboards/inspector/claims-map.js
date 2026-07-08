@@ -20,25 +20,29 @@ export function triggerMapResize() {
     }
 }
 
-export function updateClaimsMapMarkers() {
+export async function updateClaimsMapMarkers() {
     if (!claimsMapObj) return;
 
-    updateMapMarkers(claimsMapObj, state.claims, (claim) => {
-        let lat = claim.lat || claim.latitude;
-        let lng = claim.lng || claim.longitude;
-        if (!lat || !lng) {
-            const numId = parseInt(claim.id.replace(/\D/g, '')) || 0;
-            lat = -34.5700 - (numId % 20) * 0.0015;
-            lng = -58.4500 - (numId % 15) * 0.0012;
-        }
+    try {
+        const response = await fetch('/api/reclamos/pines');
+        if (!response.ok) return;
 
-        const statusObj = state.requestStatuses.find(rs => rs.slug === claim.estado);
-        const color = statusObj ? statusObj.color : '#6b7280';
+        const result = await response.json();
+        if (result.status !== 'success' || !result.data) return;
 
-        return { lat, lng, color, id: claim.id };
-    }, (id) => {
-        if (typeof window.selectClaim === 'function') {
-            window.selectClaim(id);
-        }
-    });
+        updateMapMarkers(claimsMapObj, result.data, (claim) => {
+            return {
+                lat: claim.latitude,
+                lng: claim.longitude,
+                color: claim.estado_color || '#6b7280',
+                id: claim.tracking_code
+            };
+        }, (tracking_code) => {
+            if (typeof window.selectClaim === 'function') {
+                window.selectClaim(tracking_code);
+            }
+        });
+    } catch (error) {
+        console.error('Error al cargar pines de reclamos en el mapa del inspector:', error);
+    }
 }

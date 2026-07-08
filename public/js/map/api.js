@@ -18,6 +18,60 @@ export async function loadTreesFromDatabase() {
     }
 }
 
+// Carga los reclamos que tienen un árbol vinculado y los muestra como marcadores en el mapa
+export async function loadClaimsFromDatabase() {
+    try {
+        const response = await fetch('/api/reclamos/pines');
+        if (!response.ok) throw new Error('Error al cargar reclamos');
+
+        const result = await response.json();
+        if (result.status !== 'success' || !result.data) return;
+
+        const map = getMap();
+        if (!map) return;
+
+        result.data.forEach(claim => {
+            // Creamos un icono circular con el color del estado del reclamo
+            const claim_color = claim.estado_color || '#ef4444';
+            const claimIcon = L.divIcon({
+                className: 'claim-marker-icon',
+                html: `<div style="width: 12px; height: 12px; background: ${claim_color}; border: 2px solid white; border-radius: 50%; box-shadow: 0 0 6px rgba(0,0,0,0.5);"></div>`,
+                iconSize: [12, 12],
+                iconAnchor: [6, 6]
+            });
+
+            const claim_marker = L.marker([claim.latitude, claim.longitude], {
+                icon: claimIcon,
+                zIndexOffset: 500
+            }).addTo(map);
+
+            // Popup con la información del reclamo
+            const popup_html = `
+                <div class="tree-popup" style="min-width: 180px;">
+                    <h4 class="tree-popup-title" style="font-size: 0.95rem; margin-bottom: 4px;">${claim.categoria}</h4>
+                    <p class="tree-popup-address" style="margin: 4px 0; font-size: 0.85rem; color: #555;">
+                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" style="vertical-align: middle;">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        <span>${claim.direccion}</span>
+                    </p>
+                    <div style="font-size: 0.8rem; color: #666; margin-bottom: 6px;">${claim.tracking_code}</div>
+                    <div style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; color: white; background: ${claim_color};">${claim.estado}</div>
+                </div>
+            `;
+
+            claim_marker.bindPopup(popup_html, {
+                closeButton: false,
+                className: 'custom-tree-popup',
+                offset: [0, -5]
+            });
+        });
+    } catch (error) {
+        console.error("Error al obtener los reclamos geolocalizados:", error);
+    }
+}
+
 export async function mostrarDatosArbol(arbolId) {
     try {
         const response = await fetch(`/api/arboles/${arbolId}`);

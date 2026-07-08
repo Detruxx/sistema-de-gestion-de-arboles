@@ -20,7 +20,7 @@ class RequestController extends Controller
      */
     public function index(Request $request)
     {
-        $requests = \App\Models\Request::with(['user', 'street', 'requestType', 'tree', 'histories.status', 'status', 'workOrders.company', 'priority'])->orderBy('created_at', 'desc')->get();
+        $requests = \App\Models\Request::with(['user', 'street', 'requestType', 'tree.specie', 'histories.status', 'status', 'workOrders.company', 'priority'])->orderBy('created_at', 'desc')->get();
 
         $mapped = $requests->values()->map(function ($req) {
             return [
@@ -31,7 +31,7 @@ class RequestController extends Controller
                 'estado' => $req->status ? $req->status->slug : 'open',
                 'descripcion' => $req->description,
                 'direccion' => $req->street ? $req->street->street_name . ' ' . $req->street->street_number : 'Sin dirección',
-                'especie' => $req->tree ? $req->tree->species_name : 'No vinculada',
+                'especie' => $req->tree && $req->tree->specie ? $req->tree->specie->common_name : 'No vinculada',
                 'email' => $req->user ? $req->user->email : 'sin-email@treeba.gob.ar',
                 'linked_to' => $req->linked_to,
                 'suggested_duplicate_id' => $req->suggested_duplicate_id,
@@ -397,6 +397,62 @@ class RequestController extends Controller
         return response()->json([
             'status' => 'success',
             'data'   => $statuses
+        ], 200);
+    }
+
+    /**
+     * Devuelve los reclamos que tienen un árbol vinculado, con las coordenadas del árbol.
+     * Pensado para mostrar pines de reclamos en el mapa público.
+     */
+    public function getClaimPins()
+    {
+        $claims = DB::table('requests')
+            ->join('trees', 'requests.tree_id', '=', 'trees.id')
+            ->join('request_statuses', 'requests.request_status_id', '=', 'request_statuses.id')
+            ->join('request_types', 'requests.request_type_id', '=', 'request_types.id')
+            ->leftJoin('streets', 'requests.street_id', '=', 'streets.id')
+            ->whereNotNull('requests.tree_id')
+            ->where('request_statuses.is_terminal', false)
+            ->select([
+                'requests.id',
+                'requests.tree_id',
+                'requests.description',
+                'requests.created_at',
+                'trees.latitude',
+                'trees.longitude',
+                'request_types.task_description as categoria',
+                'request_statuses.status_name as estado',
+                'request_statuses.color as estado_color',
+                'streets.street_name',
+                'streets.street_number',
+            ])
+            ->orderBy('requests.created_at', 'desc')
+            ->get();
+
+        // Armamos el tracking_code igual que en el modelo
+        $formatted_claims = $claims->map(function ($claim) {
+            $year = date('Y', strtotime($claim->created_at));
+            $tracking_code = 'REC-' . $year . '-' . str_pad($claim->id, 3, '0', STR_PAD_LEFT);
+
+            return [
+                'id'             => $claim->id,
+                'tracking_code'  => $tracking_code,
+                'tree_id'        => $claim->tree_id,
+                'latitude'       => (float) $claim->latitude,
+                'longitude'      => (float) $claim->longitude,
+                'categoria'      => $claim->categoria,
+                'estado'         => $claim->estado,
+                'estado_color'   => $claim->estado_color,
+                'direccion'      => $claim->street_name
+                    ? $claim->street_name . ' ' . ($claim->street_number ?? '')
+                    : 'Sin dirección',
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'count'  => $formatted_claims->count(),
+            'data'   => $formatted_claims
         ], 200);
     }
 }

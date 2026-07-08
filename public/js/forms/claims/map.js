@@ -35,7 +35,7 @@ export function initSelectorMap() {
     // Geolocalizar al usuario automáticamente al cargar el mapa (salto instantáneo)
     selectorMap.locate({ setView: true, maxZoom: 17 });
 
-    selectorMap.on('locationfound', function(e) {
+    selectorMap.on('locationfound', function (e) {
         const myLocationIcon = L.divIcon({
             className: 'my-location-pin',
             html: `
@@ -47,7 +47,7 @@ export function initSelectorMap() {
         L.marker(e.latlng, { icon: myLocationIcon, zIndexOffset: 1000 }).addTo(selectorMap);
     });
 
-    // Render trees on map
+    // Renderizamos arboles en el mapa
     const treeIcon = L.divIcon({
         className: 'tree-marker-icon',
         html: `<div style="width: 14px; height: 14px; background: #22c55e; border: 2px solid white; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
@@ -69,8 +69,8 @@ export function initSelectorMap() {
                 const marker = L.marker([t.latitude, t.longitude], { icon: treeIcon }).addTo(selectorMap);
                 marker.on('click', () => {
                     currentSelectedTreeId = t.id;
-                    if(previewText) previewText.innerHTML = `<strong>Árbol Seleccionado:</strong> ID #${t.id} - ${t.especie}`;
-                    if(btnConfirmAddress) btnConfirmAddress.disabled = false;
+                    if (previewText) previewText.innerHTML = `<strong>Árbol Seleccionado:</strong> ID #${t.id} - ${t.especie}`;
+                    if (btnConfirmAddress) btnConfirmAddress.disabled = false;
                 });
             }
         });
@@ -80,8 +80,8 @@ export function initSelectorMap() {
     // Función de geocodificación reversa usando Nominatim
     function reverseGeocode(lat, lng) {
         currentSelectedTreeId = null;
-        if(previewText) previewText.textContent = 'Buscando dirección...';
-        if(btnConfirmAddress) btnConfirmAddress.disabled = true;
+        if (previewText) previewText.textContent = 'Buscando dirección...';
+        if (btnConfirmAddress) btnConfirmAddress.disabled = true;
 
         fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
             .then(res => res.json())
@@ -99,8 +99,8 @@ export function initSelectorMap() {
                 } else {
                     currentCoordsAddress = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
                 }
-                if(previewText) previewText.textContent = currentCoordsAddress;
-                if(btnConfirmAddress) btnConfirmAddress.disabled = false;
+                if (previewText) previewText.textContent = currentCoordsAddress;
+                if (btnConfirmAddress) btnConfirmAddress.disabled = false;
             })
             .catch(err => {
                 console.error('Nominatim error, usando fallback:', err);
@@ -126,8 +126,8 @@ export function initSelectorMap() {
                 const simulatedNumber = Math.floor(100 + Math.random() * 800) * 10;
                 const streetName = closest.address.split(' ').slice(0, -1).join(' ') || closest.address.split(' ')[0];
                 currentCoordsAddress = streetName + ' ' + simulatedNumber + ', Palermo, CABA';
-                if(previewText) previewText.textContent = currentCoordsAddress;
-                if(btnConfirmAddress) btnConfirmAddress.disabled = false;
+                if (previewText) previewText.textContent = currentCoordsAddress;
+                if (btnConfirmAddress) btnConfirmAddress.disabled = false;
             });
     }
 
