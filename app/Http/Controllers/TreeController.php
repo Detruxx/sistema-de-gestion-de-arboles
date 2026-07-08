@@ -289,6 +289,7 @@ class TreeController extends Controller
                 'trees.id',
                 'trees.latitude',
                 'trees.longitude',
+                'trees.height', // (quiza quitar luego)
                 'streets.street_name',
                 'streets.street_number',
                 'streets.door_plate',
@@ -311,6 +312,7 @@ class TreeController extends Controller
                 'id' => $pin->id,
                 'latitude'  => (float)$pin->latitude,
                 'longitude' => (float)$pin->longitude,
+                'height'    => $pin->height, // (quiza quitar luego)
                 'street' => $pin->street_name ? [
                     'street_name' => $pin->street_name,
                     'street_number' => $pin->street_number,

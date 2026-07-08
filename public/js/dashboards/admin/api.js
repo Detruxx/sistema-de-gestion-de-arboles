@@ -44,57 +44,8 @@ export async function changeUserRole(id, role) {
     }
 };
 
-export async function banUserPrompt(id, days) {
-    const user = state.users.find(u => u.id === id);
-    if (!user) return;
 
-    const date = new Date();
-    date.setDate(date.getDate() + days);
-    const bannedUntil = date.toISOString();
 
-    try {
-        const response = await fetch(`/api/admin/users/${id}/ban`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': getCsrfToken()
-            },
-            body: JSON.stringify({ banned_until: bannedUntil })
-        });
-
-        if (!response.ok) throw new Error('Error al suspender usuario');
-
-        user.banned_until = bannedUntil;
-        showNotification(`Vecino #${id} suspendido por ${days} días.`);
-        selectresident(id);
-    } catch (err) {
-        console.error("Error al banear usuario:", err);
-    }
-};
-
-export async function liftBan(id) {
-    const user = state.users.find(u => u.id === id);
-    if (!user) return;
-
-    try {
-        const response = await fetch(`/api/admin/users/${id}/ban`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': getCsrfToken()
-            },
-            body: JSON.stringify({ banned_until: null })
-        });
-
-        if (!response.ok) throw new Error('Error al levantar suspensión');
-
-        user.banned_until = null;
-        showNotification(`Baneo de vecino #${id} levantado.`);
-        selectresident(id);
-    } catch (err) {
-        console.error("Error al levantar baneo:", err);
-    }
-};
 
 
 export async function updateAdminStats() {
