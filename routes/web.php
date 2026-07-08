@@ -98,7 +98,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/configuracion/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
         Route::post('/configuracion/photo', [ProfileController::class, 'updateProfilePhoto'])->name('profile.photo.update');
         Route::get('/mis-reclamos', [ProfileController::class, 'myRequests'])->name('profile.mis-reclamos');
-        Route::post('/reclamos/{id}/status', [ProfileController::class, 'updateRequestStatus'])->name('profile.reclamo.status');
         Route::post('/reclamos/{id}/mark-seen-by-user', [ProfileController::class, 'markRequestSeenByUser'])->name('profile.reclamo.markSeen');
         Route::get('/bandeja-entrada', [ProfileController::class, 'misMensajes'])->name('profile.bandeja-entrada');
         Route::get('/mensajes', [ContactController::class, 'index'])->name('contact.index');

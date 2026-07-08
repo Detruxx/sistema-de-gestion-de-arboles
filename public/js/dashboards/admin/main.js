@@ -26,10 +26,16 @@ Object.assign(window, companies);
 Object.assign(window, api);
 Object.assign(window, analytics);
 
-document.addEventListener('DOMContentLoaded', () => {
+function initAdmin() {
     if (typeof window.loadDataFromServer === 'function') window.loadDataFromServer();
     handleHashRouting();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAdmin);
+} else {
+    initAdmin();
+}
 
 window.addEventListener('hashchange', handleHashRouting);
 

@@ -271,6 +271,11 @@
                     </div>
                 </div>
 
+                <!-- Aviso de Página en Construcción Reutilizable -->
+                <div style="margin-bottom: 40px;">
+                    <x-under-construction />
+                </div>
+
                 <!-- Alertas Inteligentes (Actionable Intelligence) -->
                 <div class="detail-panel" style="margin-bottom: 30px; border-left: 4px solid var(--admin-accent);">
                     <h3 class="sidebar-menu-title mt-25" style="font-family: var(--font-display); margin-bottom: 20px; color: var(--admin-accent);">

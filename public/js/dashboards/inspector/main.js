@@ -23,12 +23,18 @@ Object.assign(window, trees);
 Object.assign(window, map);
 
 // Inicializar la carga de datos si estamos en Inspector
-document.addEventListener('DOMContentLoaded', () => {
+function initInspector() {
     if (typeof window.loadClaimsFromServer === 'function') window.loadClaimsFromServer();
     if (typeof window.loadTreesFromServer === 'function') window.loadTreesFromServer();
     
     handleHashRouting();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initInspector);
+} else {
+    initInspector();
+}
 
 window.addEventListener('hashchange', handleHashRouting);
 

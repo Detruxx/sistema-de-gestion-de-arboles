@@ -52,8 +52,9 @@
                             $dateFormatted = date('d/m/Y H:i', strtotime($createdAt));
                             $response = is_array($msg) ? ($msg['inspector_response'] ?? null) : ($msg->inspector_response ?? null);
 
-                            $statusClass = $status === 'unread' ? 'unread' : ($status === 'answered' ? 'answered' : 'read');
-                            $statusText = $status === 'unread' ? 'Nuevo' : ($status === 'answered' ? 'Respondido' : 'Leído');
+                            $isAnswered = !empty($response);
+                            $statusClass = $status === 'unread' ? 'unread' : ($isAnswered ? 'answered' : 'read');
+                            $statusText = $status === 'unread' ? 'Nuevo' : ($isAnswered ? 'Respondido' : 'Leído');
                         @endphp
 
                         <details class="reclamo-card {{ $statusClass }}" style="margin-bottom: 15px;" data-timestamp="{{ strtotime($createdAt) }}" data-is-new="{{ $status === 'unread' ? 'true' : 'false' }}">
@@ -87,7 +88,7 @@
                                     <p style="margin: 0; font-size: 0.95rem; line-height: 1.5;">{{ $messageText }}</p>
                                 </div>
 
-                                @if($status === 'answered' && $response)
+                                @if($isAnswered)
                                     <div style="padding: 15px; background-color: #f0fdf4; border-left: 4px solid #16a34a; border-radius: 4px;">
                                         <strong style="color: #166534; font-size: 0.85rem; display: block; margin-bottom: 6px; text-transform: uppercase;">Tu Respuesta Oficial:</strong>
                                         <p style="color: #15803d; font-size: 0.95rem; margin: 0; line-height: 1.5;">{{ $response }}</p>

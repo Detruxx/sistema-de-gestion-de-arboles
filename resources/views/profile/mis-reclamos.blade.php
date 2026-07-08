@@ -50,22 +50,21 @@
                 <div class="reclamos-list" id="reclamos-list-container">
                     @foreach($reclamos as $rec)
                         @php
-                            // Ajustes para soportar tanto objetos Eloquent como arrays de la simulacion
-                            $id = is_array($rec) ? $rec['id'] : $rec->id;
-                            $statusObj = is_array($rec) ? null : $rec->status;
-                            $statusSlug = is_array($rec) ? $rec['status'] : ($statusObj ? $statusObj->slug : 'open');
+                            $id = $rec->id;
+                            $statusObj = $rec->status;
+                            $statusSlug = $statusObj ? $statusObj->slug : 'open';
                             
                             // Mapear descartado a denied para consistencia
                             if ($statusSlug === 'discarded') {
                                 $statusSlug = 'denied';
                             }
                             
-                            $typeName = is_array($rec) ? $rec['type_name'] : ($rec->Request_Type ? $rec->Request_Type->type_name : 'Reclamo General');
-                            $streetName = is_array($rec) ? $rec['street_name'] : ($rec->street ? $rec->street->street_name . ' ' . $rec->street->street_number : 'Ubicación no especificada');
-                            $description = is_array($rec) ? $rec['description'] : $rec->description;
-                            $treeId = is_array($rec) ? $rec['tree_id'] : $rec->tree_id;
-                            $treeSpecie = is_array($rec) ? $rec['tree_specie'] : ($rec->tree && $rec->tree->species ? $rec->tree->species->common_name : null);
-                            $createdAt = is_array($rec) ? $rec['created_at'] : $rec->created_at->format('Y-m-d H:i:s');
+                            $typeName = $rec->Request_Type ? $rec->Request_Type->type_name : 'Reclamo General';
+                            $streetName = $rec->street ? $rec->street->street_name . ' ' . $rec->street->street_number : 'Ubicación no especificada';
+                            $description = $rec->description;
+                            $treeId = $rec->tree_id;
+                            $treeSpecie = $rec->tree && $rec->tree->species ? $rec->tree->species->common_name : null;
+                            $createdAt = $rec->created_at->format('Y-m-d H:i:s');
                             $dateFormatted = date('d/m/Y', strtotime($createdAt));
 
                             // Clasificar el color y badge de la tarjeta
@@ -79,8 +78,8 @@
                                 $statusText = $statusSlug === 'denied' ? 'Rechazado' : 'Vinculado';
                             }
                             $timestamp = strtotime($createdAt);
-                            // SKELETON PARA EL BACKEND: Reemplazar false por la lógica real de "no leído" de la base de datos
-                            $isNew = is_array($rec) ? ($rec['is_new'] ?? false) : false; 
+                            
+                            $isNew = $rec->is_new_for_user ?? false; 
 
                             // Stepper de estados lineales (1 al 6)
                             $linearSteps = [
@@ -98,6 +97,10 @@
                                 $terminalStatus = ['status_name' => 'Denegado', 'slug' => 'denied', 'color' => '#ef4444'];
                             } elseif ($statusSlug === 'vinculated') {
                                 $terminalStatus = ['status_name' => 'Vinculado (Duplicado)', 'slug' => 'vinculated', 'color' => '#d946ef'];
+                            } elseif ($statusSlug === 'cancelled') {
+                                $terminalStatus = ['status_name' => 'Cancelado', 'slug' => 'cancelled', 'color' => '#6b7280'];
+                                $statusClass = 'discarded';
+                                $statusText = 'Cancelado';
                             }
 
                             $isTerminalException = ($terminalStatus !== null);
@@ -128,45 +131,7 @@
                             $lineBg = $isTerminalException ? $currentStatusColor : '#15803d';
 
                             // Historial de cambios
-                            if (is_array($rec)) {
-                                $histories = [];
-                                $createdAtTime = strtotime($createdAt);
-                                $histories[] = (object)[
-                                    'created_at' => date('Y-m-d H:i:s', $createdAtTime),
-                                    'status' => (object)['status_name' => 'Pendiente', 'color' => '#eab308', 'slug' => 'open'],
-                                    'justification' => 'Registro inicial del reclamo.'
-                                ];
-                                if ($statusSlug === 'resolved') {
-                                    $histories[] = (object)[
-                                        'created_at' => date('Y-m-d H:i:s', $createdAtTime + 86400),
-                                        'status' => (object)['status_name' => 'Relevado / Inspeccionado', 'color' => '#ea580c', 'slug' => 'relevated'],
-                                        'justification' => 'El inspector visitó el lugar y constató la situación de la plantera y del ejemplar.'
-                                    ];
-                                    $histories[] = (object)[
-                                        'created_at' => date('Y-m-d H:i:s', $createdAtTime + 172800),
-                                        'status' => (object)['status_name' => 'Programado', 'color' => '#6b21a8', 'slug' => 'scheduled'],
-                                        'justification' => 'Se programó la cuadrilla de poda/remoción correspondiente.'
-                                    ];
-                                    $histories[] = (object)[
-                                        'created_at' => date('Y-m-d H:i:s', $createdAtTime + 259200),
-                                        'status' => (object)['status_name' => 'En curso', 'color' => '#2563eb', 'slug' => 'in_progress'],
-                                        'justification' => 'La cuadrilla contratista comunal se encuentra operando en la zona.'
-                                    ];
-                                    $histories[] = (object)[
-                                        'created_at' => date('Y-m-d H:i:s', $createdAtTime + 345600),
-                                        'status' => (object)['status_name' => 'Completado', 'color' => '#22c55e', 'slug' => 'resolved'],
-                                        'justification' => 'Los trabajos concluyeron de manera satisfactoria. La incidencia queda cerrada.'
-                                    ];
-                                } elseif ($statusSlug === 'denied') {
-                                    $histories[] = (object)[
-                                        'created_at' => date('Y-m-d H:i:s', $createdAtTime + 86400),
-                                        'status' => (object)['status_name' => 'Denegado', 'color' => '#ef4444', 'slug' => 'denied'],
-                                        'justification' => 'El reclamo fue denegado debido a que los datos de ubicación no corresponden o la intervención ya fue resuelta.'
-                                    ];
-                                }
-                            } else {
-                                $histories = $rec->histories;
-                            }
+                            $histories = $rec->histories ?? [];
                         @endphp
 
                         <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}" data-is-new="{{ $isNew ? 'true' : 'false' }}" data-type="reclamo" data-id="{{ $id }}" style="position: relative;">
@@ -177,7 +142,7 @@
                             @endif
                             <summary class="reclamo-card-summary">
                                 <div class="card-summary-left">
-                                    <span class="reclamo-id">#{{ $id }}</span>
+                                    <span class="reclamo-id" style="font-size: 0.85rem; color: #64748b; font-weight: 500;">{{ $rec->tracking_code }}</span>
                                     <div>
                                         <h3>{{ $typeName }}</h3>
                                         <p class="summary-meta">{{ $streetName }} • {{ $dateFormatted }}</p>
@@ -263,12 +228,29 @@
                                                 <div class="claim-step-circle {{ $isTerminalException && $step['sequence'] === 1 && $statusSlug === 'denied' ? 'is-denied' : '' }}" style="background: {{ $bgNum }}; border-color: {{ $borderNum }}; color: {{ $colorNum }};">
                                                     {{ $numText }}
                                                 </div>
-                                                <span class="claim-step-label" style="color: {{ $colorLbl }}; font-weight: {{ $fontLbl }};">
+                                                <span class="claim-step-label" style="color: {{ $colorLbl; }} font-weight: {{ $fontLbl; }};">
                                                     {{ $labelText }}
                                                 </span>
                                             </div>
                                         @endforeach
                                     </div>
+                                </div>
+
+                                <!-- Admin Response Box -->
+                                @php
+                                    $latestHistory = count($histories) > 0 ? $histories->last() : null;
+                                    $adminReply = $latestHistory && $latestHistory->justification ? $latestHistory->justification : 'Aún no se ha redactado ninguna respuesta oficial para esta solicitud.';
+                                @endphp
+                                <div class="admin-reply-box" style="margin-top: 20px; background-color: #f8fafc; border-left: 4px solid var(--living-moss); padding: 15px; border-radius: 4px;">
+                                    <h4 class="admin-reply-title" style="display: flex; align-items: center; gap: 8px; color: var(--forest-night); margin-bottom: 8px; font-size: 1rem;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--living-moss)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                        </svg>
+                                        Respuesta del Administrador
+                                    </h4>
+                                    <p class="admin-reply-text" style="color: #475569; font-size: 0.95rem; line-height: 1.5; margin: 0;">
+                                        {{ $adminReply }}
+                                    </p>
                                 </div>
 
                                 <!-- Historial de Cambios / Mensajes del Inspector -->
@@ -312,21 +294,36 @@
                                         </button>
 
                                         <!-- Formulario colapsado -->
-                                        <div class="cancel-form-box" id="cancel-form-{{ $id }}" style="display: none; margin-top: 15px; background: rgba(211, 47, 47, 0.05); border: 1px solid rgba(211, 47, 47, 0.2); padding: 15px; border-radius: 8px;">
-                                            <label for="cancel-reason-{{ $id }}" style="display: block; font-weight: 600; font-size: 0.85rem; color: #d32f2f; text-transform: uppercase; margin-bottom: 8px;">¿Por qué deseas cancelar este reclamo?</label>
-                                            <p style="font-size: 0.85rem; color: var(--forest-night); margin-top: 0; margin-bottom: 10px; opacity: 0.8;">
-                                                Por favor, indícanos el motivo (por ejemplo, si el trabajo será realizado por un privado/particular para registrar quién intervino el árbol).
-                                            </p>
-                                            <textarea id="cancel-reason-{{ $id }}" class="form-control" style="width: 100%; min-height: 80px; margin-bottom: 12px; padding: 10px; border-radius: 6px; border: 1px solid rgba(45, 122, 79, 0.25); box-sizing: border-box;" placeholder="Escribe aquí el motivo de la cancelación..."></textarea>
-                                            <div style="display: flex; gap: 10px;">
-                                                <button type="button" class="btn-main-cta" onclick="submitCancelClaim('{{ $id }}')" style="background-color: #d32f2f; border: none; font-size: 0.85rem; padding: 8px 16px; margin: 0; color: white; cursor: pointer; border-radius: 8px; font-weight: 600;">
-                                                    Confirmar Cancelación
-                                                </button>
+                                        @if($statusSlug === 'open')
+                                            <div class="cancel-form-box" id="cancel-form-{{ $id }}" style="display: none; margin-top: 15px; background: rgba(211, 47, 47, 0.05); border: 1px solid rgba(211, 47, 47, 0.2); padding: 15px; border-radius: 8px;">
+                                                <label for="cancel-reason-{{ $id }}" style="display: block; font-weight: 600; font-size: 0.85rem; color: #d32f2f; text-transform: uppercase; margin-bottom: 8px;">¿Por qué deseas cancelar este reclamo?</label>
+                                                <p style="font-size: 0.85rem; color: var(--forest-night); margin-top: 0; margin-bottom: 10px; opacity: 0.8;">
+                                                    Por favor, indícanos el motivo (por ejemplo, si el trabajo será realizado por un privado/particular para registrar quién intervino el árbol).<br><br>
+                                                    <strong>Aviso importante:</strong> La cancelación automática solo puede suceder si el reclamo está en estado "Pendiente".
+                                                </p>
+                                                <textarea id="cancel-reason-{{ $id }}" class="form-control" style="width: 100%; min-height: 80px; margin-bottom: 12px; padding: 10px; border-radius: 6px; border: 1px solid rgba(45, 122, 79, 0.25); box-sizing: border-box;" placeholder="Escribe aquí el motivo de la cancelación..."></textarea>
+                                                <div style="display: flex; gap: 10px;">
+                                                    <button type="button" class="btn-main-cta" onclick="submitCancelClaim('{{ $id }}')" style="background-color: #d32f2f; border: none; font-size: 0.85rem; padding: 8px 16px; margin: 0; color: white; cursor: pointer; border-radius: 8px; font-weight: 600;">
+                                                        Confirmar Cancelación
+                                                    </button>
+                                                    <button type="button" class="btn-main-cta" onclick="hideCancelForm('{{ $id }}')" style="background-color: transparent; border: 1px solid var(--living-moss); color: var(--living-moss); font-size: 0.85rem; padding: 8px 16px; margin: 0; cursor: pointer; border-radius: 8px; font-weight: 600;">
+                                                        Volver
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="cancel-form-box" id="cancel-form-{{ $id }}" style="display: none; margin-top: 15px; background: rgba(211, 47, 47, 0.05); border: 1px solid rgba(211, 47, 47, 0.2); padding: 15px; border-radius: 8px;">
+                                                <p style="font-size: 0.85rem; color: #d32f2f; font-weight: 600; margin-top: 0; margin-bottom: 10px;">
+                                                    ⚠️ Este reclamo ya avanzó a una etapa operativa y no puede ser cancelado automáticamente.
+                                                </p>
+                                                <p style="font-size: 0.85rem; color: var(--forest-night); margin-top: 0; margin-bottom: 10px; opacity: 0.8;">
+                                                    Por el momento, solo es posible cancelar solicitudes que se encuentren en estado Pendiente. Más adelante implementaremos la opción de enviar una solicitud formal de baja al inspector a cargo.
+                                                </p>
                                                 <button type="button" class="btn-main-cta" onclick="hideCancelForm('{{ $id }}')" style="background-color: transparent; border: 1px solid var(--living-moss); color: var(--living-moss); font-size: 0.85rem; padding: 8px 16px; margin: 0; cursor: pointer; border-radius: 8px; font-weight: 600;">
-                                                    Volver
+                                                    Entendido
                                                 </button>
                                             </div>
-                                        </div>
+                                        @endif
                                     </div>
                                 @endif
 
@@ -372,12 +369,12 @@
                     <div class="reclamos-list" id="plantaciones-list-container">
                         @foreach($plantaciones as $rec)
                             @php
-                                $id = is_array($rec) ? $rec['id'] : $rec->id;
-                                $status = is_array($rec) ? $rec['status'] : $rec->status;
+                                $id = $rec->id;
+                                $status = $rec->status;
                                 $typeName = 'Solicitud de Plantación';
-                                $streetName = is_array($rec) ? $rec['street_name'] : ($rec->street ? $rec->street->street_name . ' ' . $rec->street->street_number : 'Ubicación no especificada');
-                                $description = is_array($rec) ? $rec['description'] : $rec->description;
-                                $createdAt = is_array($rec) ? $rec['created_at'] : $rec->created_at->format('Y-m-d H:i:s');
+                                $streetName = $rec->street ? $rec->street->street_name . ' ' . $rec->street->street_number : 'Ubicación no especificada';
+                                $description = $rec->description;
+                                $createdAt = $rec->created_at->format('Y-m-d H:i:s');
                                 $dateFormatted = date('d/m/Y', strtotime($createdAt));
                                 $timestamp = strtotime($createdAt);
 
@@ -390,8 +387,8 @@
                                     $statusClass = 'discarded';
                                     $statusText = 'Rechazada';
                                 }
-                                // SKELETON PARA EL BACKEND: Reemplazar false por la lógica real
-                                $isNew = is_array($rec) ? ($rec['is_new'] ?? false) : false;
+                                
+                                $isNew = $rec->is_new_for_user ?? false;
                             @endphp
 
                             <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}" data-is-new="{{ $isNew ? 'true' : 'false' }}" data-type="plantacion" data-id="{{ $id }}" style="position: relative;">
@@ -403,7 +400,7 @@
                                 <summary class="reclamo-card-summary">
                                     <div class="card-summary-left">
                                         <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-                                            <span class="reclamo-id">#{{ $id }}</span>
+                                            <span class="reclamo-id" style="font-size: 0.85rem; color: #64748b; font-weight: 500;">{{ $rec->tracking_code }}</span>
                                         </div>
                                         <div>
                                             <h3>{{ $typeName }}</h3>
@@ -459,57 +456,37 @@
             if (trigger) trigger.style.display = 'inline-block';
         }
 
-        function submitCancelClaim(id) {
+        async function submitCancelClaim(id) {
             const reason = document.getElementById('cancel-reason-' + id).value.trim();
             if (!reason) {
                 alert('Por favor ingrese el motivo de la cancelación.');
                 return;
             }
 
-            // Guardar en localStorage
-            localStorage.setItem('cancelled_claim_' + id + '_reason', reason);
+            try {
+                const response = await fetch(`/api/reclamos/${id}/cancelar`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ cancellation_reason: reason })
+                });
 
-            // Actualizar la interfaz
-            applyLocalCancellations();
-            
-            // Cerrar el formulario
-            hideCancelForm(id);
-        }
-
-        function applyLocalCancellations() {
-            const cards = document.querySelectorAll('details.reclamo-card');
-            cards.forEach(card => {
-                const idSpan = card.querySelector('.reclamo-id');
-                if (!idSpan) return;
-                const id = idSpan.innerText.replace('#', '').trim();
-
-                const reason = localStorage.getItem('cancelled_claim_' + id + '_reason');
-                if (reason) {
-                    // Cambiar el badge de estado
-                    const badge = card.querySelector('.status-badge');
-                    if (badge) {
-                        badge.innerText = 'CANCELADO';
-                        badge.className = 'status-badge discarded';
-                    }
-
-                    // Ocultar sección de cancelar
-                    const cancelSec = document.getElementById('cancel-section-' + id);
-                    if (cancelSec) cancelSec.style.display = 'none';
-
-                    // Mostrar el display del motivo de cancelación
-                    const displayBox = document.getElementById('cancellation-display-' + id);
-                    const displayText = document.getElementById('cancellation-text-' + id);
-                    if (displayBox && displayText) {
-                        displayText.innerText = '"' + reason + '"';
-                        displayBox.style.display = 'block';
-                    }
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Reclamo cancelado exitosamente.');
+                    location.reload(); // Recargar para ver los cambios
+                } else {
+                    alert(data.message || 'Error al cancelar el reclamo.');
                 }
-            });
+            } catch (error) {
+                console.error(error);
+                alert('Ocurrió un error al intentar cancelar.');
+            }
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            applyLocalCancellations();
-        });
 
         function switchProfileTab(tabId, btnElement) {
             document.querySelectorAll('.tabs-container .tab-content').forEach(tab => {

@@ -47,57 +47,23 @@ document.addEventListener('DOMContentLoaded', () => {
             L.marker(e.latlng, { icon: myLocationIcon, zIndexOffset: 1000 }).addTo(selectorMap);
         });
 
-        // Función de geocodificación reversa usando Nominatim
-        function reverseGeocode(lat, lng) {
+        // Función de geocodificación reversa delegada al servicio compartido
+        async function reverseGeocode(lat, lng) {
             if(previewText) previewText.textContent = 'Buscando dirección...';
             if(btnConfirmAddress) btnConfirmAddress.disabled = true;
 
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data && data.address) {
-                        const road = data.address.road || data.address.pedestrian || data.address.path || '';
-                        const number = data.address.house_number || '';
-                        const suburb = data.address.suburb || data.address.neighbourhood || '';
-                        
-                        if (road) {
-                            currentCoordsAddress = road + (number ? ' ' + number : '') + (suburb ? ', ' + suburb : '');
-                        } else {
-                            currentCoordsAddress = data.display_name.split(',').slice(0, 3).join(',').trim();
-                        }
-                    } else {
-                        currentCoordsAddress = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-                    }
-                    if(previewText) previewText.textContent = currentCoordsAddress;
-                    if(btnConfirmAddress) btnConfirmAddress.disabled = false;
-                })
-                .catch(err => {
-                    console.error('Nominatim error, usando fallback:', err);
-                    // Fallback de simulación en Palermo según cercanía
-                    const fallbacks = [
-                        { lat: -34.5888, lng: -58.4285, address: 'Costa Rica 4600' },
-                        { lat: -34.5795, lng: -58.4148, address: 'Av. Sarmiento 2400' },
-                        { lat: -34.6178, lng: -58.3712, address: 'Defensa 850' },
-                        { lat: -34.5835, lng: -58.3927, address: 'Plaza Francia 1100' },
-                        { lat: -34.5615, lng: -58.4552, address: 'Juramento 1900' }
-                    ];
-                    
-                    let closest = fallbacks[0];
-                    let minDist = Infinity;
-                    fallbacks.forEach(f => {
-                        let dist = Math.pow(f.lat - lat, 2) + Math.pow(f.lng - lng, 2);
-                        if (dist < minDist) {
-                            minDist = dist;
-                            closest = f;
-                        }
-                    });
-                    
-                    const simulatedNumber = Math.floor(100 + Math.random() * 800) * 10;
-                    const streetName = closest.address.split(' ').slice(0, -1).join(' ') || closest.address.split(' ')[0];
-                    currentCoordsAddress = streetName + ' ' + simulatedNumber + ', Palermo, CABA';
-                    if(previewText) previewText.textContent = currentCoordsAddress;
-                    if(btnConfirmAddress) btnConfirmAddress.disabled = false;
-                });
+            if (typeof window.reverseGeocodeService === 'function') {
+                const address = await window.reverseGeocodeService(lat, lng);
+                currentCoordsAddress = address;
+                
+                if(previewText) previewText.textContent = currentCoordsAddress;
+                if(btnConfirmAddress) btnConfirmAddress.disabled = false;
+            } else {
+                console.error('El servicio reverseGeocodeService no está disponible.');
+                currentCoordsAddress = `Ubicación: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+                if(previewText) previewText.textContent = currentCoordsAddress;
+                if(btnConfirmAddress) btnConfirmAddress.disabled = false;
+            }
         }
 
         // Cargar dirección inicial

@@ -43,7 +43,7 @@
                             $id = is_array($msg) ? $msg['id'] : $msg->id;
                             $status = is_array($msg) ? $msg['status'] : $msg->status;
                             $message = is_array($msg) ? $msg['message'] : $msg->message;
-                            $response = is_array($msg) ? ($msg['inspector_response'] ?? null) : null;
+                            $response = is_array($msg) ? ($msg['inspector_response'] ?? null) : ($msg->inspector_response ?? null);
                             $createdAt = is_array($msg) ? $msg['created_at'] : $msg->created_at->format('Y-m-d H:i:s');
                             $dateFormatted = date('d/m/Y', strtotime($createdAt));
                             $timestamp = strtotime($createdAt);
@@ -59,8 +59,8 @@
                                 $statusText = 'En Revisión'; // Pero indicamos que ya lo leyeron
                             }
 
-                            // SKELETON PARA EL BACKEND: Reemplazar false por la lógica real de "no leído" de la base de datos
-                            $isNew = is_array($msg) ? ($msg['is_new'] ?? false) : false;
+                            // Lógica de "no leído" de la base de datos
+                            $isNew = is_array($msg) ? ($msg['is_new_for_user'] ?? false) : ($msg->is_new_for_user ?? false);
                         @endphp
 
                         <details class="reclamo-card {{ $statusClass }}" data-timestamp="{{ $timestamp }}" data-is-new="{{ $isNew ? 'true' : 'false' }}" data-type="mensaje" data-id="{{ $id }}" style="position: relative;">

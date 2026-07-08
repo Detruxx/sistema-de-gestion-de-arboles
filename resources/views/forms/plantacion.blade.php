@@ -127,6 +127,7 @@
 @section('scripts')
     @auth
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="{{ asset('js/shared/geocoder.js') }}"></script>
     <script src="{{ asset('js/shared/address-autocomplete.js') }}"></script>
     <script src="{{ asset('js/forms/planting.js') }}"></script>
     <script>

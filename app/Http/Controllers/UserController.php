@@ -34,7 +34,7 @@ class UserController extends Controller
             'residents' => User::where('role', 'vecino')->count(),
             'inspectors' => User::where('role', 'inspector')->count(),
             'companies' => \App\Models\Company::count(),
-            'pendingCompanies' => \App\Models\Company::where('status', 'Pendiente')->count()
+            'pendingCompanies' => 0 // La tabla companies no tiene columna status actualmente TODO
         ], 200);
     }
 

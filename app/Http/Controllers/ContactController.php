@@ -73,16 +73,36 @@ class ContactController extends Controller
         $msg = ContactMessage::findOrFail($id);
         
         // 1. Guardar la respuesta y cambiar estado
-        // TODO (BACKEND): Agregar estas columnas en la migración de contact_messages
-        // $msg->inspector_response = $request->reply_message;
-        // $msg->is_new_for_user = true; // Activa el punto rojo en la campana del vecino
-        
-        $msg->status = 'answered';
+        $msg->inspector_response = $request->reply_message;
+        $msg->is_new_for_user = true; // Activa el punto rojo en la campana del vecino
+        $msg->status = 'read';
         $msg->save();
 
         // 2. Enviar correo electrónico al vecino notificando la respuesta
         // TODO (BACKEND): Ej -> Mail::to($msg->user->email)->send(new ContactRepliedMail($msg));
 
         return back()->with('success', 'Respuesta oficial enviada con éxito.');
+    }
+
+    /**
+     * Marca un mensaje como visto por el vecino (apaga la notificación).
+     */
+    public function markSeenByUser(Request $request, $id)
+    {
+        $msg = ContactMessage::where('id', $id)->where('user_id', auth()->id())->first();
+        
+        if (!$msg) {
+            return response()->json(['success' => false, 'message' => 'Mensaje no encontrado.'], 404);
+        }
+        
+        if ($msg->is_new_for_user) {
+            $msg->is_new_for_user = false;
+            $msg->save(); 
+        }
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Notificación de mensaje revisada.'
+        ]);
     }
 }

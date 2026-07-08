@@ -6,6 +6,7 @@
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/forms/company_postulation.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/shared/autocomplete.css') }}">
 @endsection
 
 @section('content')
@@ -97,7 +98,15 @@
 @endsection
 
 @section('scripts')
+    <!-- Turnstile Script -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script src="{{ asset('js/shared/address-autocomplete.js') }}"></script>
     <script src="{{ asset('js/forms/company_postulation.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof initAddressAutocomplete === 'function') {
+                initAddressAutocomplete('company-location');
+            }
+        });
+    </script>
 @endsection
-
-

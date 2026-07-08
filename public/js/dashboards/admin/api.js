@@ -168,16 +168,8 @@ export function showAdminModule(moduleName) {
     if (moduleName === 'empresas') fetchCompanies();
 }
 
-export async function loadAdminData() {
+export async function loadDataFromServer() {
     // Al cargar la pagina inicialmente
     updateAdminStats();
     fetchResidents(); // Por si estamos en una solapa por defecto
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    if (state.currentUserRole === 'admin') {
-        loadAdminData();
-    }
-});
-
-
