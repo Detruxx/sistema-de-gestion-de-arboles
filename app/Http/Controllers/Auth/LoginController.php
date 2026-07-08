@@ -13,9 +13,9 @@ class LoginController extends Controller
      */
     public function showLoginForm()
     {
-        // Si ya está autenticado, redirigir al inicio
+        // Si ya está autenticado, redirigir a su panel correspondiente
         if (Auth::check()) {
-            return redirect('/');
+            return $this->redirectBasedOnRole(Auth::user());
         }
         return view('auth.login');
     }
@@ -37,7 +37,7 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended('/');
+            return $this->redirectBasedOnRole(Auth::user());
         }
 
         return back()->withErrors([
@@ -56,5 +56,22 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    /**
+     * Redirige al usuario a su panel correspondiente según su rol.
+     */
+    protected function redirectBasedOnRole($user)
+    {
+        switch ($user->role) {
+            case 'admin':
+                return redirect()->intended('/dashboard/admin');
+            case 'inspector':
+                return redirect()->intended('/dashboard/inspector');
+            case 'empresa':
+                return redirect()->intended('/dashboard/empresa');
+            default:
+                return redirect()->intended('/');
+        }
     }
 }
