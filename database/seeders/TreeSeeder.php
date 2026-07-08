@@ -24,7 +24,7 @@ class TreeSeeder extends Seeder
             return;
         }
 
-        $totalRegistros = 5000; 
+        $totalRegistros = 1000; 
         $lote = 100; 
 
         for ($i = 0; $i < $totalRegistros; $i += $lote) {
@@ -47,12 +47,12 @@ class TreeSeeder extends Seeder
                 // Recortamos la longitud en base a la línea costera del Río de la Plata
                 if ($latitude > -34.5800) {
                     // Zona Norte (Palermo, Belgrano, Núñez): El río avanza hacia el Oeste.
-                    // Nos movemos al Oeste para garantizar tierra firme.
-                    $longitude = $faker->longitude($min = -34.5950, $max = -34.5550);
+                    // Nos movemos al Oeste para garantizar tierra firme (Longitudes de CABA son ~ -58.x).
+                    $longitude = $faker->longitude($min = -58.5100, $max = -58.4400);
                 } else {
                     // Zona Centro/Sur (Flores, Caballito, Lanús): Hay más masa continental.
                     // Nos extendemos un poco más hacia el Este sin peligro.
-                    $longitude = $faker->longitude($min = -34.6700, $max = -34.5850);
+                    $longitude = $faker->longitude($min = -58.5100, $max = -58.3800);
                 }
 
                 // Sobrescribimos la data aleatoria original con nuestro cuadrante seguro
