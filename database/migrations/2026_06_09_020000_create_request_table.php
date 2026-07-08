@@ -26,6 +26,7 @@ return new class extends Migration
             
             // Completado por inspectores
             $table->foreignId('request_status_id')->constrained('request_statuses')->onDelete('restrict');
+            $table->boolean('is_new_for_user')->default(false); //Para el puntito rojo en los reclamos del vecino
             $table->text('cancellation_reason')->nullable(); // Justificación de inspector o ciudadano
             $table->foreignId('priority_id')->nullable()->constrained('priorities')->onDelete('restrict');
             
@@ -35,6 +36,8 @@ return new class extends Migration
             $table->foreign('linked_to')->references('id')->on('requests')->onDelete('set null');
             $table->foreign('suggested_duplicate_id')->references('id')->on('requests')->onDelete('set null');
             
+            $table->integer('risk_score')->default(0); // Para el algoritmo de criticidad
+
             $table->timestamps();
         });
     }

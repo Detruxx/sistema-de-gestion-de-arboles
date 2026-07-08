@@ -99,7 +99,7 @@ class RequestController extends Controller
                                 ->whereNotIn('request_status_id', $estadosTerminalesIds)
                                 ->first();
 
-        // 🤖 ALGORITMO DE SCORING (TAREA 1 COMPLETADA)
+        // ALGORITMO DE SCORING 
         $descripcion = mb_strtolower($request->input('description', ''));
         $riskScore = 0;
 
@@ -182,6 +182,11 @@ class RequestController extends Controller
             ], 404);
         }
 
+        // 📍 ⚪ Apagamos el puntito rojo si el vecino logueado está viendo su propia solicitud modificada
+        if (auth()->check() && $incident->user_id === auth()->id() && $incident->is_new_for_user) {
+            $incident->update(['is_new_for_user' => false]);
+        }
+
         $estadoFrontend = $incident->status ? $incident->status->slug : 'open';
 
         $ultimaBitacora = $incident->histories->last();
@@ -233,7 +238,7 @@ class RequestController extends Controller
                 $statusId = $statusObj->id;
             }
 
-            // 📬 LÓGICA DE ENVÍO DE MAIL - TAREA 2 COMPLETADA
+            //LÓGICA DE ENVÍO DE MAIL 
             if ($dbSlug === 'vinculated' && $request->has('linked_to')) {
                 $linkedTo = $request->linked_to;
                 $suggestedDuplicateId = null;
@@ -266,9 +271,10 @@ class RequestController extends Controller
 
         DB::transaction(function () use ($userRequest, $statusId, $userId, $justification, $linkedTo, $suggestedDuplicateId, $request) {
             $userRequest->update([
-                'request_status_id' => $statusId,
-                'linked_to' => $linkedTo,
-                'suggested_duplicate_id' => $suggestedDuplicateId
+                'request_status_id'      => $statusId,
+                'linked_to'              => $linkedTo,
+                'suggested_duplicate_id' => $suggestedDuplicateId,
+                'is_new_for_user'        => true // Activamos el puntito de notificación para el vecino
             ]);
 
             if ($justification) {

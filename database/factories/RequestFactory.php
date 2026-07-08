@@ -48,6 +48,12 @@ class RequestFactory extends Factory
             // Tus estados del reclamo (Ajustado dinámicamente si querés abarcar los nuevos estados)
             'request_status_id' => $this->faker->numberBetween(1, 8),
 
+            //Por defecto arranca en falso para el vecino
+            'is_new_for_user' => false,
+
+            //Genera puntajes entre 0 y 100 aleatoriamente
+            'risk_score' => $this->faker->numberBetween(0, 100),
+
             // Ahora almacena el arreglo para cumplir con el formato JSON requerido 
             'path' => $photosArray,
 
