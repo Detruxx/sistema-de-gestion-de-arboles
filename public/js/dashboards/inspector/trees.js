@@ -197,3 +197,60 @@ export async function loadTreesFromServer() {
         selectTree(state.selectedTreeId);
     }
 };
+
+window.submitCreateTree = async function (e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    if(btn) {
+        btn.disabled = true;
+        btn.innerText = 'Registrando...';
+    }
+
+    // Recolectar datos
+    const data = {
+        latitude: document.getElementById('new-tree-lat').value,
+        longitude: document.getElementById('new-tree-lng').value,
+        address: document.getElementById('new-tree-address').value,
+        specie: document.getElementById('new-tree-especie').value,
+        vitality: [document.getElementById('new-tree-estado').value], // Lo enviamos como array porque el backend espera array
+        height: document.getElementById('new-tree-altura').value,
+        dap: document.getElementById('new-tree-circunferencia').value,
+        years: document.getElementById('new-tree-edad').value
+    };
+
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        const response = await fetch('/api/arboles', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.message || 'Error al crear el árbol');
+        }
+
+        alert('Árbol registrado exitosamente.');
+        
+        // Cerrar modal
+        const modal = document.getElementById('create-tree-modal');
+        if(modal) modal.classList.remove('active');
+        e.target.reset();
+        
+        // Refrescar lista de arboles
+        loadTreesFromServer();
+
+    } catch (error) {
+        console.error("Error al guardar árbol:", error);
+        alert(error.message || 'Ocurrió un error de conexión');
+    } finally {
+        if(btn) {
+            btn.disabled = false;
+            btn.innerText = 'Registrar Ejemplar';
+        }
+    }
+};

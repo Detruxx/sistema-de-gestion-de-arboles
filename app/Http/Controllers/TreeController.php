@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Tree;
 use Illuminate\Support\Facades\DB;
+use App\Models\Specie;
+use App\Services\StreetService;
 
 class TreeController extends Controller
 {
@@ -13,31 +15,43 @@ class TreeController extends Controller
     // =========================
 
     // Guarda un arbol nuevo en la base de datos
-    public function store(Request $request)
+    public function store(Request $request, StreetService $streetService)
     {
         // Validamos los datos que vienen del formulario
         $validatedData = $request->validate([
-            'species_id' => 'required|exists:species,id',
-            'latitude'   => 'required|numeric',
-            'longitude'  => 'required|numeric',
-            'height'     => 'required|numeric',
-            'dap'        => 'required|numeric',
-            
-            // Validamos que 'vitality' sea un array (opcional)
-            'vitality'   => 'nullable|array', 
+            'specie'         => 'required|string',
+            'latitude'       => 'required|numeric',
+            'longitude'      => 'required|numeric',
+            'height'         => 'required|numeric',
+            'dap'            => 'required|numeric',
+            'vitality'       => 'nullable|array', 
+            'address'        => 'required|string',
+            'years'          => 'nullable|numeric',
         ]);
+
+        // Buscamos la especie por nombre comun (o la creamos/rechazamos)
+        $specie = Specie::where('common_name', $validatedData['specie'])->first();
+        if (!$specie) {
+            return response()->json(['message' => 'Especie no encontrada en la base de datos'], 404);
+        }
+
+        // Usamos el StreetService para resolver o crear la calle de forma centralizada
+        $street = $streetService->resolveFromAddress($validatedData['address']);
 
         // Creamos la instancia del Árbol
         $tree = new Tree();
-        $tree->species_id = $validatedData['species_id'];
+        $tree->species_id = $specie->id;
         $tree->latitude   = $validatedData['latitude'];
         $tree->longitude  = $validatedData['longitude'];
         $tree->height     = $validatedData['height'];
         $tree->dap        = $validatedData['dap'];
+        $tree->years      = $validatedData['years'] ?? null;
+        // Asignamos la calle resuelta y la referencia (Frente a chapa X)
+        $tree->street_id  = $street->id;
+        $tree->reference  = 'Frente a chapa ' . $street->door_plate;
 
-        // Guardamos el array de vitalidad directamente
-        // Laravel, gracias al cast que pusimos en el Modelo, se encarga de transformarlo a JSON para MySQL.
-        $tree->vitality = $request->input('vitality'); // Ej: ['semiseco', 'escasa foliacion']
+        // Guardamos el array de vitalidad directamente (Laravel lo casteará a JSON)
+        $tree->vitality = $request->input('vitality');
 
         $tree->save();
 

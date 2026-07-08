@@ -149,6 +149,9 @@ Route::get('/api/arboles/pines', [TreeController::class, 'getMapPins']);
 // Endpoint para traer el detalle de un árbol específico
 Route::get('/api/arboles/{id}', [TreeController::class, 'getTreeDetails']);
 
+// Endpoint para guardar un árbol (Inspector)
+Route::post('/api/arboles', [TreeController::class, 'store']);
+
 // Endpoint para traer todos los tipos de reclamo
 Route::get('/api/request-types',[RequestTypeController::class, 'index']);
 
@@ -205,11 +208,20 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // Modificar el rol de un usuario específico (PATCH)
     Route::patch('/api/admin/users/{user}/role', [UserController::class, 'updateRole'])->name('api.admin.users.updateRole');
 
-    //Para el metodo de toggleStatus
+    //Para el metodo de toggleStatus (Habilitar/Deshabilitar alternando)
     Route::patch('/admin/users/{id}/toggle-status', [UserController::class, 'toggleStatus']);
+    
+    //Para modificar a un estado especifico (Suspendido, Bloqueado)
+    Route::patch('/api/admin/users/{id}/status', [UserController::class, 'updateSpecificStatus']);
 
     // Listado global de empresas en formato JSON
     Route::get('/api/admin/companies', [CompanyController::class, 'indexAdmin'])->name('api.admin.companies.index');
+    
+    // Cambiar estado de una empresa (Verificada / No verificada)
+    Route::patch('/api/admin/companies/{id}/status', [CompanyController::class, 'toggleStatus']);
+
+    // Crear un usuario asociado a una empresa
+    Route::post('/api/admin/companies/{id}/users', [UserController::class, 'storeCompanyUser']);
     
     // Estadísticas del dashboard admin
     Route::get('/api/admin/stats', [UserController::class, 'adminStats'])->name('api.admin.stats');

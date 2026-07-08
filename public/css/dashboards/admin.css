@@ -13,10 +13,10 @@
     --admin-border: #E2E7E3;
     --admin-sidebar-bg: #F2EFE9;
     /* Slightly darker sand for sidebar */
-    --admin-accent: #2D7A4F;
+    --admin-accent: #10b981;
     /* Living moss green for active items/actions */
-    --admin-accent-light: rgba(45, 122, 79, 0.08);
-    --admin-accent-hover: #1E5336;
+    --admin-accent-light: rgba(16, 185, 129, 0.1);
+    --admin-accent-hover: #059669;
 
     display: flex;
     min-height: 100vh;
@@ -981,3 +981,4 @@
     height: 40px !important;
     box-sizing: border-box !important;
 }
+

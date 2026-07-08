@@ -6,6 +6,11 @@ import { state } from './state.js';
 export function openCreateTreeModal() {
     document.getElementById('create-tree-modal').classList.add('active');
     
+    // Inicializar el buscador de calles oficial
+    if (typeof window.initAddressAutocomplete === 'function') {
+        window.initAddressAutocomplete('new-tree-address');
+    }
+    
     setTimeout(() => {
         if (!state.adminMap) {
             const mapCanvas = document.getElementById('admin-tree-map-canvas');
@@ -62,43 +67,4 @@ export function setMarkerPosition(lat, lng) {
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    const formCreateTree = document.getElementById('form-create-tree');
-    if (formCreateTree) {
-        formCreateTree.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
-            
-            try {
-                const response = await fetch('/api/admin/arboles', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': getCsrfToken()
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (response.ok) {
-                    alert('Árbol registrado exitosamente.');
-                    closeCreateTreeModal();
-                    e.target.reset();
-                    if (state.adminMarker) {
-                        state.adminMap.removeLayer(state.adminMarker);
-                        state.adminMarker = null;
-                    }
-                    if (typeof state.loadTreesFromServer === 'function') {
-                        loadTreesFromServer();
-                    }
-                } else {
-                    alert('Error al registrar el árbol.');
-                }
-            } catch (err) {
-                console.error('Error saving tree:', err);
-                alert('Error de conexión.');
-            }
-        });
-    }
-});
+// Listener removido, manejado por submitCreateTree

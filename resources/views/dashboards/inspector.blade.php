@@ -288,13 +288,9 @@
                 </div>
 
                 <div class="admin-form-row">
-                    <div class="admin-form-group">
-                        <label for="new-tree-calle">Calle</label>
-                        <input type="text" id="new-tree-calle" placeholder="Ej. Av. Cabildo" required>
-                    </div>
-                    <div class="admin-form-group">
-                        <label for="new-tree-nro">Número</label>
-                        <input type="number" id="new-tree-nro" placeholder="Ej. 2950" required>
+                    <div class="admin-form-group" style="flex: 1;">
+                        <label for="new-tree-address">Dirección (Calle y Número)</label>
+                        <input type="text" id="new-tree-address" placeholder="Ej. Av. Cabildo 2535" required>
                     </div>
                 </div>
 
@@ -373,8 +369,6 @@
         window.currentUserRole = "{{ auth()->user()->role }}";
     </script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="{{ asset('js/shared/address-autocomplete.js') }}"></script>
     <script type="module" src="{{ asset('js/dashboards/inspector/main.js') }}"></script>
-
 @endsection
-
-

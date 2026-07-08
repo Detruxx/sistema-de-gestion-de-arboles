@@ -35,8 +35,7 @@
               "title": "README"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -198,21 +197,21 @@
       "bases:Crear nueva base": false
     }
   },
-  "active": "e7edb11f0143091b",
+  "active": "a6a08d31c2a8de51",
   "lastOpenFiles": [
-    "storage/framework/sessions/XYi1HzzNrdAzQUHk5EWSsjGCtJrxEeu6HPXlB9O8",
-    "storage/framework/sessions/2GgIp34oeyVBlzr449W8xaLec4ySEjQVKClNIOSk",
-    "storage/framework/sessions/P6ben949ZsNwjPyamlSA8W0WTeAxJcBydUIRB11M",
-    "storage/framework/sessions/lZUhYD6PBk2odTKj8YoG0Nn7QgMXDYsbGvdM9mUi",
-    "storage/framework/sessions/CslDdq7lWedLK2TSmEMXUrlqyHJ91QKa6hXdHT0O",
-    "storage/framework/sessions/Jq0hrKurDHcdvf3iX74gu5wamWdYFQ9aKZBloOyC",
-    "storage/framework/sessions/YYZIWZmvwrnv8erstP3jbB2cpD6qQCIF1jfMHSKD",
-    "storage/framework/sessions/gYShdubpC4iRNAwWU8xjCTbiil2jLomdMXDLfx5R",
-    "storage/framework/sessions/hgisxiRfeX0PMY7ZmCuhhiF5JFjQVh3xNo2KRLdr",
-    "storage/framework/sessions/OOGFECG190UfBGPT0HCdeu6vri6qSmH2lMZsINZk",
-    "storage/framework/sessions/8nHYL7CBGnh6q819lnbxY50Lhjkvf3mPOxdwbI39",
+    "storage/framework/sessions/1dDgOx2lQMqPbLs3VvH9vMZXNaICX3Twd2ffuM8b",
+    "storage/framework/sessions/pzmXj0fUKVQajzm5esifc1RbSO9vopWVLmZSQa3Z",
+    "storage/framework/sessions/OrqHQ9r21pMzqx85zOT6Gq0Gb6xKQv1VGXN7VkFJ",
+    "storage/framework/sessions/QtwGA5vUHn7h7HLHKPv1BzGSzl94nxPw5vJZIpkx",
+    "storage/framework/sessions/OuXx0Qr72OGR5sAITvSub3jhEfXfdmtVFSUIZSAA",
+    "storage/framework/sessions/ku4FhF7PitFuDxkbzCw9CbTsWt6zNrifcZCgnU4W",
+    "storage/framework/sessions/61gATFrLv0kyckZHHGpXbcBQdvkUYYHJYuovJbmA",
+    "storage/framework/sessions/g91ULkgOE15hcqb6JzUwaWYipcqdcpZsL4oD96si",
+    "storage/framework/sessions/1qrjyfvchfQFnVIA1Fab2ys1R15D2g4rl8MSO7x8",
+    "storage/framework/sessions/yfxmbMOSIIom5sQ52LtLr4ILKGhMWMpUjDjlO9Po",
+    "README.md",
+    "storage/framework/views/8745e8736af49380f2a49bec7daabb16.php",
     "docs/documentacion.md",
-    "TODO.md",
-    "README.md"
+    "TODO.md"
   ]
 }

@@ -47,4 +47,12 @@ class Company extends Model
         //Reutiliza el modelo UserStatus
         return $this->belongsTo(UserStatus::class, 'user_status_id');
     }
+
+    /**
+     * Una empresa puede tener muchos usuarios (ej: rol 'empresa')
+     */
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

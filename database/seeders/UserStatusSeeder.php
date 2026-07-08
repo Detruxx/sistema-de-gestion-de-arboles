@@ -13,16 +13,24 @@ class UserStatusSeeder extends Seeder
      */
     public function run(): void
     {
-        UserStatus::create([
-            'id' => 1,
+        UserStatus::updateOrCreate(['id' => 1], [
             'name' => 'Habilitado',
             'slug' => 'active'
         ]);
 
-        UserStatus::create([
-            'id' => 2,
+        UserStatus::updateOrCreate(['id' => 2], [
             'name' => 'Deshabilitado',
             'slug' => 'inactive'
+        ]);
+
+        UserStatus::updateOrCreate(['id' => 3], [
+            'name' => 'Suspendido',
+            'slug' => 'suspended'
+        ]);
+
+        UserStatus::updateOrCreate(['id' => 4], [
+            'name' => 'Bloqueado',
+            'slug' => 'banned'
         ]);
     }
 }

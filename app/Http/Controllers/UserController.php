@@ -179,4 +179,82 @@ class UserController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Crea un usuario para una empresa específica
+     */
+    public function storeCompanyUser(Request $request, $companyId)
+    {
+        if (auth()->user()->role !== 'admin') {
+            return response()->json(['status' => 'error', 'message' => 'No autorizado'], 403);
+        }
+
+        $validatedData = $request->validate([
+            'name'      => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email'     => 'required|string|email|max:255|unique:users',
+            'password'  => 'required|string|min:8',
+        ]);
+
+        try {
+            $user = User::create([
+                'name'              => $validatedData['name'],
+                'last_name'         => $validatedData['last_name'],
+                'email'             => $validatedData['email'],
+                'password'          => \Illuminate\Support\Facades\Hash::make($validatedData['password']),
+                'role'              => 'empresa',
+                'company_id'        => $companyId,
+                'user_status_id'    => 1, // Habilitado
+                'email_verified_at' => now(), // Verificado automáticamente
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Usuario de empresa creado con éxito.',
+                'data' => $user->load('status')
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No se pudo crear el usuario.',
+                'debug' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
+    }
+
+    /**
+     * Actualiza a un estado específico (ej. Suspendido 3, Bloqueado 4)
+     */
+    public function updateSpecificStatus(Request $request, $id)
+    {
+        if (auth()->user()->role !== 'admin') {
+            return response()->json(['status' => 'error', 'message' => 'No autorizado'], 403);
+        }
+
+        $request->validate([
+            'user_status_id' => 'required|integer|exists:user_statuses,id'
+        ]);
+
+        try {
+            $user = User::findOrFail($id);
+
+            if ($user->id === auth()->id()) {
+                return response()->json(['status' => 'error', 'message' => 'No puedes cambiar tu propio estado.'], 400);
+            }
+
+            $user->user_status_id = $request->user_status_id;
+            $user->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Estado actualizado correctamente.',
+                'user_status_id' => $user->user_status_id
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al actualizar estado.'
+            ], 500);
+        }
+    }
 }

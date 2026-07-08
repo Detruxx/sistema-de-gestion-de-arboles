@@ -24,9 +24,17 @@ export function loadresidentsList () {
         card.className = `list-item-card ${state.selectedresidentId === u.id ? 'active' : ''}`;
         card.onclick = () => selectresident(u.id);
 
-        const isBanned = u.banned_until && new Date(u.banned_until) > new Date();
-        const badgeColor = isBanned ? '#ef4444' : '#22c55e';
-        const badgeLabel = isBanned ? 'Suspendido' : 'Activo';
+        const isBanned = u.user_status_id === 3 || u.user_status_id === 4;
+        let badgeColor = '#22c55e'; // Verde para activo
+        let badgeLabel = 'Activo';
+        
+        if (u.user_status_id === 3) {
+            badgeColor = '#ea580c';
+            badgeLabel = 'Suspendido';
+        } else if (u.user_status_id === 4) {
+            badgeColor = '#ef4444';
+            badgeLabel = 'Bloqueado';
+        }
 
         card.innerHTML = `
             <div class="list-item-header">
@@ -48,8 +56,16 @@ export function selectresident (id) {
     const panel = document.getElementById('resident-detail-panel');
     if (!u || !panel) return;
 
-    const isBanned = u.banned_until && new Date(u.banned_until) > new Date();
-    const banText = isBanned ? `Suspendido hasta: ${new Date(u.banned_until).toLocaleDateString()}` : 'Activo';
+    let banText = 'Activo';
+    let badgeColor = '#22c55e';
+    
+    if (u.user_status_id === 3) {
+        banText = 'Suspendido';
+        badgeColor = '#ea580c';
+    } else if (u.user_status_id === 4) {
+        banText = 'Bloqueado Permanente';
+        badgeColor = '#ef4444';
+    }
 
     panel.innerHTML = `
         <div class="detail-header-panel">
@@ -57,7 +73,7 @@ export function selectresident (id) {
                 <h3 class="detail-title">${u.name} ${u.last_name || ''}</h3>
                 <p class="detail-subtitle">ID Vecino: <strong style="color:var(--admin-text-primary);">${u.id}</strong></p>
             </div>
-            <span class="badge-status" style="background-color: ${isBanned ? '#ef4444' : '#22c55e'}20; color: ${isBanned ? '#ef4444' : '#22c55e'}; border: 1px solid ${isBanned ? '#ef4444' : '#22c55e'};">${banText}</span>
+            <span class="badge-status" style="background-color: ${badgeColor}20; color: ${badgeColor}; border: 1px solid ${badgeColor};">${banText}</span>
         </div>
 
         <div class="detail-section">
@@ -76,21 +92,21 @@ export function selectresident (id) {
                 <button class="btn-primary" onclick="changeUserRole(${u.id}, 'inspector')" style="background-color: #3498db; border-color: #3498db;">
                     Promover a Inspector
                 </button>
-                <button class="btn-secondary" onclick="banUserPrompt(${u.id}, 7)" style="color: #ea580c; border-color: #ea580c;">
-                    Suspender 7 Días
-                </button>
-                <button class="btn-secondary" onclick="banUserPrompt(${u.id}, 30)" style="color: #e11d48; border-color: #e11d48;">
-                    Suspender 30 Días
-                </button>
-                ${isBanned ? `
-                    <button class="btn-primary" onclick="liftBan(${u.id})" style="background-color: #22c55e; border-color: #22c55e;">
-                        Levantar Suspensión
+                ${u.user_status_id !== 3 ? `
+                    <button class="btn-secondary" onclick="window.updateResidentStatus(${u.id}, 3)" style="color: #ea580c; border-color: #ea580c;">
+                        Suspender Temporalmente
                     </button>
-                ` : `
-                    <button class="btn-primary" onclick="banUserPrompt(${u.id}, 365)" style="background-color: #ef4444; border-color: #ef4444;">
-                        Baneo Permanente
+                ` : ''}
+                ${u.user_status_id !== 4 ? `
+                    <button class="btn-primary" onclick="window.updateResidentStatus(${u.id}, 4)" style="background-color: #ef4444; border-color: #ef4444;">
+                        Bloquear (Ban Permanente)
                     </button>
-                `}
+                ` : ''}
+                ${(u.user_status_id === 3 || u.user_status_id === 4) ? `
+                    <button class="btn-primary" onclick="window.updateResidentStatus(${u.id}, 1)" style="background-color: #22c55e; border-color: #22c55e;">
+                        Levantar Suspensión/Bloqueo
+                    </button>
+                ` : ''}
             </div>
         </div>
     `;
@@ -98,5 +114,33 @@ export function selectresident (id) {
 
 export function filterresidents () {
     loadresidentsList();
+};
+
+window.updateResidentStatus = async function (userId, newStatusId) {
+    if (!confirm('¿Estás seguro de que deseas cambiar el estado de este vecino?')) return;
+    
+    try {
+        const response = await fetch('/api/admin/users/' + userId + '/status', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken()
+            },
+            body: JSON.stringify({ user_status_id: newStatusId })
+        });
+
+        if (!response.ok) throw new Error('Error al actualizar estado');
+
+        showNotification('Estado del vecino actualizado correctamente.');
+        
+        // Refrescar lista principal
+        if (typeof window.fetchUsers === 'function') {
+            await window.fetchUsers();
+            selectresident(state.selectedresidentId);
+        }
+    } catch (err) {
+        console.error(err);
+        showNotification('No se pudo actualizar el estado del vecino.');
+    }
 };
 
