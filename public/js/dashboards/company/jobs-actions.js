@@ -15,7 +15,7 @@ export function initJobsActions(stateObj) {
 export async function updateJobStatus(jobId, newStatus) {
     try {
         const success = await putJobStatus(jobId, newStatus);
-        
+
         if (success) {
             // Actualizar estado local
             const jobIndex = stateRef.jobs.findIndex(j => j.id === jobId);
@@ -36,7 +36,7 @@ export async function updateJobStatus(jobId, newStatus) {
 
             // Refrescar lista
             renderJobsList();
-            
+
             // Refrescar el modal abierto en lugar de cerrarlo
             if (updatedJob) {
                 openJobDetailModal(updatedJob);
@@ -58,7 +58,7 @@ export async function updateJobStatus(jobId, newStatus) {
     }
 }
 
-window.updateJobSchedule = async function(id) {
+window.updateJobSchedule = async function (id) {
     const dateInput = document.getElementById(`job-schedule-date-${id}`);
     if (!dateInput || !dateInput.value) {
         alert('Por favor selecciona una fecha válida.');
@@ -66,17 +66,37 @@ window.updateJobSchedule = async function(id) {
     }
 
     try {
-        await putJobStatus(id, 'Asignado', dateInput.value);
-        
-        // Refresh
-        const data = await fetchCompanyData();
-        if (data && data.jobs) {
-            initJobs(data.jobs);
-            
-            // Re-abrir modal
-            const jobs = getCompanyJobs();
-            const j = jobs.find(item => item.id === id);
-            if (j) openJobDetailModal(j.id);
+        const success = await putJobStatus(id, 'Asignado', dateInput.value);
+
+        if (success) {
+            // Actualizar estado local y la fecha programada
+            const jobIndex = stateRef.jobs.findIndex(j => j.id === id);
+            let updatedJob = null;
+            if (jobIndex > -1) {
+                stateRef.jobs[jobIndex].work_status = 'Asignado';
+                stateRef.jobs[jobIndex].scheduled_date = dateInput.value;
+                updatedJob = stateRef.jobs[jobIndex];
+            }
+
+            // Mostrar notificación
+            const banner = document.getElementById('notification-banner');
+            const text = document.getElementById('notification-text');
+            if (banner && text) {
+                text.textContent = 'Fecha programada del trabajo actualizada correctamente.';
+                banner.style.display = 'flex';
+                setTimeout(() => { banner.style.display = 'none'; }, 4000);
+            }
+
+            // Refrescar lista y modal
+            renderJobsList();
+            if (updatedJob) {
+                openJobDetailModal(updatedJob);
+            }
+
+            // Actualizar stats si corresponde
+            if (typeof updateCompanyStats === 'function') {
+                updateCompanyStats();
+            }
         }
     } catch (error) {
         console.error('Error al programar trabajo:', error);

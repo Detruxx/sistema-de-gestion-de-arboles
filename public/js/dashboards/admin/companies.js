@@ -173,7 +173,6 @@ export function selectCompany (id) {
                             <th style="padding: 8px;">Descripción</th>
                             <th style="padding: 8px;">Fecha Prog.</th>
                             <th style="padding: 8px;">Estado</th>
-                            <th style="padding: 8px;">Costo ($)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -187,9 +186,8 @@ export function selectCompany (id) {
                                         ${w.work_status}
                                     </span>
                                 </td>
-                                <td style="padding: 8px;">$${parseFloat(w.cost || 0).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                             </tr>
-                        `).join('') : `<tr><td colspan="5" style="padding: 15px; text-align: center; color: var(--admin-text-secondary);">No hay tareas registradas para esta empresa.</td></tr>`}
+                        `).join('') : `<tr><td colspan="4" style="padding: 15px; text-align: center; color: var(--admin-text-secondary);">No hay tareas registradas para esta empresa.</td></tr>`}
                     </tbody>
                 </table>
             </div>

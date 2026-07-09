@@ -23,7 +23,7 @@
 
         <section class="plantacion-form-container reveal delay-1">
             @auth
-                <form class="contact-form" onsubmit="event.preventDefault(); showSuccessModal('¡Solicitud Enviada!', 'Tu solicitud de plantación ha sido registrada correctamente. Nuestro equipo la evaluará a la brevedad.'); this.reset();">
+                <form class="contact-form" id="plantacion-form" >
 
 
                     <div class="form-group">
@@ -121,6 +121,18 @@
             </div>
         </div>
     </div>
+    <x-layouts.alert-modal 
+        type="success" 
+        title="¡Trámite Enviado!" 
+        message="Tu solicitud de plantación ha sido registrada correctamente."
+        image="{{ asset('img/components/success-tree.webp') }}"
+    />
+    <x-layouts.alert-modal 
+        type="error" 
+        title="Error" 
+        message="Ocurrió un error al procesar tu solicitud."
+        image="{{ asset('img/components/error-tree.webp') }}"
+    />
     @endauth
 @endsection
 
@@ -129,7 +141,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script src="{{ asset('js/shared/geocoder.js') }}"></script>
     <script src="{{ asset('js/shared/address-autocomplete.js') }}"></script>
-    <script src="{{ asset('js/forms/planting.js') }}"></script>
+    <script type="module" src="{{ asset('js/forms/planting.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof initAddressAutocomplete === 'function') {
@@ -139,5 +151,4 @@
     </script>
     @endauth
 @endsection
-
 

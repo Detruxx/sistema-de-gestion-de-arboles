@@ -1,6 +1,7 @@
 /**
  * Formulario: Lógica de validación e interacción para el formulario de solicitud de plantación.
  */
+import { submitClaim } from './claims/api.js';
 
 // Lógica para Trámite de Plantación
 document.addEventListener('DOMContentLoaded', () => {
@@ -12,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnConfirmAddress = document.getElementById('btn-confirm-address');
     const previewText = document.getElementById('address-preview-text');
     const addressMapBody = document.querySelector('.address-map-body');
-    
+
     let selectorMap = null;
     let currentCoordsAddress = '';
     let debounceTimer = null;
@@ -35,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Geolocalizar al usuario automáticamente al cargar el mapa (salto instantáneo)
         selectorMap.locate({ setView: true, maxZoom: 17 });
 
-        selectorMap.on('locationfound', function(e) {
+        selectorMap.on('locationfound', function (e) {
             const myLocationIcon = L.divIcon({
                 className: 'my-location-marker',
                 html: `
@@ -49,20 +50,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Función de geocodificación reversa delegada al servicio compartido
         async function reverseGeocode(lat, lng) {
-            if(previewText) previewText.textContent = 'Buscando dirección...';
-            if(btnConfirmAddress) btnConfirmAddress.disabled = true;
+            if (previewText) previewText.textContent = 'Buscando dirección...';
+            if (btnConfirmAddress) btnConfirmAddress.disabled = true;
 
             if (typeof window.reverseGeocodeService === 'function') {
                 const address = await window.reverseGeocodeService(lat, lng);
                 currentCoordsAddress = address;
-                
-                if(previewText) previewText.textContent = currentCoordsAddress;
-                if(btnConfirmAddress) btnConfirmAddress.disabled = false;
+
+                if (previewText) previewText.textContent = currentCoordsAddress;
+                if (btnConfirmAddress) btnConfirmAddress.disabled = false;
             } else {
                 console.error('El servicio reverseGeocodeService no está disponible.');
                 currentCoordsAddress = `Ubicación: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-                if(previewText) previewText.textContent = currentCoordsAddress;
-                if(btnConfirmAddress) btnConfirmAddress.disabled = false;
+                if (previewText) previewText.textContent = currentCoordsAddress;
+                if (btnConfirmAddress) btnConfirmAddress.disabled = false;
             }
         }
 
@@ -72,12 +73,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Añadir efectos físicos de salto al pin
         selectorMap.on('movestart', () => {
-            if(addressMapBody) addressMapBody.classList.add('map-moving');
+            if (addressMapBody) addressMapBody.classList.add('map-moving');
         });
 
         selectorMap.on('moveend', () => {
-            if(addressMapBody) addressMapBody.classList.remove('map-moving');
-            
+            if (addressMapBody) addressMapBody.classList.remove('map-moving');
+
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 const center = selectorMap.getCenter();
@@ -86,9 +87,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if(btnSelectMap) {
+    if (btnSelectMap) {
         btnSelectMap.addEventListener('click', () => {
-            if(mapModal) mapModal.classList.add('active');
+            if (mapModal) mapModal.classList.add('active');
             setTimeout(() => {
                 initSelectorMap();
                 if (selectorMap) {
@@ -98,18 +99,111 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if(mapModalClose) {
+    if (mapModalClose) {
         mapModalClose.addEventListener('click', () => {
-            if(mapModal) mapModal.classList.remove('active');
+            if (mapModal) mapModal.classList.remove('active');
         });
     }
 
-    if(btnConfirmAddress) {
+    if (btnConfirmAddress) {
         btnConfirmAddress.addEventListener('click', () => {
             if (currentCoordsAddress) {
-                if(inputDireccion) inputDireccion.value = currentCoordsAddress;
+                if (inputDireccion) inputDireccion.value = currentCoordsAddress;
             }
-            if(mapModal) mapModal.classList.remove('active');
+            if (mapModal) mapModal.classList.remove('active');
+        });
+    }
+
+    const plantacionForm = document.getElementById('plantacion-form');
+    if (plantacionForm) {
+        plantacionForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const tokenEl = document.querySelector('meta[name="csrf-token"]');
+            const token = tokenEl ? tokenEl.getAttribute('content') : '';
+
+            const formData = new FormData();
+            formData.append('request_type_id', '4'); // ID tipo de reclamo para plantación
+            formData.append('address', inputDireccion ? inputDireccion.value.trim() : '');
+
+            let descriptionText = '';
+            const cazuelaEl = document.getElementById('cazuela-estado');
+            if (cazuelaEl && cazuelaEl.value) {
+                const mapCazuela = {
+                    'si': 'Sí, está abierta y con tierra suelta',
+                    'cemento': 'No, la vereda está completamente cementada',
+                    'tocon': 'No, hay un tronco/muñón viejo que debe extraerse primero'
+                };
+                const estadoTexto = mapCazuela[cazuelaEl.value] || cazuelaEl.value;
+                descriptionText += `Estado de la cazuela: ${estadoTexto}.\n`;
+            }
+
+            const descriptionInput = document.getElementById('descripcion-plantacion');
+            if (descriptionInput && descriptionInput.value.trim() !== '') {
+                descriptionText += `Detalles/Motivo: ${descriptionInput.value.trim()}`;
+            }
+
+            formData.append('description', descriptionText.trim());
+
+            // Validar e ingresar fotos si existen
+            const fileInput = document.getElementById('foto-plantacion');
+            if (fileInput && fileInput.files.length > 0) {
+                if (fileInput.files.length > 3) {
+                    alert('Solo se permite adjuntar un máximo de 3 fotos.');
+                    return;
+                }
+
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    const file = fileInput.files[i];
+                    const maxSize = 10 * 1024 * 1024; // 10 MB
+                    if (file.size > maxSize) {
+                        alert(`La foto "${file.name}" supera el tamaño máximo permitido de 10MB.`);
+                        return;
+                    }
+
+                    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.heic'];
+                    const fileName = file.name.toLowerCase();
+                    const isValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+
+                    if (!isValidExtension) {
+                        alert(`El archivo "${file.name}" no es válido. Sube únicamente imágenes (JPG, PNG, WEBP).`);
+                        return;
+                    }
+
+                    formData.append('foto[]', file);
+                }
+            }
+
+            try {
+                const result = await submitClaim(formData, token);
+                if (typeof window.openAlertModal === 'function') {
+                    const modalSuccess = document.getElementById('alert-modal-success');
+                    if (modalSuccess) {
+                        const msgEl = modalSuccess.querySelector('.alert-modal-message');
+                        if (msgEl) msgEl.textContent = `Tu solicitud de plantación ha sido registrada correctamente con el código: ${result.data.tracking_code}`;
+                    }
+                    window.openAlertModal('alert-modal-success');
+                } else {
+                    alert(`Solicitud registrada con éxito bajo el código: ${result.data.tracking_code}`);
+                }
+                plantacionForm.reset();
+
+                // Reiniciar el texto del archivo adjunto
+                const labelFile = document.getElementById('foto-plantacion-name');
+                if (labelFile) labelFile.textContent = 'Ningún archivo seleccionado';
+            } catch (err) {
+                console.error('Submit error:', err);
+                if (typeof window.openAlertModal === 'function') {
+                    const modalError = document.getElementById('alert-modal-error');
+                    if (modalError) {
+                        const msgEl = modalError.querySelector('.alert-modal-message');
+                        if (msgEl) msgEl.textContent = err.message || 'Ocurrió un error al procesar tu solicitud.';
+                    }
+                    window.openAlertModal('alert-modal-error');
+                } else {
+                    alert(err.message || 'Error al intentar registrar la solicitud de plantación.');
+                }
+            }
         });
     }
 });

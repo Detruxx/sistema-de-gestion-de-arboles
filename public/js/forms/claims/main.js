@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (err) {
                 console.error('Submit error:', err);
                 if (typeof window.openAlertModal === 'function') {
-                    // Update the modal's text with the real error message
+                    // Actualiza el texto con el error real
                     const modalError = document.getElementById('alert-modal-error');
                     if (modalError) {
                         const titleEl = modalError.querySelector('.alert-modal-title');

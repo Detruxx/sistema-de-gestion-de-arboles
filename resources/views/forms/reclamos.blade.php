@@ -52,7 +52,7 @@
                 @auth
                 <form class="contact-form" id="reclamo-form">
                     <div class="form-group">
-                        <label for="tipo-reclamo">Tipo de Error <span class="required-asterisk">*</span></label>
+                        <label for="tipo-reclamo">Tipo de Reclamo <span class="required-asterisk">*</span></label>
                         <select id="tipo-reclamo" name="request_type_id" class="form-control" required>
                         <!-- Aca se rellena solo con el JS -->
                         </select>

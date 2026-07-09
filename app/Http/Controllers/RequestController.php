@@ -202,7 +202,7 @@ class RequestController extends Controller
             'data'   => [
                 'id'              => $incident->tracking_code,
                 'direccion'       => $incident->street ? $incident->street->street_name . ' ' . $incident->street->street_number : 'Ubicación no especificada',
-                'categoria'       => $incident->requestType ? $incident->requestType->name : 'General',
+                'categoria'       => $incident->requestType ? $incident->requestType->task_description : 'General',
                 'fecha'           => $incident->created_at->format('d/m/Y'),
                 'estado'          => $estadoFrontend,
                 'respuesta_admin' => $respuestaAdmin
