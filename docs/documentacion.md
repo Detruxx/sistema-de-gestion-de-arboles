@@ -1,77 +1,112 @@
-¡Hola! Es completamente normal sentir que la documentación es tediosa, sobre todo si nunca la hiciste. La buena noticia es que **no tiene por qué ser aburrida ni pesada** si la encaras paso a paso y te enfocas en lo que realmente aporta valor. Documentar es, en realidad, hacerle un favor a tu "yo del futuro" (y a cualquier otro programador que toque el código).
+# [Nombre del Proyecto]
 
-Como me pediste, no voy a escribirla por vos, pero te voy a dar una guía clara de por dónde empezar, qué incluir y cómo puedo ayudarte en el proceso. Dado que estás trabajando en un proyecto en Laravel (PHP) llamado **Sistema de Gestión de Árboles**, vamos a enfocarlo en eso.
-
----
-
-### 1. El punto de partida: El archivo `README.md`
-Este es el documento más importante de cualquier proyecto. Es la portada. Si subís tu código a GitHub o GitLab, es lo primero que se ve. Se crea en la raíz del proyecto.
-
-**¿Qué deberías incluir acá?**
-*   **Título y Descripción:** ¿Qué es el Sistema de Gestión de Árboles? ¿Qué problema resuelve? (Ej: "Plataforma web para el registro, seguimiento y mantenimiento del arbolado público/privado").
-*   **Requisitos:** ¿Qué necesita alguien instalado en su PC para correr esto? (Ej: PHP 8.2, Composer, MySQL, Node.js).
-*   **Instalación (Paso a paso):** Los comandos exactos para levantar el proyecto desde cero.
-    *   `git clone ...`
-    *   `composer install`
-    *   `npm install`
-    *   Copiar `.env.example` a `.env`
-    *   `php artisan key:generate`
-    *   `php artisan migrate --seed`
-*   **Uso básico:** Cómo iniciar el servidor (`php artisan serve`, `npm run dev`) y credenciales de prueba si existen.
-
-### 2. Documentación en el Código (Comentarios y PHPDoc)
-Aquí es donde aplicamos tus propias **Reglas Generales de Programación**:
-*   *Todo el código (variables, métodos, clases) va en inglés.*
-*   *Todos los comentarios van estrictamente en español.*
-
-**A. Nivel de Archivo (Cabeceras):**
-Al principio de archivos importantes (como tus Controladores, Modelos, o Servicios), agregá un bloque explicando su propósito. Por ejemplo, en tu `CompanyPanelController.php`:
-```php
-<?php
-/**
- * Controlador encargado de manejar el panel principal de las empresas.
- * Gestiona la visualización de estadísticas, árboles asignados y reportes
- * específicos para el rol de Empresa.
- */
-namespace App\Http\Controllers;
-...
-```
-
-**B. Nivel de Método/Función (PHPDoc):**
-Antes de cada método importante, explicá qué hace, qué recibe y qué devuelve.
-```php
-/**
- * Obtiene la lista de árboles asignados a una empresa específica
- * y los formatea para la vista del dashboard.
- *
- * @param int $company_id El ID de la empresa a consultar.
- * @return \Illuminate\View\View Vista con los datos de los árboles.
- */
-public function getCompanyTrees(int $company_id)
-{
-    // ...
-}
-```
-
-**C. Nivel de Lógica (Comentarios en línea):**
-Solo documentá el *por qué* o *qué* hace un bloque si la lógica es compleja. No documentes lo obvio.
-*   ❌ **Mal:** `// Incrementa el contador en 1` (Es obvio leyendo `$i++`).
-*   ✅ **Bien:** `// Filtramos los árboles cuyo estado sea 'en_peligro' para mostrarlos en la alerta superior`
-
-### 3. Documentación Estructural o de Negocio (Opcional pero recomendada)
-Si el proyecto crece, el README queda corto. Podés crear una carpeta `/docs` en la raíz de tu proyecto y agregar archivos Markdown (`.md`) para temas específicos:
-*   `docs/base_de_datos.md`: Explicando cómo se relacionan las tablas principales (Empresas, Árboles, Especies, Inspecciones).
-*   `docs/roles_y_permisos.md`: Explicando qué puede hacer un Admin vs. una Empresa.
-*   `docs/flujo_de_trabajo.md`: Cómo es el proceso desde que se planta un árbol hasta que se inspecciona.
+> Aplicación web orientada a la gestión integral de arbolado urbano, permitiendo su registro, seguimiento de reclamos y visualización geográfica a través de un mapa interactivo centralizado.Breve descripción de 1 o 2 líneas sobre qué es el proyecto, para qué sirve y qué problema resuelve.
 
 ---
 
-### ¿Cómo te puedo ayudar a partir de ahora?
+## Tecnologías Utilizadas
 
-Dado que querés hacerlo vos para aprender, podemos trabajar así:
+Enumera aquí las tecnologías principales del proyecto:
+- **Backend:** Laravel 12, PHP 8.2
+- **Frontend:** Javascript Vanilla, Blade.PHP y CSS
+- **Base de Datos:** MySQL
+- **Otras herramientas:** API de autocompletado y normalizacion de calles (USIG-GCBA), API de Nominatim (OpenStreetMap) para la busqueda de calles por fuera del CABA y para geocodificacion inversa, API de Servidor de Mosaicos (Tiles) de OpenStreetMap que usa la libreria Leaflet para la visualizacion del mapa, API de Cloudflare Turnstile para el uso de Captcha.
 
-1.  **Plantillas:** Si querés, pedime *"Armame una estructura vacía para mi README.md"* y te paso un molde para que vos lo llenes con la información real.
-2.  **Revisión:** Podés escribir un bloque de documentación (por ejemplo, la cabecera de un archivo complejo) y preguntarme: *"¿Se entiende esto? ¿Está bien redactado?"* y te doy feedback.
-3.  **Dudas puntuales:** Si estás haciendo una función muy rara y no sabés cómo documentar sus parámetros, pasame la función y te muestro cómo sería su bloque PHPDoc estándar.
 
-¿Por dónde te gustaría arrancar? ¿Te animás a crear el archivo `README.md` o preferís empezar poniendo comentarios en los Controladores que ya tenés abiertos?
+## Requisitos Previos
+Para poder ejecutar este proyecto, necesitas tener instalado en tu entorno local:
+- **PHP:** >= 8.2 (Laravel 12 es compatible con PHP >= 8.2)
+- **Composer:** Version 2.x
+
+- **Base de Datos:** MySQL (recomendado usar a través de **XAMPP** para entorno Windows, iniciando los módulos de Apache y MySQL).
+
+
+
+##  Instalación y Configuración
+
+Sigue estos pasos para levantar el entorno de desarrollo local:
+
+**1. Instalar dependencias del Backend:**
+```bash
+composer install
+```
+
+**2. Configurar las variables de entorno:**
+```bash
+# Copiar archivo de ejemplo para crear la configuración local
+cp .env.example .env
+```
+
+**3. Generar la clave de la aplicación Laravel:**
+```bash
+php artisan key:generate
+```
+
+**4. Configurar la Base de Datos:**
+Abre el archivo `.env` y ajusta según tu motor de DB.
+*Si es MySQL:*
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=gestion_arboles
+DB_USERNAME=root
+DB_PASSWORD=
+```
+*Si es SQLite:*
+```env
+DB_CONNECTION=sqlite
+```
+
+**5. Correr las migraciones y seeders (en caso de no contar con base de datos):**
+```bash
+php artisan migrate --seed
+```
+
+**6. Enlazar el Storage (Archivos públicos):**
+```bash
+php artisan storage:link
+```
+
+---
+
+## Uso / Ejecución Local
+
+Para poner en marcha el proyecto, necesitas correr:
+
+```bash
+php artisan serve
+```
+
+El proyecto estará disponible en: `http://localhost:8000`
+
+---
+
+## Estructura Principal del Proyecto
+
+Breve mención a dónde están las partes clave del código:
+- `app/` - Controladores, Modelos y Lógica principal (Backend).
+- `database` - Migraciones, seeders y factorias de la base de datos.
+- `public/css/` - Hoja de estilos de la aplicación
+- `public/js/` - Lógica de los módulos JS del frontend y dashboards.
+- `resources/views/` - Vistas Blade y estructura HTML.
+- `routes/` - Archivos de rutas (web.php y api.php).
+
+---
+
+## Credenciales de Prueba
+
+Si utilizaste Seeders, deja aquí credenciales de prueba para facilitar la vida de quien clone el proyecto:
+
+| Rol | Email | Contraseña |
+| --- | --- | --- |
+| Vecino | vecino@example.com | vecino123 |
+| Inspector | inspector@example.com | inspector123 |
+| Administrador | admin@example.com | admin123 |
+| Empresa | empresa@example.com | empresa123 |
+
+---
+
+## Notas adicionales
+
+En el .env estan las claves para el captcha y el usuario de prueba para testear el envio de mails.
