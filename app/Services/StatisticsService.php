@@ -116,6 +116,7 @@ class StatisticsService
     public function getSmartAlerts()
     {
         $alerts = [];
+        $process_alerts = [];
 
         try {
             // 1. Alerta de Riesgo Inminente (Reclamos abiertos sobre árboles altos y enfermos)
@@ -137,10 +138,15 @@ class StatisticsService
                     'title' => 'Riesgo de Caída Inminente',
                     'description' => "Se detectaron {$urgentCount} reclamos pendientes sobre árboles de gran porte (más de 10 metros) reportados en mal estado. Se recomienda intervención de emergencia."
                 ];
+            } else {
+                $alerts[] = [
+                    'type' => 'success',
+                    'title' => 'Riesgo Controlado',
+                    'description' => "No se detectaron árboles de gran porte enfermos con reclamos pendientes de atención."
+                ];
             }
 
             // 2. Alerta Operativa (Promedio de resolución de reclamos finalizados)
-            // Se calcula el promedio en días (updated_at - created_at) de reclamos terminados
             $avgCurrentMonth = Request::whereHas('status', function($q) { $q->where('is_terminal', true); })
                                       ->whereMonth('updated_at', Carbon::now()->month)
                                       ->selectRaw('AVG(DATEDIFF(updated_at, created_at)) as avg_days')
@@ -159,15 +165,27 @@ class StatisticsService
                     $alerts[] = [
                         'type' => 'success',
                         'title' => 'Mejora Operativa',
-                        'description' => "El tiempo promedio de resolución de reclamos disminuyó un {$percent}% respecto al mes pasado. (Promedio actual: " . round($avgCurrentMonth, 1) . " días)."
+                        'description' => "El tiempo promedio de resolución disminuyó un {$percent}% respecto al mes pasado. (Promedio actual: " . round($avgCurrentMonth, 1) . " días)."
                     ];
                 } elseif ($percent < 0) {
                     $alerts[] = [
                         'type' => 'warning',
                         'title' => 'Demora Operativa',
-                        'description' => "El tiempo de resolución aumentó un " . abs($percent) . "% respecto al mes pasado. Revisar cuellos de botella."
+                        'description' => "El tiempo de resolución aumentó un " . abs($percent) . "% respecto al mes pasado. Revisar posibles cuellos de botella."
+                    ];
+                } else {
+                    $alerts[] = [
+                        'type' => 'info',
+                        'title' => 'Rendimiento Estable',
+                        'description' => "El tiempo promedio de resolución se mantiene idéntico al del mes pasado."
                     ];
                 }
+            } else {
+                $alerts[] = [
+                    'type' => 'info',
+                    'title' => 'Rendimiento Operativo',
+                    'description' => "Se requiere más historial de reclamos finalizados para poder calcular una tendencia de rendimiento."
+                ];
             }
 
             // 3. Hotspot de Especies (Especie más problemática combinada con tipo de reclamo)
@@ -181,7 +199,6 @@ class StatisticsService
                 ->first();
 
             if ($hotspot && $hotspot->total > 5) {
-                // Contar total de reclamos para sacar porcentaje
                 $totalRequests = Request::count();
                 $percentage = $totalRequests > 0 ? round(($hotspot->total / $totalRequests) * 100, 1) : 0;
                 
@@ -189,6 +206,12 @@ class StatisticsService
                     'type' => 'warning',
                     'title' => 'Especies Problemáticas (Hotspot)',
                     'description' => "El {$percentage}% de los reclamos históricos corresponden a '{$hotspot->problem}' en árboles de la especie '{$hotspot->species_name}'. Considerar reemplazo a largo plazo en el censo."
+                ];
+            } else {
+                $alerts[] = [
+                    'type' => 'success',
+                    'title' => 'Distribución Equilibrada',
+                    'description' => "No se detectan especies particulares que concentren un nivel crítico y anormal de reclamos recurrentes."
                 ];
             }
 
@@ -204,7 +227,7 @@ class StatisticsService
                     if ($percentage > 50) {
                         $company = \App\Models\Company::find($load->company_id);
                         if ($company) {
-                            $alerts[] = [
+                            $process_alerts[] = [
                                 'type' => 'danger',
                                 'title' => 'Saturación de Contratista',
                                 'description' => "La empresa '{$company->name}' concentra el " . round($percentage, 1) . "% de las Órdenes pendientes. Se sugiere derivar a otras contratistas para evitar cuellos de botella operativos."
@@ -223,10 +246,16 @@ class StatisticsService
                 ->get();
                 
             if ($repeatedTrees->count() > 0) {
-                $alerts[] = [
+                $process_alerts[] = [
                     'type' => 'danger',
                     'title' => 'Reincidencia Crítica Detectada',
                     'description' => "Existen {$repeatedTrees->count()} árboles en la comuna que acumulan 3 o más reclamos históricos. Se recomienda suspender mantenimientos temporales y evaluar su extracción definitiva."
+                ];
+            } else {
+                $process_alerts[] = [
+                    'type' => 'success',
+                    'title' => 'Reincidencia Bajo Control',
+                    'description' => "No se detectaron árboles con reiterados reclamos (3 o más). El historial de intervenciones se mantiene saludable."
                 ];
             }
 
@@ -240,7 +269,10 @@ class StatisticsService
             ];
         }
 
-        return $alerts;
+        return [
+            'alerts' => $alerts,
+            'process_alerts' => $process_alerts
+        ];
     }
 
     /**
@@ -253,35 +285,96 @@ class StatisticsService
             throw new \Exception("Modelo no permitido.");
         }
 
-        // Iniciar Eloquent Builder según el modelo seleccionado
-        if ($model === 'trees') $query = Tree::query();
-        elseif ($model === 'requests') $query = Request::query();
-        elseif ($model === 'work_orders') $query = WorkOrder::query();
-
-        // Aplicar filtros dinámicos con when() de Eloquent
-        $query->when($dateRange === '30days', function ($q) {
-            return $q->where('created_at', '>=', Carbon::now()->subDays(30));
-        })->when($dateRange === 'this_year', function ($q) {
-            return $q->where('created_at', '>=', Carbon::now()->startOfYear());
-        });
-
-        // Determinar columna de agrupación
-        $groupCol = 'id';
-        if ($groupBy === 'status') {
-            if ($model === 'requests') $groupCol = 'request_status_id';
-            if ($model === 'work_orders') $groupCol = 'work_status';
-            if ($model === 'trees') $groupCol = 'estado_salud';
-        } elseif ($groupBy === 'species') {
-            if ($model === 'trees') $groupCol = 'species_id';
-        } elseif ($groupBy === 'month') {
-            // Agrupar por el mes de creación (compatible con varios motores SQL)
-            $groupCol = DB::raw('MONTH(created_at)');
+        // Validación de Incompatibilidad
+        if ($model === 'trees' && $metric === 'avg_time') {
+            throw new \Exception("No se puede calcular el 'Tiempo Promedio' de un Árbol físico. Esta métrica solo está disponible para Reclamos y Órdenes de Trabajo.");
         }
 
-        // Ejecutar métrica (COUNT por defecto)
-        $results = $query->selectRaw("COUNT(*) as valor, {$groupCol} as grupo")
-                         ->groupBy(DB::raw($groupCol))
-                         ->get();
+        // 1. Instanciar la Query base según el modelo
+        if ($model === 'trees') $query = Tree::query();
+        elseif ($model === 'requests') $query = \App\Models\Request::query();
+        elseif ($model === 'work_orders') $query = \App\Models\WorkOrder::query();
+
+        // 2. Aplicar filtro de fechas
+        $table = $query->getModel()->getTable();
+        $query->when($dateRange === '30days', function ($q) use ($table) {
+            return $q->where($table.'.created_at', '>=', Carbon::now()->subDays(30));
+        })->when($dateRange === 'this_year', function ($q) use ($table) {
+            return $q->where($table.'.created_at', '>=', Carbon::now()->startOfYear());
+        });
+
+        // 3. Determinar Métrica a usar (Cantidad o Promedio de Días)
+        $table = $query->getModel()->getTable();
+        $selectMetric = "COUNT({$table}.id) as valor";
+        if ($metric === 'avg_time') {
+            // Calcula el promedio de días que estuvo abierto. Usa ABS para evitar negativos con datos de prueba incoherentes.
+            $selectMetric = "ROUND(AVG(ABS(DATEDIFF({$table}.updated_at, {$table}.created_at))), 1) as valor";
+        }
+
+        // 4. Determinar lógicas específicas de Agrupamiento y Joins
+        if ($groupBy === 'species') {
+            if ($model === 'trees') {
+                $query->join('species', 'trees.species_id', '=', 'species.id')
+                      ->selectRaw("species.common_name as grupo, {$selectMetric}")
+                      ->groupBy('species.common_name');
+            } elseif ($model === 'requests') {
+                $query->join('trees', 'requests.tree_id', '=', 'trees.id')
+                      ->join('species', 'trees.species_id', '=', 'species.id')
+                      ->selectRaw("species.common_name as grupo, {$selectMetric}")
+                      ->groupBy('species.common_name');
+            } else {
+                // Work Orders u otros que no tienen especies de forma directa
+                $query->selectRaw("'No Aplica' as grupo, {$selectMetric}");
+            }
+        } 
+        elseif ($groupBy === 'status') {
+            if ($model === 'trees') {
+                $query->selectRaw("maintenance_status as grupo, {$selectMetric}")
+                      ->groupBy('maintenance_status');
+            } elseif ($model === 'requests') {
+                $query->join('request_statuses', 'requests.request_status_id', '=', 'request_statuses.id')
+                      ->selectRaw("request_statuses.name as grupo, {$selectMetric}")
+                      ->groupBy('request_statuses.name');
+            } elseif ($model === 'work_orders') {
+                $query->selectRaw("work_status as grupo, {$selectMetric}")
+                      ->groupBy('work_status');
+            }
+        } 
+        elseif ($groupBy === 'month') {
+            // Compatible con MySQL
+            $query->selectRaw("MONTH({$table}.created_at) as mes_num, {$selectMetric}")
+                  ->groupBy(DB::raw("MONTH({$table}.created_at)"));
+        }
+        else {
+            // Fallback genérico
+            $query->selectRaw("'Total' as grupo, {$selectMetric}");
+        }
+
+        // 5. Ejecutar consulta
+        $results = $query->get();
+
+        // 6. Post-procesamiento
+        $meses = [
+            1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril', 5 => 'Mayo', 6 => 'Junio',
+            7 => 'Julio', 8 => 'Agosto', 9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
+        ];
+
+        $results->transform(function($item) use ($meses, $groupBy, $metric) {
+            // Convertir mes numérico a texto
+            if ($groupBy === 'month') {
+                $item->grupo = $meses[$item->mes_num] ?? 'Desconocido';
+                unset($item->mes_num);
+            }
+            
+            // Añadir sufijo "días" si la métrica es tiempo promedio
+            if ($metric === 'avg_time') {
+                // Si el valor es null (ej. no hay registros cerrados), poner 0
+                $val = $item->valor ? $item->valor : '0';
+                $item->valor = $val . " días";
+            }
+            
+            return $item;
+        });
 
         return [
             'metadata' => [
