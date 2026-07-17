@@ -1,25 +1,24 @@
 <!-- Notificaciones del perfil de usuario -->
 @php
-    // Iniciamos contadores en cero por defecto (para invitados o si no hay novedades)
+    // 1. Inicializamos todo en cero y false por defecto (para invitados)
     $unreadClaimsCount = 0;
     $unreadMessagesCount = 0;
     $hasAnyNotification = false;
 
-    // Si el usuario inicio sesion, contamos cuantas notificaciones nuevas tiene en la base de datos
+    // 2. Si el usuario SÍ está logueado, vamos a la base de datos a buscar la posta
     if (auth()->check()) {
-        // Buscamos reclamos nuevos
-        // TODO: Descomentar cuando la migración is_new_for_user para requests esté creada
-        // $unreadClaimsCount = \App\Models\Request::where('user_id', auth()->id())
-        //     ->where('is_new_for_user', true)
-        //     ->count();
-        $unreadClaimsCount = 0;
+        
+        // Notificaciones de Mis Reclamos
+        $unreadClaimsCount = \App\Models\Request::where('user_id', auth()->id())
+            ->where('is_new_for_user', true)
+            ->count();
 
-        // Buscamos mensajes nuevos
+        // Notificaciones de Bandeja de Entrada (Mensajes)
         $unreadMessagesCount = \App\Models\ContactMessage::where('user_id', auth()->id())
             ->where('is_new_for_user', true)
             ->count();
             
-        // Si hay al menos un reclamo o mensaje nuevo, encendemos la notificacion global
+        // Condición para el puntito rojo del menú global
         $hasAnyNotification = ($unreadClaimsCount > 0 || $unreadMessagesCount > 0);
     }
 @endphp

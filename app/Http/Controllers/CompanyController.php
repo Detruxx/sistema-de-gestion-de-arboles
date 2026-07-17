@@ -7,7 +7,6 @@ use Illuminate\Http\JsonResponse;
  
 class CompanyController extends Controller
 {
-
     /**
      * Registra una nueva empresa en la base de datos.
      * Recibe los datos, los valida y si está todo bien, crea la empresa.

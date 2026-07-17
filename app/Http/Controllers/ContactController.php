@@ -58,6 +58,29 @@ class ContactController extends Controller
 
         return back()->with('error', 'Mensaje no encontrado.');
     }
+
+    public function markSeenByUser(Request $request, $id)
+    {
+        $msg = ContactMessage::where('id', $id)->where('user_id', auth()->id())->first();
+        
+        if(!$msg){
+            return response()->json([
+                'success' => false,
+                'message' => 'Mensaje no encontrado.'
+            ], 404);
+        }
+
+        if ($msg->is_new_for_user) {
+            $msg->is_new_for_user = false;
+            $msg->save(); 
+        }
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Notificación revisada.'
+        ], 200); 
+    }
+
     /**
      * Responde a un mensaje de contacto (Solo Inspector/Admin).
      */

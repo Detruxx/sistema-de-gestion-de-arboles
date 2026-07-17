@@ -234,11 +234,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/api/admin/analytics/custom', [AnalyticsController::class, 'generateCustomReport'])->name('api.admin.analytics.custom');
 });
 
-
 Route::middleware(['auth'])->group(function () {
 
     // 1. Alta de Empresa Contratista (Store)
-    
     Route::post('/companies', [CompanyController::class, 'store'])
         ->name('companies.store')
         ->middleware('turnstile');
@@ -246,6 +244,14 @@ Route::middleware(['auth'])->group(function () {
     // 2. Actualizar foto de perfil
     Route::post('/profile/photo', [App\Http\Controllers\ProfileController::class, 'updateProfilePhoto'])
         ->name('profile.photo.update');
+
+    // 3. Apagar puntito rojo de Mensajes de Contacto
+    Route::post('/mensajes/{id}/mark-seen-by-user', [ContactController::class, 'markSeenByUser'])
+        ->name('contact.markSeen');
+
+    // 4. Apagar puntito rojo de Actualización de Reclamos (En el Profile)
+    Route::post('/reclamos/{id}/mark-seen-by-user', [ProfileController::class, 'markRequestSeenByUser'])
+        ->name('profile.reclamo.markSeen');
 
 });
 
