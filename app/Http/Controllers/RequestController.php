@@ -19,8 +19,12 @@ class RequestController extends Controller
      * Muestra un listado de los reclamos (Para el Dashboard de Admin).
      */
     public function index(Request $request)
-    {
-        $requests = \App\Models\Request::with(['user', 'street', 'requestType', 'tree.specie', 'histories.status', 'status', 'workOrders.company', 'priority'])->orderBy('created_at', 'desc')->get();
+    {   
+       $requests = \App\Models\Request::with(['user', 'street', 'requestType', 'tree.specie', 'histories.status', 'status', 'workOrders.company', 'priority'])
+            ->orderBy('urgente_sla', 'desc')
+            ->orderBy('risk_score', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         $mapped = $requests->values()->map(function ($req) {
             return [

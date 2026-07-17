@@ -61,8 +61,22 @@ export async function loadClaimsFromServer() {
 
     try {
         const result = await fetchClaims();
-        state.claims = (result.data || result).sort((a, b) => a.raw_request_id - b.raw_request_id);
-        
+        state.claims = (result.data || result).sort((a, b) => {
+            const getPriorityWeight = (p) => {
+                if (!p) return 0;
+                const lower = String(p).toLowerCase();
+                if (lower === 'auto-alta' || lower === 'urgent' || lower === 'urgente') return 2;
+                if (lower === 'auto-media' || lower === 'high' || lower === 'alta') return 1;
+                return 0;
+            };
+            const wA = getPriorityWeight(a.priority);
+            const wB = getPriorityWeight(b.priority);
+            if (wA !== wB) {
+                return wB - wA;
+            }
+            return a.raw_request_id - b.raw_request_id;
+        });
+
         updateStats();
         ui.loadClaimsList();
         claimsMap.initClaimsMap();
