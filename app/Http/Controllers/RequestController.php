@@ -248,10 +248,22 @@ class RequestController extends Controller
                 
                 // Si el reclamo tiene un usuario vinculado con un email válido, le disparamos el correo
                 if ($userRequest->user && !empty($userRequest->user->email)) {
-                    Mail::to($userRequest->user->email)->send(new ClaimMergedMail($linkedTo));
+                    Mail::to($userRequest->user->email)->send(new \App\Mail\ClaimMergedMail($linkedTo));
                 }
             } elseif ($dbSlug !== 'vinculated') {
                 $linkedTo = null;
+            }
+
+            // Enviar correo de cierre si el nuevo estado es terminal y diferente al anterior
+            if ($statusObj && $statusObj->is_terminal && $userRequest->request_status_id != $statusId) {
+                if ($userRequest->user && !empty($userRequest->user->email)) {
+                    // ID 4 = Plantación
+                    if ($userRequest->request_type_id == 4) {
+                        Mail::to($userRequest->user->email)->send(new \App\Mail\TreePlantedMail($userRequest));
+                    } else {
+                        Mail::to($userRequest->user->email)->send(new \App\Mail\RequestCompletedMail($userRequest));
+                    }
+                }
             }
         }
 

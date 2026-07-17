@@ -359,6 +359,43 @@
     </svg>
     <span id="notification-text">Respuesta enviada con éxito.</span>
 </div>
+
+<!-- Modal Editar Estado del Árbol -->
+<div id="edit-tree-modal" class="admin-modal-overlay" style="display: none; z-index: 1060;">
+    <div class="admin-modal-container">
+        <div class="admin-modal-header">
+            <h3>Actualizar Estado Fitosanitario</h3>
+            <button type="button" class="admin-modal-close" onclick="closeEditTreeModal()">&times;</button>
+        </div>
+        <form id="edit-tree-form" onsubmit="submitEditTree(event)">
+            <input type="hidden" id="edit-tree-id" value="">
+            <div class="admin-modal-body">
+                <div class="admin-form-group">
+                    <label for="edit-tree-follaje">Estado del Follaje</label>
+                    <select id="edit-tree-follaje" required>
+                        <option value="Completo">Follaje Completo (Vigoroso)</option>
+                        <option value="Ralo">Follaje Ralo (Poco denso/Escaso)</option>
+                        <option value="Seco">Follaje Seco (Muerto)</option>
+                    </select>
+                </div>
+                <div class="admin-form-group">
+                    <label for="edit-tree-plagas">Presencia de Plagas</label>
+                    <select id="edit-tree-plagas" required>
+                        <option value="Ninguna">Ninguna Plaga Detectada</option>
+                        <option value="Cochinilla">Cochinilla / Pulgones</option>
+                        <option value="Hongo">Hongo / Clorosis</option>
+                        <option value="Taladro">Taladro / Insectos xilófagos</option>
+                    </select>
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeEditTreeModal()">Cancelar</button>
+                <button type="submit" class="btn-primary">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 </div>
 @endsection
 @section('footer')

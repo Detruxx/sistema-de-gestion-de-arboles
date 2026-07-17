@@ -19,7 +19,8 @@ export async function loadAnalyticsModule() {
         const result = await response.json();
 
         if (result.status === 'success') {
-            renderSmartAlerts(result.data.alerts);
+            renderSmartAlerts(result.data.alerts.alerts);
+            renderProcessAlerts(result.data.alerts.process_alerts);
             renderCharts(result.data.charts);
             analyticsLoaded = true;
         }
@@ -37,31 +38,97 @@ export async function loadAnalyticsModule() {
 }
 
 /**
- * Renderiza las tarjetas de alertas inteligentes cruzando datos.
+ * Renderiza las tarjetas de alertas inteligentes (originales).
  */
 function renderSmartAlerts(alerts) {
     const container = document.getElementById('smart-alerts-container');
     container.innerHTML = '';
 
     if (!alerts || alerts.length === 0) {
-        container.innerHTML = '<p style="color: #666; font-size: 0.9rem;">No hay hallazgos automáticos en este momento.</p>';
+        container.innerHTML = `
+            <div style="padding: 20px; background: white; border-radius: 12px; border: 1px solid var(--admin-border); border-left: 4px solid #9ca3af; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                <p style="color: #666; font-size: 0.95rem;">No hay hallazgos automáticos en este momento.</p>
+            </div>`;
         return;
     }
 
     alerts.forEach(alert => {
-        // Map alert type to dot color class
         let dotClass = 'activity-dot-info';
-        if (alert.type === 'danger') dotClass = 'activity-dot-danger';
-        if (alert.type === 'warning') dotClass = 'activity-dot-warning';
-        if (alert.type === 'success') dotClass = 'activity-dot-success';
+        let borderColor = 'var(--admin-accent)';
+        let titleColor = 'var(--admin-accent)';
+
+        if (alert.type === 'danger') {
+            dotClass = 'activity-dot-danger';
+            borderColor = 'var(--admin-danger)';
+            titleColor = 'var(--admin-danger)';
+        } else if (alert.type === 'warning') {
+            dotClass = 'activity-dot-warning';
+            borderColor = 'var(--admin-warning)';
+            titleColor = '#b45309';
+        } else if (alert.type === 'success') {
+            dotClass = 'activity-dot-success';
+            borderColor = 'var(--admin-success)';
+            titleColor = 'var(--admin-success)';
+        } else if (alert.type === 'info') {
+            dotClass = 'activity-dot-info';
+            borderColor = '#3b82f6';
+            titleColor = '#2563eb';
+        }
 
         const alertHtml = `
-            <div class="activity-item" style="align-items: flex-start; padding: 12px; background: rgba(0,0,0,0.02); border-radius: 8px; margin-bottom: 10px;">
-                <span class="activity-dot ${dotClass}" style="margin-top: 5px;"></span>
-                <div>
-                    <p class="activity-title" style="font-weight: 600; font-size: 1.05rem;">${alert.title}</p>
-                    <p class="activity-desc" style="font-size: 0.95rem; line-height: 1.4; color: var(--admin-text-secondary); margin-top: 5px;">${alert.description}</p>
+            <div style="padding: 20px; background: white; border-radius: 12px; border: 1px solid var(--admin-border); border-left: 4px solid ${borderColor}; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: flex-start; gap: 12px; transition: transform 0.2s ease;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="activity-dot ${dotClass}" style="margin:0;"></span>
+                    <p style="font-weight: 700; font-size: 1.05rem; color: ${titleColor}; margin: 0;">${alert.title}</p>
                 </div>
+                <p style="font-size: 0.95rem; color: var(--admin-text-secondary); line-height: 1.5; margin: 0;">${alert.description}</p>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', alertHtml);
+    });
+}
+
+/**
+ * Renderiza las tarjetas de auditoría de procesos.
+ */
+function renderProcessAlerts(alerts) {
+    const container = document.getElementById('process-alerts-container');
+    container.innerHTML = '';
+
+    if (!alerts || alerts.length === 0) {
+        container.innerHTML = `
+            <div style="padding: 20px; background: white; border-radius: 12px; border: 1px solid var(--admin-border); border-left: 4px solid #9ca3af; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                <p style="color: #666; font-size: 0.95rem;">No hay hallazgos operativos que reportar en este momento.</p>
+            </div>`;
+        return;
+    }
+
+    alerts.forEach(alert => {
+        let dotClass = 'activity-dot-info';
+        let borderColor = 'var(--admin-accent)';
+        let titleColor = 'var(--admin-accent)';
+
+        if (alert.type === 'danger') {
+            dotClass = 'activity-dot-danger';
+            borderColor = 'var(--admin-danger)';
+            titleColor = 'var(--admin-danger)';
+        } else if (alert.type === 'warning') {
+            dotClass = 'activity-dot-warning';
+            borderColor = 'var(--admin-warning)';
+            titleColor = '#b45309';
+        } else if (alert.type === 'success') {
+            dotClass = 'activity-dot-success';
+            borderColor = 'var(--admin-success)';
+            titleColor = 'var(--admin-success)';
+        }
+
+        const alertHtml = `
+            <div style="padding: 20px; background: white; border-radius: 12px; border: 1px solid var(--admin-border); border-left: 4px solid ${borderColor}; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: flex-start; gap: 12px; transition: transform 0.2s ease;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="activity-dot ${dotClass}" style="margin:0;"></span>
+                    <p style="font-weight: 700; font-size: 1.05rem; color: ${titleColor}; margin: 0;">${alert.title}</p>
+                </div>
+                <p style="font-size: 0.95rem; color: var(--admin-text-secondary); line-height: 1.5; margin: 0;">${alert.description}</p>
             </div>
         `;
         container.insertAdjacentHTML('beforeend', alertHtml);
@@ -196,21 +263,174 @@ export async function exportQuery(exportType) {
         // 3. Cerrar el modal
         closeQueryExportModal();
 
-        // 4. Mostrar alerta de éxito (Mock)
-        if (result.status === 'success') {
-            const banner = document.getElementById('notification-banner');
-            document.getElementById('notification-text').innerText = 
-                `Consulta generada con éxito. Tipo de exportación: ${exportType.toUpperCase()}`;
-            
-            banner.style.display = 'flex';
-            setTimeout(() => { banner.style.display = 'none'; }, 4000);
-            
-            // Aquí iría la lógica para renderizar la tabla, gráfico, o forzar descarga de CSV
-            console.log("Datos generados:", result.data);
+        if (result.status === 'success' && result.data && result.data.results) {
+            const resultsContainer = document.getElementById('custom-query-results');
+            resultsContainer.style.display = 'block';
+
+            if (exportType === 'table') {
+                renderQueryTable(result.data, resultsContainer);
+            } else if (exportType === 'chart') {
+                renderQueryChart(result.data, resultsContainer);
+            } else if (exportType === 'csv') {
+                downloadCSV(result.data);
+                
+                // Mostrar alerta de éxito
+                const banner = document.getElementById('notification-banner');
+                document.getElementById('notification-text').innerText = 
+                    'Archivo CSV generado y descargado con éxito.';
+                banner.style.display = 'flex';
+                setTimeout(() => { banner.style.display = 'none'; }, 4000);
+            }
+        } else if (result.status === 'error') {
+            alert(result.message || "Ocurrió un error al procesar la consulta.");
+        } else {
+            throw new Error("Formato de respuesta inválido");
         }
 
     } catch (error) {
         console.error("Error al generar consulta", error);
-        alert("Ocurrió un error al procesar la consulta personalizada.");
+        alert("Ocurrió un error inesperado de conexión al procesar la consulta.");
     }
+}
+
+/**
+ * Renderiza los resultados en formato Tabla HTML
+ */
+function renderQueryTable(data, container) {
+    const results = data.results;
+    
+    let html = `
+        <h4 style="margin-bottom: 20px; color: var(--admin-text); font-family: var(--font-display);">Resultados de la Consulta (Formato Tabla)</h4>
+        <div style="overflow-x: auto; border-radius: 8px; border: 1px solid var(--admin-border);">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: var(--font-base);">
+                <thead>
+                    <tr style="background-color: rgba(29, 138, 87, 0.05); color: var(--admin-accent); border-bottom: 2px solid var(--admin-border);">
+                        <th style="padding: 15px; font-weight: 600;">Grupo Evaluado</th>
+                        <th style="padding: 15px; font-weight: 600;">Resultado (Valor)</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    if (results.length === 0) {
+        html += `<tr><td colspan="2" style="padding: 20px; text-align: center; color: #6b7280;">No se encontraron registros para esta consulta.</td></tr>`;
+    } else {
+        results.forEach(row => {
+            // Manejar valores nulos o vacíos amigablemente
+            const grupo = (row.grupo === null || row.grupo === '') ? 'Desconocido / Sin Clasificar' : row.grupo;
+            html += `
+                <tr style="border-bottom: 1px solid var(--admin-border);">
+                    <td style="padding: 15px; color: var(--admin-text); font-weight: 500;">${grupo}</td>
+                    <td style="padding: 15px; color: #4b5563;">${row.valor}</td>
+                </tr>
+            `;
+        });
+    }
+
+    html += `
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    container.innerHTML = html;
+}
+
+/**
+ * Renderiza los resultados en un gráfico de barras (Chart.js)
+ */
+let customQueryChartInstance = null;
+
+function renderQueryChart(data, container) {
+    const results = data.results;
+    
+    // Inyectar el canvas
+    container.innerHTML = `
+        <h4 style="margin-bottom: 20px; color: var(--admin-text); font-family: var(--font-display);">Resultados de la Consulta (Formato Gráfico)</h4>
+        <div style="position: relative; height: 350px; width: 100%; background: white; border-radius: 12px; border: 1px solid var(--admin-border); padding: 20px;">
+            <canvas id="customQueryCanvas"></canvas>
+        </div>
+    `;
+
+    const ctx = document.getElementById('customQueryCanvas').getContext('2d');
+    
+    if (customQueryChartInstance) {
+        customQueryChartInstance.destroy();
+    }
+
+    // Preparar datos
+    const labels = results.map(row => (row.grupo === null || row.grupo === '') ? 'Sin Clasificar' : String(row.grupo));
+    const values = results.map(row => parseFloat(row.valor));
+
+    customQueryChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Cantidad / Valor',
+                data: values,
+                backgroundColor: 'rgba(29, 138, 87, 0.8)', // Verde Arbórea
+                borderColor: '#1d8a57',
+                borderWidth: 1,
+                borderRadius: 4,
+                maxBarThickness: 60 // Evita que las barras sean gigantes cuando hay pocos datos
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1f2937',
+                    titleFont: { size: 14, family: 'Inter' },
+                    bodyFont: { size: 13, family: 'Inter' },
+                    padding: 10,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { borderDash: [4, 4] } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+}
+
+/**
+ * Genera un archivo CSV en memoria y fuerza su descarga
+ */
+function downloadCSV(data) {
+    const results = data.results;
+    
+    if (results.length === 0) {
+        alert("No hay datos para exportar.");
+        return;
+    }
+
+    // Cabeceras del CSV
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Grupo,Valor\n";
+
+    // Filas
+    results.forEach(row => {
+        const grupo = (row.grupo === null || row.grupo === '') ? 'Sin Clasificar' : String(row.grupo);
+        const valor = row.valor;
+        // Escapar comillas dobles y comas si existieran en el texto
+        const safeGrupo = `"${grupo.replace(/"/g, '""')}"`;
+        csvContent += `${safeGrupo},${valor}\n`;
+    });
+
+    // Crear un enlace virtual para descargar
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    
+    // Nombre de archivo dinámico basado en la fecha
+    const dateStr = new Date().toISOString().slice(0, 10);
+    link.setAttribute("download", `Reporte_Arborea_${dateStr}.csv`);
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }

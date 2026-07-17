@@ -271,25 +271,19 @@
                     </div>
                 </div>
 
-                <!-- Aviso de Página en Construcción Reutilizable -->
-                <div style="margin-bottom: 40px;">
-                    <x-under-construction />
-                </div>
 
                 <!-- Alertas Inteligentes (Actionable Intelligence) -->
-                <div class="detail-panel" style="margin-bottom: 30px; border-left: 4px solid var(--admin-accent);">
-                    <h3 class="sidebar-menu-title mt-25" style="font-family: var(--font-display); margin-bottom: 20px; color: var(--admin-accent);">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <div class="detail-panel" style="margin-bottom: 30px; border: none; background: transparent; padding: 0; box-shadow: none;">
+                    <h3 class="sidebar-menu-title mt-25" style="font-family: var(--font-display); margin-bottom: 25px; color: var(--admin-accent); text-align: left; font-size: 1.2rem;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 10px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                         Alertas y Hallazgos Automáticos
                     </h3>
-                    <div class="activity-list" id="smart-alerts-container">
-                        <!-- Loaded via JS Skeleton -->
-                        <div class="activity-item">
-                            <span class="activity-dot activity-dot-warning"></span>
-                            <div>
-                                <p class="activity-title" style="font-weight: 600;">Cargando motor de inteligencia...</p>
-                                <p class="activity-desc">Analizando correlaciones entre especies y reclamos...</p>
-                            </div>
+                    
+                    <div id="smart-alerts-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <!-- Cargando Skeleton -->
+                        <div style="padding: 20px; background: white; border-radius: 12px; border-left: 4px solid var(--admin-border); box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                            <p style="font-weight: 600; margin-bottom: 8px;">Cargando motor de inteligencia...</p>
+                            <p style="font-size: 0.9rem; color: #6b7280;">Analizando correlaciones entre especies y reclamos...</p>
                         </div>
                     </div>
                 </div>
@@ -309,6 +303,23 @@
                         <h4 style="margin-bottom: 20px; color: var(--admin-text); font-family: var(--font-display);">Salud del Arbolado</h4>
                         <div style="position: relative; height: 300px; width: 100%; display: flex; justify-content: center; align-items: center;">
                             <canvas id="distributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alertas de Procesos y Operativa -->
+                <div style="margin-top: 40px; margin-bottom: 30px;">
+                    <h3 class="sidebar-menu-title" style="font-family: var(--font-display); margin-bottom: 20px; color: var(--admin-accent);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        Auditoría de Procesos Operativos
+                    </h3>
+                    
+                    <!-- Contenedor Grid para las Tarjetas de Alerta -->
+                    <div id="process-alerts-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+                        <!-- Cargando Skeleton -->
+                        <div style="padding: 20px; background: white; border-radius: 12px; border-left: 4px solid var(--admin-border); box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                            <p style="font-weight: 600; margin-bottom: 8px;">Cargando motor de procesos...</p>
+                            <p style="font-size: 0.9rem; color: #6b7280;">Analizando cuellos de botella y reincidencias...</p>
                         </div>
                     </div>
                 </div>
@@ -353,9 +364,15 @@
                             </select>
                         </div>
                     </form>
-                    <div style="text-align: right; margin-top: 30px;">
+                    <div style="text-align: right; margin-top: 30px; border-bottom: 1px solid var(--admin-border); padding-bottom: 30px; margin-bottom: 30px;">
                         <button type="button" class="btn-primary" onclick="openQueryExportModal()" style="padding: 14px 32px; font-size: 1.1rem; font-weight: 600; border-radius: 8px; box-shadow: 0 4px 12px rgba(29,138,87,0.2);">Generar Consulta</button>
                     </div>
+
+                    <!-- Contenedor Dinámico de Resultados -->
+                    <div id="custom-query-results" style="display: none; animation: fadeIn 0.4s ease-out;">
+                        <!-- Aquí se inyectará la tabla o el gráfico -->
+                    </div>
+
                     </div> <!-- Cierre admin-card-body -->
                 </div> <!-- Cierre admin-card -->
             </section>
