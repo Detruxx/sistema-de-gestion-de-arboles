@@ -52,10 +52,15 @@ export async function selectTree(id) {
         const tree = result.data;
         
         let estadoStr = 'Saludable';
+        let currentFollaje = 'Completo';
+        let currentPlagas = 'Ninguna';
+        
         if (Array.isArray(tree.vitality)) {
             estadoStr = tree.vitality.join(', ');
         } else if (typeof tree.vitality === 'object' && tree.vitality !== null) {
             estadoStr = Object.values(tree.vitality).join(', ');
+            currentFollaje = tree.vitality.follaje || 'Completo';
+            currentPlagas = tree.vitality.plagas || 'Ninguna';
         } else if (tree.vitality) {
             estadoStr = String(tree.vitality);
         }
@@ -100,7 +105,14 @@ export async function selectTree(id) {
                 </div>
             </div>
 
-            <div class="mt-25" style="display: flex; justify-content: flex-end;">
+            <div class="mt-25" style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button onclick="window.openEditTreeModal(${tree.id}, '${currentFollaje}', '${currentPlagas}')" class="btn-primary" style="background-color: var(--admin-accent); padding: 8px 15px; border-radius: 8px; color: white; display:flex; align-items:center; gap:5px; border:none; cursor:pointer;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    Editar Estado
+                </button>
                 <a href="/mapa?id=${tree.id}" target="_blank" class="btn-primary sidebar-btn-link btn-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
@@ -195,5 +207,70 @@ export async function loadTreesFromServer() {
 
     if (state.selectedTreeId) {
         selectTree(state.selectedTreeId);
+    }
+};
+
+window.openEditTreeModal = function(id, follaje = 'Completo', plagas = 'Ninguna') {
+    document.getElementById('edit-tree-id').value = id;
+    
+    const follajeSelect = document.getElementById('edit-tree-follaje');
+    const plagasSelect = document.getElementById('edit-tree-plagas');
+    
+    if (follajeSelect) {
+        // Asegurar la primera letra en mayúscula para que coincida con el option value
+        const f = follaje.charAt(0).toUpperCase() + follaje.slice(1).toLowerCase();
+        follajeSelect.value = f;
+    }
+    if (plagasSelect) {
+        const p = plagas.charAt(0).toUpperCase() + plagas.slice(1).toLowerCase();
+        plagasSelect.value = p;
+    }
+
+    document.getElementById('edit-tree-modal').style.display = 'flex';
+};
+
+window.closeEditTreeModal = function() {
+    document.getElementById('edit-tree-modal').style.display = 'none';
+};
+
+window.submitEditTree = async function(event) {
+    event.preventDefault();
+    const id = document.getElementById('edit-tree-id').value;
+    const follaje = document.getElementById('edit-tree-follaje').value;
+    const plagas = document.getElementById('edit-tree-plagas').value;
+
+    try {
+        const response = await fetch(`/api/arboles/${id}/status`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                vitality: { follaje: follaje, plagas: plagas }
+            })
+        });
+
+        if (response.ok) {
+            closeEditTreeModal();
+            
+            // Mostrar notificación de éxito
+            const banner = document.getElementById('notification-banner');
+            const text = document.getElementById('notification-text');
+            if (banner && text) {
+                text.innerText = 'Estado del árbol actualizado con éxito';
+                banner.style.display = 'flex';
+                setTimeout(() => { banner.style.display = 'none'; }, 3000);
+            }
+
+            // Recargar detalles y lista
+            selectTree(id);
+            loadTreesFromServer();
+        } else {
+            alert('Error al actualizar el estado del árbol');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error de conexión con el servidor');
     }
 };

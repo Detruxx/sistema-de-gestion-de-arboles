@@ -271,28 +271,6 @@
                     </div>
                 </div>
 
-                <!-- Aviso de Página en Construcción Reutilizable -->
-                <div style="margin-bottom: 40px;">
-                    <x-under-construction />
-                </div>
-
-                <!-- Alertas Inteligentes (Actionable Intelligence) -->
-                <div class="detail-panel" style="margin-bottom: 30px; border-left: 4px solid var(--admin-accent);">
-                    <h3 class="sidebar-menu-title mt-25" style="font-family: var(--font-display); margin-bottom: 20px; color: var(--admin-accent);">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                        Alertas y Hallazgos Automáticos
-                    </h3>
-                    <div class="activity-list" id="smart-alerts-container">
-                        <!-- Loaded via JS Skeleton -->
-                        <div class="activity-item">
-                            <span class="activity-dot activity-dot-warning"></span>
-                            <div>
-                                <p class="activity-title" style="font-weight: 600;">Cargando motor de inteligencia...</p>
-                                <p class="activity-desc">Analizando correlaciones entre especies y reclamos...</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Grilla de Gráficos -->
                 <div class="split-layout" style="gap: 30px;">
@@ -309,6 +287,23 @@
                         <h4 style="margin-bottom: 20px; color: var(--admin-text); font-family: var(--font-display);">Salud del Arbolado</h4>
                         <div style="position: relative; height: 300px; width: 100%; display: flex; justify-content: center; align-items: center;">
                             <canvas id="distributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alertas Inteligentes (Actionable Intelligence) -->
+                <div style="margin-top: 40px; margin-bottom: 30px;">
+                    <h3 class="sidebar-menu-title" style="font-family: var(--font-display); margin-bottom: 20px; color: var(--admin-accent);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        Alertas y Hallazgos Automáticos
+                    </h3>
+                    
+                    <!-- Contenedor Grid para las Tarjetas de Alerta -->
+                    <div id="smart-alerts-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                        <!-- Cargando Skeleton -->
+                        <div style="padding: 20px; background: white; border-radius: 12px; border-left: 4px solid var(--admin-border); box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                            <p style="font-weight: 600; margin-bottom: 8px;">Cargando motor de inteligencia...</p>
+                            <p style="font-size: 0.9rem; color: #6b7280;">Analizando correlaciones entre especies y reclamos...</p>
                         </div>
                     </div>
                 </div>

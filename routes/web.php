@@ -149,6 +149,9 @@ Route::get('/api/arboles/pines', [TreeController::class, 'getMapPins']);
 // Endpoint para traer el detalle de un árbol específico
 Route::get('/api/arboles/{id}', [TreeController::class, 'getTreeDetails']);
 
+// Endpoint para actualizar el estado de un árbol
+Route::put('/api/arboles/{id}/status', [TreeController::class, 'updateStatus']);
+
 // Endpoint para traer todos los tipos de reclamo
 Route::get('/api/request-types',[RequestTypeController::class, 'index']);
 
