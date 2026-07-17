@@ -58,7 +58,7 @@ DB_PASSWORD=
 DB_CONNECTION=sqlite
 ```
 
-**5. Correr las migraciones y seeders (en caso de no contar con base de datos):**
+**5. (SOLO SI NO SE TIENE BASE DE DATOS) Correr las migraciones y seeders:**
 ```bash
 php artisan migrate --seed
 ```
@@ -69,6 +69,25 @@ php artisan storage:link
 ```
 
 ---
+
+**7. (SOLO SI SE TIENE BASE DE DATOS) IMPORTAR BASE DE DATOS (Con XAMPP):**
+
+- Paso 1: Importar el archivo .sql en XAMPP
+
+- Paso 2: Abrir el XAMPP Control Panel y activar los módulos de Apache y MySQL.
+
+- Paso 3: Ir a http://localhost/phpmyadmin en el navegador.
+
+- Paso 4: Hacer clic en "Nueva" (en la columna de la izquierda) para crear una base de datos.
+
+- Paso 5: Ponerle el nombre del proyecto (por ejemplo: sistema_arbolado) y elegir la codificación utf8mb4_unicode_ci (o la que hayan usado).
+
+- Paso 6: Seleccionar la base de datos recién creada, ir a la pestaña "Importar" (Import) en el menú superior.
+
+- Paso 7: Hacer clic en "Seleccionar archivo", elegir el archivo .sql que te entregamos y darle al botón "Importar" (o Go) abajo de todo.
+
+
+
 
 ## Uso / Ejecución Local
 
