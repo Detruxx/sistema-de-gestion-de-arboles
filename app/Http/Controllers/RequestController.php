@@ -10,8 +10,8 @@ use App\Models\Company;
 use Illuminate\Http\Request;
 use App\Models\Request as RequestModel;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail; // 📍 IMPORTANTE PARA TAREA 2
-use App\Mail\ClaimMergedMail;       // 📍 IMPORTANTE PARA TAREA 2
+use Illuminate\Support\Facades\Mail; 
+use App\Mail\ClaimMergedMail;       
 
 class RequestController extends Controller
 {
@@ -60,7 +60,7 @@ class RequestController extends Controller
     }
 
     /**
-     * Guarda un reclamo recién creado en la base de datos con algoritmo de scoring inteligente (TAREA 1).
+     * Guarda un reclamo recién creado en la base de datos con algoritmo de scoring inteligente
      */
     public function store(Request $request, \App\Services\StreetService $streetService)
     {
@@ -185,7 +185,7 @@ class RequestController extends Controller
             ], 404);
         }
 
-        // 📍 ⚪ Apagamos el puntito rojo si el vecino logueado está viendo su propia solicitud modificada
+        // Apagamos el puntito rojo si el vecino logueado está viendo su propia solicitud modificada
         if (auth()->check() && $incident->user_id === auth()->id() && $incident->is_new_for_user) {
             $incident->update(['is_new_for_user' => false]);
         }
@@ -211,7 +211,7 @@ class RequestController extends Controller
     }
 
     /**
-     * Actualiza el estado del reclamo y envía correos automáticos (TAREA 2).
+     * Actualiza el estado del reclamo y envía correos automáticos
      */
     public function updateStatus(Request $request, $id)
     {
