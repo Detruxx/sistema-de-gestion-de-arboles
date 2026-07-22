@@ -22,7 +22,8 @@ class Request extends Model
         'priority_id',
         'linked_to',
         'suggested_duplicate_id',
-        'risk_score'
+        'risk_score',
+        'urgente_sla'
     ];
 
     // Esto hace que Laravel convierta los tipos de la BDD automáticamente
@@ -30,6 +31,7 @@ class Request extends Model
         'path' => 'array',
         'is_new_for_user' => 'boolean', // CONVERSIÓN A TRUE/FALSE GARANTIZADA
         'risk_score' => 'integer',
+        'urgente_sla' => 'boolean',
     ];
     
     // Esto es para que se pueda acceder al codigo de seguimiento como si fuera una propiedad normal

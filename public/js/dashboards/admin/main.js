@@ -15,7 +15,6 @@ window.showModule = function(moduleName) {
         analytics.loadAnalyticsModule();
     }
 };
-window.showModule = showModule;
 window.showAdminModule = api.showAdminModule;
 window.toggleAdminSidebar = toggleAdminSidebar;
 window.getCsrfToken = getCsrfToken;

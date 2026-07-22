@@ -44,24 +44,40 @@ function renderSmartAlerts(alerts) {
     container.innerHTML = '';
 
     if (!alerts || alerts.length === 0) {
-        container.innerHTML = '<p style="color: #666; font-size: 0.9rem;">No hay hallazgos automáticos en este momento.</p>';
+        container.innerHTML = `
+            <div style="padding: 20px; background: white; border-radius: 12px; border-left: 4px solid #9ca3af; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <p style="color: #666; font-size: 0.95rem;">No hay hallazgos automáticos que reportar en este momento.</p>
+            </div>`;
         return;
     }
 
     alerts.forEach(alert => {
-        // Map alert type to dot color class
+        // Map alert type to dot color class and border color
         let dotClass = 'activity-dot-info';
-        if (alert.type === 'danger') dotClass = 'activity-dot-danger';
-        if (alert.type === 'warning') dotClass = 'activity-dot-warning';
-        if (alert.type === 'success') dotClass = 'activity-dot-success';
+        let borderColor = 'var(--admin-accent)';
+        let titleColor = 'var(--admin-accent)';
+
+        if (alert.type === 'danger') {
+            dotClass = 'activity-dot-danger';
+            borderColor = 'var(--admin-danger)';
+            titleColor = 'var(--admin-danger)';
+        } else if (alert.type === 'warning') {
+            dotClass = 'activity-dot-warning';
+            borderColor = 'var(--admin-warning)';
+            titleColor = '#b45309'; // Darker warning for text readability
+        } else if (alert.type === 'success') {
+            dotClass = 'activity-dot-success';
+            borderColor = 'var(--admin-success)';
+            titleColor = 'var(--admin-success)';
+        }
 
         const alertHtml = `
-            <div class="activity-item" style="align-items: flex-start; padding: 12px; background: rgba(0,0,0,0.02); border-radius: 8px; margin-bottom: 10px;">
-                <span class="activity-dot ${dotClass}" style="margin-top: 5px;"></span>
-                <div>
-                    <p class="activity-title" style="font-weight: 600; font-size: 1.05rem;">${alert.title}</p>
-                    <p class="activity-desc" style="font-size: 0.95rem; line-height: 1.4; color: var(--admin-text-secondary); margin-top: 5px;">${alert.description}</p>
+            <div style="padding: 20px; background: white; border-radius: 12px; border-left: 4px solid ${borderColor}; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: flex-start; gap: 12px; transition: transform 0.2s ease;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="activity-dot ${dotClass}" style="margin:0;"></span>
+                    <p style="font-weight: 700; font-size: 1.05rem; color: ${titleColor}; margin: 0;">${alert.title}</p>
                 </div>
+                <p style="font-size: 0.95rem; color: var(--admin-text-secondary); line-height: 1.5; margin: 0;">${alert.description}</p>
             </div>
         `;
         container.insertAdjacentHTML('beforeend', alertHtml);
