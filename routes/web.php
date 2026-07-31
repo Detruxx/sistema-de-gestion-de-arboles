@@ -249,3 +249,7 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
+Route::get('/run-migrations', function () {
+    \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
+    return 'Migraciones (Estructura de la BD) creadas con exito en TiDB.';
+});
