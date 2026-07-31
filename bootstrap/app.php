@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     // Aca van los middleware de la aplicacion
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->trustProxies(at: '*');
         
         //Esto corre el middleware globalmente en todas las rutas web normales
         $middleware->web(append: [
