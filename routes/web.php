@@ -249,8 +249,3 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
-// RUTA TEMPORAL PARA IMPORTAR BD EN RENDER
-Route::get('/import-db', function () {
-    \Illuminate\Support\Facades\DB::unprepared(file_get_contents(base_path('gestion_arboles.sql')));
-    return '¡Base de datos importada con éxito desde el archivo SQL!';
-});
