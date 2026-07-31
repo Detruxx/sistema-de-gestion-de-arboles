@@ -14,6 +14,9 @@ WORKDIR /app
 # Copiamos el código de la aplicación
 COPY . .
 
+# Creamos las carpetas temporales que Laravel necesita (por si Git las ignoró)
+RUN mkdir -p /app/bootstrap/cache /app/storage/framework/views /app/storage/framework/cache /app/storage/framework/sessions
+
 # Instalamos dependencias de PHP
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
