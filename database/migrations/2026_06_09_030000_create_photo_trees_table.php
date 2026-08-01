@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('photo__trees', function (Blueprint $table) {
+        Schema::create('photo_trees', function (Blueprint $table) {
             $table->id();
             // puede tener un request_id o un tree_id
             $table->foreignId('request_id')->nullable()->constrained('requests')->onDelete('cascade');
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('photo__trees');
+        Schema::dropIfExists('photo_trees');
     }
 };
