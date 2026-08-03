@@ -155,6 +155,9 @@ Route::post('/api/arboles', [TreeController::class, 'store']);
 // Endpoint para actualizar el estado fitosanitario de un árbol (Inspector)
 Route::put('/api/arboles/{id}/status', [TreeController::class, 'updateStatus']);
 
+// Endpoint para actualizar todos los datos editables de un árbol (Inspector)
+Route::put('/api/arboles/{id}', [TreeController::class, 'update']);
+
 // Endpoint para traer todos los tipos de reclamo
 Route::get('/api/request-types',[RequestTypeController::class, 'index']);
 

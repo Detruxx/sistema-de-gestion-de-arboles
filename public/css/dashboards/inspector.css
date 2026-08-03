@@ -442,3 +442,52 @@
     padding: 3px 8px !important;
     white-space: nowrap !important;
 }
+
+/* ==========================================================================
+   Modal de Edición de Datos del Árbol (Expandido)
+   ========================================================================== */
+
+/* Contenedor del modal de edicion ampliado para acomodar todos los campos */
+.edit-tree-modal-container {
+    max-width: 680px !important;
+    width: 95% !important;
+}
+
+/* Textarea de observaciones dentro del modal de edicion */
+#edit-tree-modal textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 70px;
+    padding: 10px 12px;
+    border: 1px solid var(--admin-border, #d1d5db);
+    border-radius: 8px;
+    font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+    font-size: 0.9rem;
+    color: var(--admin-text-primary, #1f2937);
+    background: var(--admin-bg-panel, #ffffff);
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+#edit-tree-modal textarea:focus {
+    border-color: var(--admin-accent, #10b981);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* ==========================================================================
+   Ficha Técnica del Árbol Expandida (Panel Derecho del Inventario)
+   ========================================================================== */
+
+/* Grilla de dos columnas para mostrar todos los campos del arbol */
+.tree-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+/* Campos que ocupan toda la fila (observaciones, etc.) */
+.tree-detail-field-full {
+    grid-column: 1 / -1;
+}

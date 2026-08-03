@@ -14,6 +14,11 @@ class ValidateTurnstile
      */
     public function handle(Request $request, Closure $next)
     {
+        // En entorno local (desarrollo), omitimos la validación del captcha para evitar bloqueos
+        if (app()->environment('local')) {
+            return $next($request);
+        }
+
         // Validamos el captcha usando la regla que ya creamos en la regla del proyecto
         $validator = validator($request->all(), [
             'cf-turnstile-response' => ['required', new Turnstile()],
