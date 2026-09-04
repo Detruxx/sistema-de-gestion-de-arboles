@@ -33,14 +33,14 @@ class RequestFactory extends Factory
             // El usuario de prueba que creamos en el DatabaseSeeder (ID 1)
             'user_id' => 1, 
             
-            // 50% de probabilidad de que el reclamo esté asociado a un árbol físico existente (IDs 1 al 50)
-            'tree_id' => $this->faker->boolean(50) ? $this->faker->numberBetween(1, 50) : null,
+            // 50% de probabilidad de que el reclamo esté asociado a un árbol físico existente
+            'tree_id' => $this->faker->boolean(50) ? \App\Models\Tree::inRandomOrder()->value('id') : null,
             
             // Apunta a uno de los 7 tipos de reclamo fijos que creamos arriba
             'request_type_id' => $this->faker->numberBetween(1, 7),
             
-            // Apunta a una de las 10 calles existentes
-            'street_id' => $this->faker->numberBetween(1, 10),
+            // Apunta a una calle existente
+            'street_id' => \App\Models\Street::inRandomOrder()->value('id') ?? 1,
             
             // Descripción del reclamo que escribe el vecino
             'description' => $this->faker->paragraph(2),

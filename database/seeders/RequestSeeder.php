@@ -47,16 +47,19 @@ class RequestSeeder extends Seeder
         // 1. Creamos 10 reclamos aleatorios utilizando el Factory (el cual ya genera el path JSON vacío o con fotos)
         $reclamos = TreeRequest::factory()->count(10)->create();
 
+        // Obtenemos una calle válida para asegurar integridad
+        $calleId = \App\Models\Street::first()->id ?? 1;
+
         // 1.5 Creamos un caso EXPLICITO de duplicado para probar el algoritmo
         $reclamoMaestro = TreeRequest::factory()->create([
-            'street_id' => 1,
+            'street_id' => $calleId,
             'request_type_id' => 1,
             'request_status_id' => $relevatedStatusId, // 📍 Dinámico
             'description' => 'Reclamo Original: Rama gigante a punto de caer',
         ]);
 
         $reclamoDuplicado = TreeRequest::factory()->create([
-            'street_id' => 1,
+            'street_id' => $calleId,
             'request_type_id' => 1, // Misma calle y mismo tipo de reclamo
             'request_status_id' => $openStatusId, // 📍 Dinámico
             'description' => 'Reclamo Duplicado: Vecino reporta la misma rama gigante',

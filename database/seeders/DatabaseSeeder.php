@@ -18,15 +18,12 @@ class DatabaseSeeder extends Seeder
         // 1. Ejecutamos primero todos los catálogos y estructuras base
         $this->call([
             UserStatusSeeder::class,  // Siempre primero para que empresas y usuarios puedan nacer vinculados 
-            StreetSeeder::class,      
             ParkSeeder::class,        
-            SpecieSeeder::class,
             PrioritySeeder::class,
             CompanySeeder::class,     // Usa el estado por defecto 
             RequestTypeSeeder::class,
             RequestStatusSeeder::class,
-            PlanterSeeder::class,
-            TreeSeeder::class,
+            CensoComuna13Seeder::class, // Carga especies, calles, planteras y árboles reales
             RequestSeeder::class,
             WorkOrderSeeder::class,   // Al final de todo, cuando ya existen reclamos y empresas
         ]);
