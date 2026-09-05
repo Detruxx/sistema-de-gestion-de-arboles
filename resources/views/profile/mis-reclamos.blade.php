@@ -262,9 +262,36 @@
                                         @else
                                             @foreach($histories as $history)
                                                 @php
+                                                    $statusSlugMap = [
+                                                        'open'             => 'Pendiente',
+                                                        'relevated'        => 'Relevado / Inspeccionado',
+                                                        'scheduled'        => 'Programado',
+                                                        'in_progress'      => 'En curso',
+                                                        'resolved'         => 'Completado',
+                                                        'certified'        => 'Certificado',
+                                                        'denied'           => 'Denegado',
+                                                        'vinculated'       => 'Vinculado (Duplicado)',
+                                                        'cancelled'        => 'Cancelado por Vecino',
+                                                        'cancel_requested' => 'Cancelación Solicitada',
+                                                    ];
+
                                                     $hStatusName = $history->status ? $history->status->status_name : 'Actualización';
+                                                    if (isset($statusSlugMap[$hStatusName])) {
+                                                        $hStatusName = $statusSlugMap[$hStatusName];
+                                                    }
                                                     $hColor = $history->status ? $history->status->color : '#6b7280';
-                                                    $hDate = date('d/m/Y H:i', strtotime($history->created_at));
+                                                    $hDate = $history->created_at ? \Carbon\Carbon::parse($history->created_at)->format('d/m/Y H:i') : '';
+
+                                                    // Traducir justificaciones automáticas que hayan guardado el slug en inglés
+                                                    $historyText = $history->justification;
+                                                    if ($historyText) {
+                                                        foreach ($statusSlugMap as $slug => $traducido) {
+                                                            $historyText = preg_replace('/(a:\s*)' . preg_quote($slug, '/') . '$/i', '$1' . $traducido, $historyText);
+                                                            $historyText = preg_replace('/(a:\s*)' . preg_quote($slug, '/') . '\b/i', '$1' . $traducido, $historyText);
+                                                        }
+                                                    } else {
+                                                        $historyText = 'Estado de la solicitud actualizado por el área técnica.';
+                                                    }
                                                 @endphp
                                                 <div class="claim-history-item">
                                                     <div class="history-meta">
@@ -276,7 +303,7 @@
                                                             {{ $hStatusName }}
                                                         </span>
                                                         <p class="history-justification">
-                                                            {{ $history->justification ?: 'Estado de la solicitud actualizado por el área técnica.' }}
+                                                            {{ $historyText }}
                                                         </p>
                                                     </div>
                                                 </div>

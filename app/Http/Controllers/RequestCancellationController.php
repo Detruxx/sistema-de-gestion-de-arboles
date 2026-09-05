@@ -81,7 +81,7 @@ class RequestCancellationController extends Controller
             $reclamo->histories()->create([
                 'request_status_id' => $nuevoEstado->id,
                 'user_id'           => Auth::id(),
-                'description'       => $mensajeHistorial // O la columna donde guarden la bitácora
+                'justification'     => $mensajeHistorial
             ]);
 
             DB::commit();

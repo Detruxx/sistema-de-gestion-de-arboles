@@ -279,7 +279,8 @@ class RequestController extends Controller
 
         $justification = $request->respuesta;
         if (!$justification && $request->has('estado')) {
-            $justification = 'Cambio de estado a: ' . $request->estado;
+            $statusFriendlyName = ($statusObj ?? null)?->status_name ?? $request->estado;
+            $justification = 'Cambio de estado a: ' . $statusFriendlyName;
         }
         
         $userId = auth()->id() ?? 1;
