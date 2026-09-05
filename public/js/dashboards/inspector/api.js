@@ -47,3 +47,9 @@ export async function assignCompanyToClaim(claimId, companyId) {
     if (!res.ok) throw new Error('Error al asignar empresa');
     return res.json();
 }
+
+export async function fetchClaimPhotos(claimId) {
+    const res = await fetch(`/requests/${claimId}/photos`, { headers: { 'Accept': 'application/json' }});
+    if (!res.ok) throw new Error('Error al cargar fotos');
+    return res.json();
+}

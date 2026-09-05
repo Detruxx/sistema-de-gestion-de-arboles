@@ -64,6 +64,7 @@ Route::post('/requests', [RequestController::class, 'store']);
 Route::put('/requests/update-status/{id}', [RequestController::class, 'updateStatus']);
 Route::get('/requests/tree/{treeId}', [RequestController::class, 'getRequestsByTree']);
 Route::get('/requests/type/{typeId}', [RequestController::class, 'getRequestsByType']);
+Route::get('/requests/{id}/photos', [RequestController::class, 'getPhotos']);
 
 // Rutas de Contacto (de rediseño-home)
 Route::post('/contacto', [ContactController::class, 'store'])->name('contacto.store')->middleware('turnstile');

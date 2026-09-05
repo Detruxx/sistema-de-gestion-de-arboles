@@ -49,7 +49,8 @@ class RequestController extends Controller
                 'risk_score' => $req->risk_score,
                 'tree_id' => $req->tree_id,
                 'latitude' => $req->tree ? (float) $req->tree->latitude : null,
-                'longitude' => $req->tree ? (float) $req->tree->longitude : null
+                'longitude' => $req->tree ? (float) $req->tree->longitude : null,
+                'photo_count' => is_array($req->path) ? count($req->path) : 0
             ];
         });
 
@@ -475,6 +476,19 @@ class RequestController extends Controller
             'status' => 'success',
             'count'  => $formatted_claims->count(),
             'data'   => $formatted_claims
+        ], 200);
+    }
+
+    /**
+     * Devuelve las fotos de un reclamo en formato JSON.
+     */
+    public function getPhotos($id)
+    {
+        $request = \App\Models\Request::findOrFail($id);
+        
+        return response()->json([
+            'status' => 'success',
+            'data' => $request->path ?: []
         ], 200);
     }
 }

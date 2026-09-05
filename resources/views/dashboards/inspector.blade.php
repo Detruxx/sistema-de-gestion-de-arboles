@@ -349,6 +349,23 @@
         <div class="admin-modal-body" id="claim-modal-body-content" style="flex: 1; overflow-y: auto; padding: 20px;">
             <!-- Cargado dinámicamente por JS -->
         </div>
+</div>
+</div>
+
+<!-- Modal Galería de Fotos -->
+<div id="photos-gallery-modal" class="admin-modal-overlay" style="display: none; z-index: 1100; background-color: rgba(0,0,0,0.9);" onclick="if(event.target.id === 'photos-gallery-modal' || event.target.id === 'gallery-inner-container') window.closePhotosGallery()">
+    <div id="gallery-inner-container" style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+        <button type="button" id="gallery-prev-btn" onclick="window.prevGalleryPhoto()" style="position: absolute; left: 30px; background: rgba(255,255,255,0.2); border: none; font-size: 2rem; color: #fff; cursor: pointer; padding: 15px; border-radius: 50%; z-index: 1101; display: none; transition: background 0.3s;">&#10094;</button>
+        <div style="position: relative; max-width: 85%; max-height: 90vh; display: flex; align-items: center; justify-content: center;">
+            <button type="button" onclick="window.closePhotosGallery()" style="position: absolute; top: 0; right: -55px; background: var(--admin-primary, #10b981); border: 1px solid rgba(255,255,255,0.2); font-size: 2rem; color: #fff; cursor: pointer; z-index: 1102; width: 44px; height: 44px; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: background 0.2s;">&times;</button>
+            <img id="gallery-current-image" src="" alt="Foto adjunta" style="max-width: 100%; max-height: 90vh; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        </div>
+        
+        <button type="button" id="gallery-next-btn" onclick="window.nextGalleryPhoto()" style="position: absolute; right: 30px; background: rgba(255,255,255,0.2); border: none; font-size: 2rem; color: #fff; cursor: pointer; padding: 15px; border-radius: 50%; z-index: 1101; display: none; transition: background 0.3s;">&#10095;</button>
+        
+        <div id="gallery-counter" style="position: absolute; bottom: 30px; color: #fff; font-size: 1.1rem; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px;">
+            1 / 1
+        </div>
     </div>
 </div>
 <!-- Notification Banner -->

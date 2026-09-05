@@ -7,7 +7,7 @@ import { getProgressTrackerHtml } from '../shared/ui-components.js';
 export function getClaimListCardHtml(c, isSelected, statusObj) {
     const statusLabel = statusObj ? statusObj.status_name : c.estado.toUpperCase();
     const statusHex = statusObj ? statusObj.color : '#6b7280';
-    
+
     let priorityBadge = '';
     if (c.priority === 'auto-alta') {
         priorityBadge = `<span style="background-color: #fef2f2; color: #dc2626; border: 1px solid #dc2626; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; white-space: nowrap;">URGENTE</span>`;
@@ -103,8 +103,19 @@ export function getClaimModalHtml(claim, state) {
         <div class="detail-box">
             <p class="detail-label">Mensaje / Descripción del problema</p>
             <p class="detail-box-desc">${claim.descripcion}</p>
-        </div>
-    </div> <!-- FIN COLUMNA IZQUIERDA -->`;
+        </div>`;
+
+    if (claim.photo_count && claim.photo_count > 0) {
+        html += `
+        <div style="margin-top: 15px;">
+            <button class="btn-secondary" onclick="window.openPhotosGallery('${claim.id}')" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                Ver fotos adjuntas (${claim.photo_count})
+            </button>
+        </div>`;
+    }
+
+    html += `</div> <!-- FIN COLUMNA IZQUIERDA -->`;
 
     // --- COLUMNA DERECHA: GESTIÓN ---
     html += `<div class="claim-modal-col-right">
@@ -186,7 +197,7 @@ export function getClaimModalHtml(claim, state) {
                     <label class="task-form-label">Tipo de Tarea:</label>
                     <select id="new-task-type-select" class="task-form-select">
                         <option value="">-- Seleccionar Tarea --</option>`;
-        
+
         const uniqueCategories = [...new Set(state.claims.map(c => c.categoria))].filter(c => c !== 'Otro' && c !== 'Arbol no mapeado');
         uniqueCategories.forEach(cat => {
             html += `<option value="${cat}">${cat}</option>`;
@@ -199,7 +210,7 @@ export function getClaimModalHtml(claim, state) {
                     <label class="task-form-label">Empresa Contratista:</label>
                     <select id="new-task-company-select" class="task-form-select">
                         <option value="">-- Seleccionar Empresa --</option>`;
-        
+
         (state.activeCompanies || []).forEach(c => {
             html += `<option value="${c.id}">${c.name || c.company_name}</option>`;
         });
