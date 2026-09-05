@@ -99,6 +99,67 @@ class TreeController extends Controller
         ], 200);
     }
 
+    // Actualiza todos los datos editables de un arbol (usado por el modal de edicion del inspector)
+    public function update(Request $request, $id)
+    {
+        // Validacion de datos
+        $validatedData = $request->validate([
+            'specie'             => 'required|string',
+            'height'             => 'required|numeric',
+            'dap'                => 'required|numeric',
+            'years'              => 'nullable|numeric',
+            'reference'          => 'nullable|string',
+            'structure'          => 'nullable|string',
+            'degree'             => 'nullable|integer',
+            'maintenance_status' => 'nullable|string',
+            'vitality'           => 'nullable|array',
+            'observations'       => 'nullable|string',
+        ]);
+
+        // Se busca el arbol
+        $tree = Tree::find($id);
+
+        if (!$tree) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Arbol no encontrado'
+            ], 404);
+        }
+
+        // Se resuelve la especie por nombre comun
+        $specie = Specie::where('common_name', $validatedData['specie'])->first();
+        if (!$specie) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Especie no encontrada en la base de datos'
+            ], 404);
+        }
+
+        // Actualizamos todos los campos editables
+        $tree->species_id         = $specie->id;
+        $tree->height             = $validatedData['height'];
+        $tree->dap                = $validatedData['dap'];
+        $tree->years              = $validatedData['years'] ?? null;
+        $tree->reference          = $validatedData['reference'] ?? null;
+        $tree->structure          = $validatedData['structure'] ?? null;
+        $tree->degree             = $validatedData['degree'] ?? null;
+        $tree->maintenance_status = $validatedData['maintenance_status'] ?? null;
+        $tree->vitality           = $request->input('vitality');
+        $tree->observations       = $validatedData['observations'] ?? null;
+
+        // Guardamos los cambios
+        $tree->save();
+
+        // Devolvemos el arbol actualizado con sus relaciones
+        $tree->load(['street', 'specie', 'planter', 'park']);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Datos del arbol actualizados con exito',
+            'data'    => $tree
+        ], 200);
+    }
+
 
     // =================================
     // FUNCIONES DE CONSULTA (GET)
@@ -289,7 +350,8 @@ class TreeController extends Controller
                 'trees.id',
                 'trees.latitude',
                 'trees.longitude',
-                'trees.height', // (quiza quitar luego)
+                'trees.height',
+                'trees.reference',
                 'streets.street_name',
                 'streets.street_number',
                 'streets.door_plate',
@@ -312,7 +374,8 @@ class TreeController extends Controller
                 'id' => $pin->id,
                 'latitude'  => (float)$pin->latitude,
                 'longitude' => (float)$pin->longitude,
-                'height'    => $pin->height, // (quiza quitar luego)
+                'height'    => $pin->height,
+                'reference' => $pin->reference,
                 'street' => $pin->street_name ? [
                     'street_name' => $pin->street_name,
                     'street_number' => $pin->street_number,

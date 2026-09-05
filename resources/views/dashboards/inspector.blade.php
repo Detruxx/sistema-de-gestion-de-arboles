@@ -360,33 +360,103 @@
     <span id="notification-text">Respuesta enviada con éxito.</span>
 </div>
 
-<!-- Modal Editar Estado del Árbol -->
+<!-- Modal Editar Datos del Árbol -->
 <div id="edit-tree-modal" class="admin-modal-overlay" style="display: none; z-index: 1060;">
-    <div class="admin-modal-container">
+    <div class="admin-modal-container edit-tree-modal-container">
         <div class="admin-modal-header">
-            <h3>Actualizar Estado Fitosanitario</h3>
+            <h3>Editar Datos del Árbol</h3>
             <button type="button" class="admin-modal-close" onclick="closeEditTreeModal()">&times;</button>
         </div>
         <form id="edit-tree-form" onsubmit="submitEditTree(event)">
             <input type="hidden" id="edit-tree-id" value="">
             <div class="admin-modal-body">
-                <div class="admin-form-group">
-                    <label for="edit-tree-follaje">Estado del Follaje</label>
-                    <select id="edit-tree-follaje" required>
-                        <option value="Completo">Follaje Completo (Vigoroso)</option>
-                        <option value="Ralo">Follaje Ralo (Poco denso/Escaso)</option>
-                        <option value="Seco">Follaje Seco (Muerto)</option>
-                    </select>
+
+                <div class="admin-form-row">
+                    <div class="admin-form-group">
+                        <label for="edit-tree-especie">Especie</label>
+                        <select id="edit-tree-especie" required>
+                            <option value="Jacarandá">Jacarandá</option>
+                            <option value="Ceibo">Ceibo</option>
+                            <option value="Fresno">Fresno</option>
+                            <option value="Palo Borracho">Palo Borracho</option>
+                            <option value="Tilo">Tilo</option>
+                            <option value="Liquidámbar">Liquidámbar</option>
+                        </select>
+                    </div>
+                    <div class="admin-form-group">
+                        <label for="edit-tree-referencia">Referencia</label>
+                        <input type="text" id="edit-tree-referencia" placeholder="Ej. Frente a chapa 1425">
+                    </div>
                 </div>
-                <div class="admin-form-group">
-                    <label for="edit-tree-plagas">Presencia de Plagas</label>
-                    <select id="edit-tree-plagas" required>
-                        <option value="Ninguna">Ninguna Plaga Detectada</option>
-                        <option value="Cochinilla">Cochinilla / Pulgones</option>
-                        <option value="Hongo">Hongo / Clorosis</option>
-                        <option value="Taladro">Taladro / Insectos xilófagos</option>
-                    </select>
+
+                <div class="admin-form-row">
+                    <div class="admin-form-group">
+                        <label for="edit-tree-altura">Altura (metros)</label>
+                        <input type="number" step="0.01" id="edit-tree-altura" placeholder="Ej. 8.5" required>
+                    </div>
+                    <div class="admin-form-group">
+                        <label for="edit-tree-dap">DAP / Circunferencia (cm)</label>
+                        <input type="number" step="0.01" id="edit-tree-dap" placeholder="Ej. 95" required>
+                    </div>
                 </div>
+
+                <div class="admin-form-row">
+                    <div class="admin-form-group">
+                        <label for="edit-tree-edad">Edad Estimada (años)</label>
+                        <input type="number" id="edit-tree-edad" placeholder="Ej. 12">
+                    </div>
+                    <div class="admin-form-group">
+                        <label for="edit-tree-estructura">Estructura</label>
+                        <select id="edit-tree-estructura">
+                            <option value="">Sin especificar</option>
+                            <option value="Erguido">Erguido</option>
+                            <option value="Inclinado">Inclinado</option>
+                            <option value="Caído">Caído</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="admin-form-row">
+                    <div class="admin-form-group">
+                        <label for="edit-tree-grado">Grado de Inclinación</label>
+                        <input type="number" id="edit-tree-grado" placeholder="Ej. 15" min="0" max="90">
+                    </div>
+                    <div class="admin-form-group">
+                        <label for="edit-tree-mantenimiento">Estado de Mantenimiento</label>
+                        <select id="edit-tree-mantenimiento">
+                            <option value="">Sin especificar</option>
+                            <option value="Normal">Normal</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Urgente">Urgente</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="admin-form-row">
+                    <div class="admin-form-group">
+                        <label for="edit-tree-follaje">Estado del Follaje</label>
+                        <select id="edit-tree-follaje">
+                            <option value="Completo">Follaje Completo (Vigoroso)</option>
+                            <option value="Ralo">Follaje Ralo (Poco denso/Escaso)</option>
+                            <option value="Seco">Follaje Seco (Muerto)</option>
+                        </select>
+                    </div>
+                    <div class="admin-form-group">
+                        <label for="edit-tree-plagas">Presencia de Plagas</label>
+                        <select id="edit-tree-plagas">
+                            <option value="Ninguna">Ninguna Plaga Detectada</option>
+                            <option value="Cochinilla">Cochinilla / Pulgones</option>
+                            <option value="Hongo">Hongo / Clorosis</option>
+                            <option value="Taladro">Taladro / Insectos xilófagos</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="edit-tree-observaciones">Observaciones</label>
+                    <textarea id="edit-tree-observaciones" rows="3" placeholder="Observaciones adicionales sobre el ejemplar..."></textarea>
+                </div>
+
             </div>
             <div class="admin-modal-footer">
                 <button type="button" class="btn-secondary" onclick="closeEditTreeModal()">Cancelar</button>

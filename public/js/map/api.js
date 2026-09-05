@@ -104,7 +104,7 @@ export async function mostrarDatosArbol(arbolId) {
             direccionCompleta = arbol.park.park_name;
             direccionLabel = 'Parque:';
         } else if (arbol.street) {
-            direccionCompleta = `${arbol.street.street_name} ${arbol.street.street_number}`;
+            direccionCompleta = `${arbol.street.street_name} ${arbol.street.door_plate || arbol.street.street_number || ''}`;
             if (arbol.reference) {
                 direccionCompleta += ` (${arbol.reference})`;
             }

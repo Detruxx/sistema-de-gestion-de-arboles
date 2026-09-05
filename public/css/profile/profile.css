@@ -558,21 +558,50 @@ details.reclamo-card[open] .chevron-arrow svg {
     }
 
     details.reclamo-card summary {
-        padding: 20px;
+        padding: 18px;
         flex-direction: column;
         align-items: flex-start;
-        gap: 15px;
+        gap: 12px;
+    }
+
+    /* Apilar el summary-left verticalmente para que el ID y el titulo no se peleen */
+    .card-summary-left {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+
+    /* Compactar el badge de ID */
+    .reclamo-id {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+        min-width: auto;
+        align-self: flex-start;
+    }
+
+    .card-summary-left h3 {
+        font-size: 1rem;
+    }
+
+    .summary-meta {
+        font-size: 0.82rem;
     }
     
     .card-summary-right {
         width: 100%;
         justify-content: space-between;
         border-top: 1px dashed rgba(45, 122, 79, 0.15);
-        padding-top: 15px;
+        padding-top: 12px;
     }
 
     .reclamo-card-details {
-        padding: 0 20px 20px 20px;
+        padding: 0 18px 18px 18px;
+    }
+
+    /* Grilla de metadatos en una sola columna */
+    .details-meta-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
     }
 
     .message-card-header {

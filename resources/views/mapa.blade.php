@@ -87,8 +87,8 @@
                 </div>
             </div>
 
-            <aside id="tree-sidebar" class="sidebar-closed">
-                <button id="toggle-sidebar" class="toggle-btn">
+            <aside id="tree-sidebar" class="sidebar-closed" data-sheet-state="closed">
+                <button id="toggle-sidebar" class="toggle-btn" aria-label="Deslizar panel de detalles del árbol">
                     <svg id="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="15 18 9 12 15 6"></polyline>
                     </svg>

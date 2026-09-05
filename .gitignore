@@ -31,3 +31,6 @@ TODO.md
 
 # Agent configuration
 .agents/
+
+# Data files
+Bdd_censo_2018.json

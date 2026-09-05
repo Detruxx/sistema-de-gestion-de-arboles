@@ -173,84 +173,9 @@
     }
 
     /* Map Bottom-Sheet UX for Mobile */
+    /* NOTA: Estos estilos fueron migrados a css/pages/home/map.css para respetar SRP */
+
     .map-page-container {
-        padding: 80px 10px 10px 10px;
-    }
-
-    #tree-sidebar {
-        top: auto;
-        bottom: 0;
-        width: 100%;
-        height: 50vh;
-        border-right: none;
-        border-top: 2px solid rgba(45, 122, 79, 0.3);
-        border-radius: 20px 20px 0 0;
-        transform: translateY(0);
-        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
-    }
-
-    #tree-sidebar.sidebar-closed {
-        transform: translateY(calc(100% - 40px));
-    }
-
-    .sidebar-content {
-        padding: 40px 15px 15px 15px;
-    }
-
-    /* Toggle Button as a Pull-up handle bar */
-    .toggle-btn {
-        top: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        height: 40px;
-        transform: none;
-        border: none;
-        border-bottom: 1px solid rgba(45, 122, 79, 0.1);
-        border-radius: 20px 20px 0 0;
-        background-color: var(--paper-white);
-        box-shadow: none;
-    }
-
-    .toggle-btn::after {
-        content: '';
-        position: absolute;
-        top: 17px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 50px;
-        height: 5px;
-        background-color: rgba(45, 122, 79, 0.3);
-        border-radius: 10px;
-    }
-
-    /* Hide default chevron inside handle bar */
-    .toggle-btn #arrow-icon {
-        display: none;
-    }
-
-    .sidebar-top {
-        height: auto;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .badges-col {
-        flex-direction: row;
-        height: auto;
-        width: 100%;
-        gap: 10px;
-    }
-
-    .info-badge {
-        flex: 1;
-        height: 65px;
-        padding: 4px;
-    }
-
-    .photo-col {
-        width: 100%;
-        height: 160px;
-        flex: none;
+        padding: 80px 0 0 0;
     }
 }

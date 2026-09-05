@@ -102,7 +102,7 @@ export function renderMapMarkers() {
         if (arbol.park) {
             direccionBasica = arbol.park.park_name;
         } else if (arbol.street) {
-            direccionBasica = `${arbol.street.street_name} ${arbol.street.street_number || ''}`.trim();
+            direccionBasica = `${arbol.street.street_name} ${arbol.street.door_plate || arbol.street.street_number || ''}`.trim();
         }
         const nombreEspeciePopup = arbol.specie ? arbol.specie.common_name : 'Desconocida';
 
