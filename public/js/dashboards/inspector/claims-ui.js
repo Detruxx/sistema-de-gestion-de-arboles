@@ -5,6 +5,10 @@
 import { state } from './state.js';
 import { getClaimListCardHtml, getClaimModalHtml } from './claims-template.js';
 import { updateStats } from './ui.js';
+import { fetchClaimPhotos } from './api.js';
+
+let currentGalleryPhotos = [];
+let currentPhotoIndex = 0;
 
 export function loadClaimsList() {
     const container = document.getElementById('claims-list-container');
@@ -74,7 +78,72 @@ export function filterClaims() {
 
 export function closeClaimDetailModal() {
     const modal = document.getElementById('claim-detail-modal');
-    if(modal) {
+    if (modal) {
         modal.style.display = 'none';
+    }
+}
+
+export async function openPhotosGallery(claimId) {
+    const claim = state.claims.find(c => c.id === claimId);
+    if (!claim || !claim.photo_count || claim.photo_count === 0) return;
+
+    try {
+        const response = await fetchClaimPhotos(claim.raw_request_id);
+        if (!response.data || response.data.length === 0) return;
+        
+        currentGalleryPhotos = response.data;
+        currentPhotoIndex = 0;
+        
+        updateGalleryModal();
+        document.getElementById('photos-gallery-modal').style.display = 'flex';
+    } catch (err) {
+        console.error("Error al cargar fotos", err);
+        alert("Ocurrió un error al cargar las fotos.");
+    }
+}
+
+export function closePhotosGallery() {
+    document.getElementById('photos-gallery-modal').style.display = 'none';
+}
+
+export function prevGalleryPhoto() {
+    if (currentPhotoIndex > 0) {
+        currentPhotoIndex--;
+        updateGalleryModal();
+    }
+}
+
+export function nextGalleryPhoto() {
+    if (currentPhotoIndex < currentGalleryPhotos.length - 1) {
+        currentPhotoIndex++;
+        updateGalleryModal();
+    }
+}
+
+function updateGalleryModal() {
+    const img = document.getElementById('gallery-current-image');
+    const counter = document.getElementById('gallery-counter');
+    const prevBtn = document.getElementById('gallery-prev-btn');
+    const nextBtn = document.getElementById('gallery-next-btn');
+
+    if (!img) return;
+
+    // Asumimos que los paths están guardados en la BD relativos a storage/app/public o directamente en public.
+    // Usualmente Laravel devuelve el path desde storage, así que ajustamos si es necesario.
+    let src = currentGalleryPhotos[currentPhotoIndex];
+    if (src && !src.startsWith('/storage/') && !src.startsWith('http')) {
+        src = '/storage/' + src;
+    }
+    img.src = src;
+
+    if (counter) {
+        counter.textContent = `${currentPhotoIndex + 1} / ${currentGalleryPhotos.length}`;
+    }
+
+    if (prevBtn) {
+        prevBtn.style.display = currentPhotoIndex > 0 ? 'block' : 'none';
+    }
+    if (nextBtn) {
+        nextBtn.style.display = currentPhotoIndex < currentGalleryPhotos.length - 1 ? 'block' : 'none';
     }
 }
