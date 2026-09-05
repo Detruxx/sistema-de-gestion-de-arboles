@@ -8,6 +8,8 @@
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/shared/autocomplete.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" crossorigin=""/>
 @endsection
 
 @section('content')
@@ -61,6 +63,35 @@
                                 <option value="medio">Medio (6m a 12m)</option>
                                 <option value="alto">Alto (mayor a 12m)</option>
                             </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-group-label" style="margin-top: 10px;">Mostrar en el mapa</label>
+                            <select id="filter-display-type" class="form-control">
+                                <option value="both">Árboles y Reclamos</option>
+                                <option value="trees">Solo Árboles</option>
+                                <option value="claims">Solo Reclamos</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group" style="margin-top: 15px;">
+                            <label class="filter-group-label" style="display: flex; justify-content: space-between; align-items: center;">
+                                Agrupar Marcadores
+                                <label class="switch" style="position: relative; display: inline-block; width: 34px; height: 20px; margin-bottom: 0;">
+                                    <input type="checkbox" id="toggle-clustering" checked style="opacity: 0; width: 0; height: 0;">
+                                    <span class="slider round" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px;"></span>
+                                </label>
+                            </label>
+                            <small id="clustering-warning" class="form-text text-warning" style="display: none; font-size: 0.75rem; color: #d97706; margin-top: 4px; line-height: 1.2;">
+                                Desactivar esta opción renderizará los miles de árboles de forma individual y podría causar que el mapa funcione con lentitud.
+                            </small>
+                            <style>
+                                /* Estilos para el switch inyectados aquí por simplicidad */
+                                .switch input:checked + .slider { background-color: #2d7a4f; }
+                                .switch input:focus + .slider { box-shadow: 0 0 1px #2d7a4f; }
+                                .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+                                .switch input:checked + .slider:before { transform: translateX(14px); }
+                            </style>
                         </div>
                         <!--   POR AHORA ESTOS FILTROS NO LOS NECESITAMOS
                         <div class="filter-group">
@@ -160,6 +191,7 @@
 
 @section('scripts')
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js" crossorigin=""></script>
     <script src="{{ asset('js/shared/address-autocomplete.js') }}"></script>
     <script type="module" src="{{ asset('js/map/main.js') }}"></script>
     <script>

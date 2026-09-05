@@ -22,8 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. Configurar listeners de filtros
     const filterEspecie = document.getElementById('filter-especie');
     const filterAltura = document.getElementById('filter-altura');
+    const filterDisplay = document.getElementById('filter-display-type');
+    const toggleClustering = document.getElementById('toggle-clustering');
+    
     if (filterEspecie) filterEspecie.addEventListener('change', renderMapMarkers);
     if (filterAltura) filterAltura.addEventListener('change', renderMapMarkers);
+    if (filterDisplay) filterDisplay.addEventListener('change', renderMapMarkers);
+    if (toggleClustering) toggleClustering.addEventListener('change', renderMapMarkers);
 
     // 5. Configurar búsqueda
     const searchBtn = document.getElementById('map-search-btn');

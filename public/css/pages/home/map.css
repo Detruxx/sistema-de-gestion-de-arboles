@@ -442,6 +442,8 @@
     z-index: 1001;
     transform-origin: top right;
     animation: fadeInScale 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
 }
 
 .filter-dropdown-menu.active {
@@ -687,7 +689,8 @@
     }
 
     .map-floating-controls .search-box {
-        width: 100%;
+        flex: 1;
+        width: auto;
         height: 44px;
     }
 
