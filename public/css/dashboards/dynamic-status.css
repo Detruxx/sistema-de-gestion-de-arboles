@@ -71,3 +71,52 @@
 .step-num.is-denied {
     font-size: 1.2rem;
 }
+
+/* ==========================================================================
+   RESPONSIVE: Stepper vertical para dispositivos moviles.
+   Convierte el stepper horizontal de bolitas en una timeline vertical
+   para evitar cortes y solapamientos en pantallas angostas.
+   ========================================================================== */
+@media (max-width: 768px) {
+
+    /* Convertir la fila horizontal en columna vertical */
+    #dynamic-stepper-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        padding-left: 8px;
+    }
+
+    /* La linea de progreso ahora es vertical, a la izquierda de los nodos */
+    #dynamic-stepper-container .track-step-line {
+        top: 17px;
+        bottom: 17px;
+        left: 24px;
+        right: auto;
+        width: 4px;
+        height: auto;
+        border-radius: 2px;
+    }
+
+    /* Cada paso se muestra como fila: circulo + label */
+    #dynamic-stepper-container .track-step-item {
+        flex-direction: row;
+        align-items: center;
+        gap: 14px;
+        width: 100%;
+        text-align: left;
+        padding: 8px 0;
+    }
+
+    /* Circulo del paso */
+    #dynamic-stepper-container .step-num {
+        flex-shrink: 0;
+        margin-bottom: 0;
+    }
+
+    /* Label del paso al lado del circulo */
+    #dynamic-stepper-container .step-lbl {
+        text-align: left;
+        font-size: 0.9rem;
+    }
+}

@@ -326,7 +326,7 @@
 }
 
 /* =========================================
-   RESPONSIVE (Reclamos Móvil)
+   RESPONSIVE (Reclamos Movil)
    ========================================= */
 @media (max-width: 768px) {
     .tramites-tabs {
@@ -359,26 +359,40 @@
         grid-template-columns: 1fr;
     }
     
+    /* Stepper: ocultar la linea horizontal (la version vertical la aporta dynamic-status.css) */
     .track-step-line {
-        display: none; /* Mejor ocultar la linea en movil para evitar solapamientos en pantallas muy finas */
+        display: none;
     }
     
+    /* Stepper: convertir a layout vertical con items en fila */
     .track-stepper-row {
         flex-direction: column;
-        gap: 20px;
+        gap: 0;
         align-items: flex-start;
+        padding-left: 8px;
     }
     
     .track-step-item {
         flex-direction: row;
-        gap: 15px;
+        gap: 14px;
         width: 100%;
         justify-content: flex-start;
+        padding: 8px 0;
     }
     
     .step-lbl {
         margin-top: 0;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
+        text-align: left;
+    }
+
+    .step-num {
+        flex-shrink: 0;
+    }
+
+    /* Stepper contenedor: darle un poco mas de padding */
+    .track-stepper {
+        padding: 20px;
     }
     
     .custom-file-upload {
@@ -393,4 +407,14 @@
     .admin-reply-box {
         padding: 15px;
     }
+
+    /* Titulo y subtitulo del tracking mas compactos */
+    .track-title {
+        font-size: 1.3rem;
+    }
+
+    .track-subtitle {
+        font-size: 0.9rem;
+    }
 }
+

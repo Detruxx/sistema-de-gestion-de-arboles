@@ -460,25 +460,7 @@
     }
 }
 
-/* Adaptación responsive para móviles */
-@media (max-width: 768px) {
-    .map-floating-controls {
-        top: 15px;
-        right: 15px;
-        left: 15px;
-        max-width: none;
-        flex-direction: column;
-        align-items: flex-end;
-    }
-
-    .map-floating-controls .search-box {
-        width: 100%;
-    }
-
-    .filter-dropdown-menu {
-        width: calc(100vw - 30px);
-    }
-}
+/* Adaptacion responsive de controles flotantes: movido al bloque principal al final del archivo */
 
 /* --- ESTILOS DEL POPUP DE LEAFLET --- */
 .custom-tree-popup .leaflet-popup-content-wrapper {
@@ -555,4 +537,169 @@
 
 .tree-popup-btn:hover {
     background: #24633f;
+}
+
+/* ==========================================================================
+   RESPONSIVE: Bottom Sheet del Mapa para dispositivos moviles.
+   Reemplaza el sidebar lateral de desktop por un panel inferior deslizable
+   con 3 estados: cerrado (solo handle), peek (datos basicos) y abierto (completo).
+   ========================================================================== */
+@media (max-width: 768px) {
+
+    /* --- Contenedor del Mapa --- */
+    .map-page-container {
+        padding: 80px 0 0 0;
+    }
+
+    .map-wrapper {
+        border: none;
+        border-radius: 0;
+    }
+
+    /* --- Bottom Sheet: Panel inferior deslizable --- */
+    #tree-sidebar {
+        position: fixed;
+        top: auto;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 80vh;
+        border-right: none;
+        border-top: none;
+        border-radius: 20px 20px 0 0;
+        box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.15);
+        z-index: 1100;
+        transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+        will-change: transform;
+        overflow: hidden;
+    }
+
+    /* Estado cerrado: solo se asoma el handle (48px desde abajo) */
+    #tree-sidebar.sidebar-closed {
+        transform: translateY(calc(100% - 48px));
+    }
+
+    /* Estado peek: muestra 35vh de contenido (datos basicos del arbol) */
+    #tree-sidebar.sidebar-peek {
+        transform: translateY(calc(100% - 35vh));
+    }
+
+    /* Estado abierto: se expande al maximo (80vh) */
+    #tree-sidebar.sidebar-open {
+        transform: translateY(0);
+    }
+
+    /* Deshabilitar transicion durante el arrastre para seguir el dedo */
+    #tree-sidebar.is-dragging {
+        transition: none !important;
+    }
+
+    /* --- Handle / Barra de arrastre --- */
+    .toggle-btn {
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 48px;
+        transform: none;
+        border: none;
+        border-bottom: 1px solid rgba(45, 122, 79, 0.08);
+        border-radius: 20px 20px 0 0;
+        background-color: var(--paper-white);
+        box-shadow: none;
+        cursor: grab;
+        touch-action: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .toggle-btn:active {
+        cursor: grabbing;
+    }
+
+    /* Indicador visual de arrastre (pill) */
+    .toggle-btn::after {
+        content: '';
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 5px;
+        background-color: rgba(45, 122, 79, 0.25);
+        border-radius: 10px;
+        transition: background-color 0.2s ease, width 0.2s ease;
+    }
+
+    .toggle-btn:active::after {
+        width: 50px;
+        background-color: rgba(45, 122, 79, 0.5);
+    }
+
+    /* Ocultar la flecha SVG dentro del handle en movil */
+    .toggle-btn #arrow-icon {
+        display: none;
+    }
+
+    /* --- Contenido del sidebar adaptado a bottom-sheet --- */
+    .sidebar-content {
+        padding: 8px 20px 20px 20px;
+        height: calc(100% - 48px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* --- Tarjeta de detalles del arbol --- */
+    .sidebar-top {
+        height: auto;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .badges-col {
+        flex-direction: row;
+        height: auto;
+        width: 100%;
+        gap: 8px;
+    }
+
+    .info-badge {
+        flex: 1;
+        height: 55px;
+        padding: 4px;
+    }
+
+    .photo-col {
+        width: 100%;
+        height: 160px;
+        flex: none;
+    }
+
+    /* --- Controles flotantes del mapa --- */
+    .map-floating-controls {
+        top: 12px;
+        right: 12px;
+        left: 12px;
+        max-width: none;
+    }
+
+    .map-floating-controls .search-box {
+        width: 100%;
+        height: 44px;
+    }
+
+    .filter-dropdown-menu {
+        width: calc(100vw - 24px);
+        right: 0;
+    }
+
+    /* Boton "Volver" mas compacto */
+    .panel-back-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        margin-bottom: 5px;
+    }
 }
